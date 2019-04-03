@@ -1,59 +1,38 @@
 <?php
-/*******************************************************************************
-** Basic Analysis and Security Engine (BASE)
-** Copyright (C) 2004 BASE Project Team
-** Copyright (C) 2000 Carnegie Mellon University
-**
-** (see the file 'base_main.php' for license details)
-**
-** Project Leads: Kevin Johnson <kjohnson@secureideas.net>
-**                Sean Muller <samwise_diver@users.sourceforge.net>
-** Built upon work by Roman Danyliw <rdd@cert.org>, <roman@danyliw.com>
-**
-** Purpose: This file is the second step in the setup program
-********************************************************************************
-** Authors:
-********************************************************************************
-** Kevin Johnson <kjohnson@secureideas.net
-**
-********************************************************************************
-*/
+
+use Webmozart\PathUtil\Path;
+use Vendi\Shared\utils as vendi_utils;
+
+require_once dirname(__DIR__) . '/includes/vendi_boot.php';
+
 session_start();
 
 define( "_BASE_INC", 1 );
 include("../includes/base_setup.inc.php");
-if (!array_key_exists("adodbpath", $_SESSION))
-{
-  $errorMsg = "ERROR: The php session does not contain the array key \"adodbpath\". This is typically caused by not having allowed cookies. Exiting.";
-  print $errorMsg;
-  exit();
+if (!array_key_exists("adodbpath", $_SESSION)) {
+   throw new \Exception('The php session does not contain the array key "adodbpath". This is typically caused by not having allowed cookies.');
 }
-$ado_inc_php = $_SESSION['adodbpath'] . "/adodb.inc.php";
-if ($ado_inc_php == "")
-{
-  print __FILE__ . ":" . __LINE__ . ": ERROR: The variable \$ado_inc_php is empty. Exiting.";
-  exit();
+
+$ado_inc_php = Path::join(vendi_utils::get_session_value('adodbpath'), 'adodb.inc.php');
+if(!file_exists($ado_inc_php)) {
+   throw new \Exception('The file "' . $ado_inc_php . '" does not exist');
 }
-else if (!file_exists($ado_inc_php))
-{
-  print "ERROR: The file \"" . $ado_inc_php . "\" does not exist. Exiting.";
-  exit();
+
+if(!is_readable($ado_inc_php)) {
+  throw new \Exception('The file "' . $ado_inc_php . '" does exist, but is not readable. Typically a permission problem.');
 }
-else if (!is_readable($ado_inc_php))
-{
-  print "ERROR: " . $ado_inc_php . " does exist, but is not readable. Typically a permission problem. Exiting.";
-  exit();
-}
+
 include($ado_inc_php);
 include("../includes/base_state_common.inc.php");
 include("../includes/base_constants.inc.php");
 
-if (file_exists('../base_conf.php'))
-	die ("If you wish to re-run the setup routine, please either move OR delete your previous base_conf file first.");
+if (file_exists('../base_conf.php')){
+   die ("If you wish to re-run the setup routine, please either move OR delete your previous base_conf file first.");
+}
 
 $errorMsg = '';
 
-if (@$_GET['action'] == "check")
+if (vendi_utils::is_post())
 {
    // form was submitted do the checks!
    $dbtype = ImportHTTPVar("dbtype", VAR_ALPHA);
@@ -87,7 +66,7 @@ if (@$_GET['action'] == "check")
    if (@$_POST['usearchive'] == "on")
    {
        $_SESSION['usearchive'] = 1;
-      $dbconnect = $db->Connect( ( ($arcdbport == "") ? $arcdbhost : ($arcdbhost.":".$arcdbport) ), 
+      $dbconnect = $db->Connect( ( ($arcdbport == "") ? $arcdbhost : ($arcdbhost.":".$arcdbport) ),
                                  $arcdbusername, $arcdbpasswd, $arcdbname);
       if ( !$dbconnect )
       {
@@ -132,28 +111,28 @@ if (@$_GET['action'] == "check")
 <br>
 <P>
 <?php echo("<div class='errorMsg' align='center'>".$errorMsg."</div>"); ?>
-<form action=setup2.php?action=check method="POST">
+<form method="POST">
 <center><table width="50%" border=1 class ="query">
 <tr><td colspan=2 align="center" class="setupTitle">Step 2 of 5</td><tr>
 <tr><td class="setupKey" width="50%">Pick a Database type:</td><td class="setupValue"><select name="dbtype">
-<option value="mysql" <?php if ($_SESSION['dbtype'] == 'mysql') echo "selected";?>>MySQL
-<option value="postgres" <?php if ($_SESSION['dbtype'] == 'postgres') echo "selected";?>>PostgreSQL
-<option value="mssql" <?php if ($_SESSION['dbtype'] == 'mssql') echo "selected";?>>Microsoft SQL Server
-<option value="oci8" <?php if ($_SESSION['dbtype'] == 'oci8') echo "selected";?>>Oracle
-</select>[<a href="../help/base_setup_help.php#dbtype" onClick="javascript:window.open('../help/base_setup_help.php#dbtype','helpscreen','width=300,height=300');">?</a>]</td</tr>
+<option value="mysql" <?php if (vendi_utils::get_session_value('dbtype') == 'mysql') echo "selected";?>>MySQL
+<option value="postgres" <?php if (vendi_utils::get_session_value('dbtype') == 'postgres') echo "selected";?>>PostgreSQL
+<option value="mssql" <?php if (vendi_utils::get_session_value('dbtype') == 'mssql') echo "selected";?>>Microsoft SQL Server
+<option value="oci8" <?php if (vendi_utils::get_session_value('dbtype') == 'oci8') echo "selected";?>>Oracle
+</select>[<a href="../help/base_setup_help.php#dbtype" onClick="javascript:window.open('../help/base_setup_help.php#dbtype','helpscreen','width=300,height=300'); return false;">?</a>]</td</tr>
 <tr><td colspan=2 align="center">&nbsp;</td></tr>
-<tr><td class="setupKey">Database Name:</td><td class="setupValue"><input type="text" name="dbname" value="<?php echo $_SESSION['dbname'];?>"></td></tr>
-<tr><td class="setupKey">Database Host:</td><td class="setupValue"><input type="text" name="dbhost" value="<?php echo $_SESSION['dbhost'];?>"></td></tr>
-<tr><td class="setupKey">Database Port:<br>Leave blank for default!</td><td class="setupValue"><input type="text" name="dbport" value="<?php echo $_SESSION['dbport'];?>"></td></tr>
-<tr><td class="setupKey">Database User Name:</td><td class="setupValue"><input type="text" name="dbusername" value="<?php echo $_SESSION['dbusername'];?>"></td></tr>
-<tr><td class="setupKey">Database Password:</td><td class="setupValue"><input type="password" name="dbpasswd" value="<?php echo $_SESSION['dbpasswd'];?>"></td></tr>
+<tr><td class="setupKey">Database Name:</td><td class="setupValue"><input type="text" name="dbname" value="<?php echo vendi_utils::get_session_value('dbname');?>"></td></tr>
+<tr><td class="setupKey">Database Host:</td><td class="setupValue"><input type="text" name="dbhost" value="<?php echo vendi_utils::get_session_value('dbhost');?>"></td></tr>
+<tr><td class="setupKey">Database Port:<br>Leave blank for default!</td><td class="setupValue"><input type="text" name="dbport" value="<?php echo vendi_utils::get_session_value('dbport');?>"></td></tr>
+<tr><td class="setupKey">Database User Name:</td><td class="setupValue"><input type="text" name="dbusername" value="<?php echo vendi_utils::get_session_value('dbusername');?>"></td></tr>
+<tr><td class="setupKey">Database Password:</td><td class="setupValue"><input type="password" name="dbpasswd" value="<?php echo vendi_utils::get_session_value('dbpasswd');?>"></td></tr>
 <tr><td colspan=2 align="center">&nbsp;</td></tr>
-<tr><td colspan=2 align="center"><input type="checkbox" name="usearchive" <?php if ($_SESSION['usearchive'] == 1 ) echo "checked";?>>Use Archive Database[<a href="../help/base_setup_help.php#usearchive" onClick="javascript:window.open('../help/base_setup_help.php#usearchive','helpscreen','width=300,height=300');">?</a>]</td></tr>
-<tr><td class="setupKey">Archive Database Name:</td><td class="setupValue"><input type="text" name="arcdbname" value="<?php echo $_SESSION['arcdbname'];?>"></td></tr>
-<tr><td class="setupKey">Archive Database Host:</td><td class="setupValue"><input type="text" name="arcdbhost" value="<?php echo $_SESSION['arcdbhost'];?>"></td></tr>
-<tr><td class="setupKey">Archive Database Port:<br>Leave blank for default!</td><td class="setupValue"><input type="text" name="arcdbport" value="<?php echo $_SESSION['arcdbport'];?>"></td></tr>
-<tr><td class="setupKey">Archive Database User Name:</td><td class="setupValue"><input type="text" name="arcdbusername" value="<?php echo $_SESSION['arcdbusername'];?>"></td></tr>
-<tr><td class="setupKey">Archive Database Password:</td><td class="setupValue"><input type="password" name="arcdbpasswd" value="<?php echo $_SESSION['arcdbpasswd'];?>"></td></tr>
+<tr><td colspan=2 align="center"><input type="checkbox" name="usearchive" <?php if (vendi_utils::get_session_value('usearchive') == 1 ) echo "checked";?>>Use Archive Database[<a href="../help/base_setup_help.php#usearchive" onClick="javascript:window.open('../help/base_setup_help.php#usearchive','helpscreen','width=300,height=300');">?</a>]</td></tr>
+<tr><td class="setupKey">Archive Database Name:</td><td class="setupValue"><input type="text" name="arcdbname" value="<?php echo vendi_utils::get_session_value('arcdbname');?>"></td></tr>
+<tr><td class="setupKey">Archive Database Host:</td><td class="setupValue"><input type="text" name="arcdbhost" value="<?php echo vendi_utils::get_session_value('arcdbhost');?>"></td></tr>
+<tr><td class="setupKey">Archive Database Port:<br>Leave blank for default!</td><td class="setupValue"><input type="text" name="arcdbport" value="<?php echo vendi_utils::get_session_value('arcdbport');?>"></td></tr>
+<tr><td class="setupKey">Archive Database User Name:</td><td class="setupValue"><input type="text" name="arcdbusername" value="<?php echo vendi_utils::get_session_value('arcdbusername');?>"></td></tr>
+<tr><td class="setupKey">Archive Database Password:</td><td class="setupValue"><input type="password" name="arcdbpasswd" value="<?php echo vendi_utils::get_session_value('arcdbpasswd');?>"></td></tr>
 <tr><td colspan=2 align="center"><input type="submit" value="Continue"></td></tr>
 </table></center></form>
 </BODY>
