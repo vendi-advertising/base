@@ -56,7 +56,7 @@ if (isset($_POST['submit'])) {
 
     $displayError = 1;
     $errorMsg     = _LOGINERROR;
-} 
+}
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <!-- <?php echo _TITLE . $BASE_VERSION; ?> -->

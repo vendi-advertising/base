@@ -18,7 +18,7 @@
 **
 ********************************************************************************
 */
-  
+
   include("../base_conf.php");
   include("$BASE_path/includes/base_constants.inc.php");
   include("$BASE_path/includes/base_include.inc.php");
@@ -29,20 +29,20 @@
   $et = new EventTiming($debug_time_mode);
   $cs = new CriteriaState("admin/index.php");
   $cs->ReadState();
-  
+
   // Check role out and redirect if needed -- Kevin
   $roleneeded = 1;
   $BUser = new BaseUser();
   if (($BUser->hasRole($roleneeded) == 0) && ($Use_Auth_System == 1)) {
     base_header("Location: ". $BASE_urlpath . "/base_main.php");
   }
-    
+
   $page_title = _BASEADMIN;
-    
+
     PrintBASESubHeader($page_title, $page_title, $cs->GetBackLink(), $refresh_all_pages);
-  
+
     PrintBASEAdminMenuHeader();
-  
+
     echo _BASEADMINTEXT;
 
     PrintBASEAdminMenuFooter();
