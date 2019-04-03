@@ -1,0 +1,31 @@
+{
+    "name": "vendi-advertising/base",
+    "authors": [
+        {
+            "name": "Kevin Johnson",
+            "email": "kjohnson@secureideas.net",
+            "role": "Author, Project Lead"
+        },
+        {
+            "name": "Sean Muller",
+            "email": "samwise_diver@users.sourceforge.net",
+            "role": "Project Lead"
+        },
+        {
+            "name": "Roman Danyliw",
+            "email": "rdd@cert.org",
+            "role": "Previous Work"
+        },
+        {
+            "name": "Chris Haas",
+            "email": "chris@vendiadvertising.com",
+            "homepage": "https://vendiadvertising.com/",
+            "role": "Developer"
+        }
+    ],
+    "license": "GPL-2.0-or-later",
+    "require": {
+        "vendi-advertising/vendi-shared-utils": "^4.0",
+        "adodb/adodb-php": "^5.20"
+    }
+}

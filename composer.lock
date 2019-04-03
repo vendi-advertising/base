@@ -1,0 +1,119 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "16c6a8a8a38330b480a3f00ad8eef1d9",
+    "packages": [
+        {
+            "name": "adodb/adodb-php",
+            "version": "v5.20.14",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ADOdb/ADOdb.git",
+                "reference": "a32113c6b3e4e2cb8ae6b49752527d5668a9d7a6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ADOdb/ADOdb/zipball/a32113c6b3e4e2cb8ae6b49752527d5668a9d7a6",
+                "reference": "a32113c6b3e4e2cb8ae6b49752527d5668a9d7a6",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.2"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "adodb.inc.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause",
+                "LGPL-2.1-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "John Lim",
+                    "email": "jlim@natsoft.com",
+                    "role": "Author"
+                },
+                {
+                    "name": "Damien Regad",
+                    "role": "Current maintainer"
+                },
+                {
+                    "name": "Mark Newnham",
+                    "role": "Developer"
+                }
+            ],
+            "description": "ADOdb is a PHP database abstraction layer library",
+            "homepage": "http://adodb.org/",
+            "keywords": [
+                "abstraction",
+                "database",
+                "layer",
+                "library",
+                "php"
+            ],
+            "time": "2019-01-05T23:16:44+00:00"
+        },
+        {
+            "name": "vendi-advertising/vendi-shared-utils",
+            "version": "4.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/vendi-advertising/vendi-shared-utils.git",
+                "reference": "f1739d71a146e105e69ef1aa90cdab04c9ebb60f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/vendi-advertising/vendi-shared-utils/zipball/f1739d71a146e105e69ef1aa90cdab04c9ebb60f",
+                "reference": "f1739d71a146e105e69ef1aa90cdab04c9ebb60f",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.0.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "*",
+                "scrutinizer/ocular": "*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Vendi\\Shared\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Chris Haas",
+                    "email": "chris@vendiadvertising.com",
+                    "homepage": "https://www.vendiadvertising.com/",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Helper class shared across all Vendi-controlled properties",
+            "homepage": "https://github.com/vendi-advertising/vendi-shared-utils",
+            "keywords": [
+                "vendi",
+                "vendi-advertising"
+            ],
+            "time": "2017-06-19T20:58:25+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": []
+}
