@@ -35,7 +35,7 @@ class CriteriaState
 
   var $criteria;
 
-  function CriteriaState($url, $params = "")
+  function __construct($url, $params = "")
   {
      $this->clear_url = $url;
      $this->clear_url_params = $params;
@@ -63,7 +63,7 @@ class CriteriaState
      $this->criteria['rawip_field'] = new TCPFieldCriteria($tdb, $obj, "rawip_field", PROTO_CFCNT);
      $this->criteria['data'] = new DataCriteria($tdb, $obj, "data", PAYLOAD_CFCNT);
 
-     /* 
+     /*
       * For new criteria, add a call to the appropriate constructor here, and implement
       * the appropriate class in base_state_citems.inc.php
       */
@@ -77,7 +77,7 @@ class CriteriaState
   function InitState()
   {
      RegisterGlobalState();
-  
+
      $valid_criteria_list = array_keys($this->criteria);
 
      foreach ( $valid_criteria_list as $cname )
@@ -88,7 +88,7 @@ class CriteriaState
   {
      RegisterGlobalState();
 
-     /* 
+     /*
       * If the BACK button was clicked, shuffle the appropriate
       * criteria variables from the $back_list (history) array into
       * the current session ($_SESSION)
@@ -99,8 +99,8 @@ class CriteriaState
         PopHistory();
      }
 
-     /* 
-      * Import, update and sanitize all persistant criteria variables 
+     /*
+      * Import, update and sanitize all persistant criteria variables
       */
      $valid_criteria_list = array_keys($this->criteria);
      foreach ( $valid_criteria_list as $cname )
@@ -109,12 +109,12 @@ class CriteriaState
         $this->criteria[$cname]->Sanitize();
      }
 
-     /* 
-      * Check whether criteria elements need to be cleared 
+     /*
+      * Check whether criteria elements need to be cleared
       */
-     $this->clear_criteria_name = ImportHTTPVar("clear_criteria", "", 
+     $this->clear_criteria_name = ImportHTTPVar("clear_criteria", "",
                                                 array_keys($this->criteria));
-     $this->clear_criteria_element = ImportHTTPVar("clear_criteria_element", "", 
+     $this->clear_criteria_element = ImportHTTPVar("clear_criteria_element", "",
                                                    array_keys($this->criteria));
 
      if ( $this->clear_criteria_name != "" )
@@ -146,8 +146,8 @@ class CriteriaState
     if ( in_array($name, $valid_criteria_list) )
     {
        ErrorMessage(_REMOVE." '$name' "._FROMCRIT);
-  
-       $this->criteria[$name]->Init();     
+
+       $this->criteria[$name]->Init();
     }
     else
       ErrorMessage(_ERRCRITELEM);
@@ -157,9 +157,9 @@ class CriteriaState
 /* ***********************************************************************
  * Function: PopHistory()
  *
- * @doc Remove and restore the last entry of the history list (i.e., 
+ * @doc Remove and restore the last entry of the history list (i.e.,
  *      hit the back button in the browser)
- *     
+ *
  * @see PushHistory PrintBackButton
  *
  ************************************************************************/
@@ -172,17 +172,17 @@ function PopHistory()
        */
       unset($_SESSION['back_list'][$_SESSION['back_list_cnt']]);
 
-      /* 
-       * save a copy of the $back_list because session_destroy()/session_decode() will 
-       * overwrite it. 
+      /*
+       * save a copy of the $back_list because session_destroy()/session_decode() will
+       * overwrite it.
        */
       $save_back_list = $_SESSION['back_list'];
       $save_back_list_cnt = $_SESSION['back_list_cnt']-1;
 
-      /* Restore the session 
+      /* Restore the session
        *   - destroy all variables in the current session
        *   - restore proper back_list history entry into the current variables (session)
-       *       - but, first delete the currently restored entry and 
+       *       - but, first delete the currently restored entry and
        *              decremement the history stack
        *   - push saved back_list back into session
        */
@@ -203,9 +203,9 @@ function PopHistory()
 /* ***********************************************************************
  * Function: PushHistory()
  *
- * @doc Save the current criteria into the history list ($back_list, 
+ * @doc Save the current criteria into the history list ($back_list,
  *      $back_list_cnt) in order to support the BASE back button.
- *     
+ *
  * @see PopHistory PrintBackButton
  *
  ************************************************************************/
@@ -216,9 +216,9 @@ function PushHistory()
       ErrorMessage("Saving state (into ".$_SESSION['back_list_cnt'].")");
    }
 
-   /* save the current session without the $back_list into the history 
+   /* save the current session without the $back_list into the history
     *   - make a temporary copy of the $back_list
-    *   - NULL-out the $back_list in $_SESSION (so that 
+    *   - NULL-out the $back_list in $_SESSION (so that
     *       the current session is serialized without these variables)
     *   - serialize the current session
     *   - fix-up the QUERY_STRING
@@ -231,7 +231,7 @@ function PushHistory()
    } else {
        $tmp_back_list = '';
    }
-   
+
    if (isset($_SESSION['back_list_cnt'])) {
        $tmp_back_list_cnt = $_SESSION['back_list_cnt'];
    } else {
@@ -255,9 +255,9 @@ function PushHistory()
    $query_string = ereg_replace("back=1&", "", CleanVariable($query_string, VAR_PERIOD | VAR_DIGIT | VAR_PUNC | VAR_LETTER));
 
    ++$_SESSION['back_list_cnt'];
-   $_SESSION['back_list'][$_SESSION['back_list_cnt']] =  
+   $_SESSION['back_list'][$_SESSION['back_list_cnt']] =
           array ("SCRIPT_NAME"     => $_SERVER["SCRIPT_NAME"],
-                 "QUERY_STRING" => $query_string, 
+                 "QUERY_STRING" => $query_string,
                  "session"      => $full_session );
 
   if ( $GLOBALS['debug_mode'] > 1 )
@@ -275,9 +275,9 @@ function PushHistory()
  *
  * @doc Returns a string with the URL of the previously viewed
  *      page.  Clicking this link is equivalent to using the browser
- *      back-button, but all the associated BASE meta-information 
+ *      back-button, but all the associated BASE meta-information
  *      propogates correctly.
- *     
+ *
  * @see PushHistory PopHistory
  *
  ************************************************************************/
@@ -295,4 +295,3 @@ function PrintBackButton()
    else
      return "&nbsp;";
 }
-?>

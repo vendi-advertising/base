@@ -10,7 +10,7 @@
 **                Sean Muller <samwise_diver@users.sourceforge.net>
 ** Built upon work by Roman Danyliw <rdd@cert.org>, <roman@danyliw.com>
 **
-** Purpose: generates timing information   
+** Purpose: generates timing information
 ********************************************************************************
 ** Authors:
 ********************************************************************************
@@ -30,7 +30,7 @@ class EventTiming
   var $event_log;
   var $verbose;
 
-  function EventTiming($verbose)
+  function __construct($verbose)
   {
     $this->num_events = 0;
     $this->verbose = $verbose;
@@ -58,8 +58,6 @@ class EventTiming
           echo "<LI>".$this->event_log[$i][1]." [".
                ($this->event_log[$i][0] - ($this->event_log[$i-1][0])).
                " "._SECONDS."]\n";
-    } 
+    }
   }
 }
-
-?>

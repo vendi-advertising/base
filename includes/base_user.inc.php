@@ -13,7 +13,7 @@
 ** Purpose: Creates a user preferences object.  This object will allow the system
 **  to track the preferences of the user.  It will also provide basic functions
 **  like change password, etc.....
-** 
+**
 ********************************************************************************
 ** Authors:
 ********************************************************************************
@@ -29,8 +29,8 @@ defined( '_BASE_INC' ) or die( 'Accessing this file directly is not allowed.' );
 class BaseUserPrefs
 {
     var $db;
-    
-    function BaseUserPrefs()
+
+    function __construct()
     {
         // Constructor
         GLOBAL $DBlib_path, $DBtype, $db_connect_method, $alert_dbname, $alert_host,
@@ -40,8 +40,6 @@ class BaseUserPrefs
                             $alert_port, $alert_user, $alert_password);
         $this->db = $db;
     }
-    
-    
-}
 
-?>
+
+}

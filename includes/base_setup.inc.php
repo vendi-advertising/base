@@ -11,7 +11,7 @@
 ** Built upon work by Roman Danyliw <rdd@cert.org>, <roman@danyliw.com>
 **
 ** Purpose: This file contains all of the common functions for the setup program
-** 
+**
 ********************************************************************************
 ** Authors:
 ********************************************************************************
@@ -23,23 +23,23 @@
 class BaseSetup
 {
    var $file;
-   
-    function BaseSetup($filename)
+
+    function __construct($filename)
     {
         // Passes in the filename... This is for the CheckConfig
         $this->file = $filename;
     }
-    
+
     function CheckConfig($distConfigFile)
     {
         // Compares variables in distConfigFile to $this->file
     }
-    
+
     function writeConfig()
     {
         //writes the config file
     }
-    
+
     function displayConfig()
     {
         /*displays current config
@@ -50,5 +50,3 @@ class BaseSetup
 
 
 }
-
-?>

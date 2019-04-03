@@ -16,7 +16,7 @@
 ** an admin user effectively turning off the authorization system
 **
 ** This file also contains the role object which is used to handle role management
-** 
+**
 ********************************************************************************
 ** Authors:
 ********************************************************************************
@@ -32,8 +32,8 @@ defined( '_BASE_INC' ) or die( 'Accessing this file directly is not allowed.' );
 class BaseUser
 {
     var $db;
-    
-    function BaseUser()
+
+    function __construct()
     {
         // Constructor
         GLOBAL $DBlib_path, $DBtype, $db_connect_method, $alert_dbname, $alert_host,
@@ -44,7 +44,7 @@ class BaseUser
         $db->DB->SetFetchMode(ADODB_FETCH_BOTH);
         $this->db = $db;
     }
-    
+
     function Authenticate($user, $pwd)
     {
         /* Accepts a username and a password
@@ -56,23 +56,23 @@ class BaseUser
         $cryptpwd = $this->cryptpassword($pwd);
         if ($user == "")
         {
-            // needs to input a user.....   
+            // needs to input a user.....
             return 3;
         }
-        
+
         $sql = "SELECT * from base_users where base_users.usr_login ='" . $user ."';";
         $tmpresult = $this->db->baseExecute($sql);
-        
+
         if ( $this->db->baseErrorMessage() != "" )
            return 3;
-        
+
         if ($tmpresult->baseRecordCount() == 0)
         {
             return 3;
         }
-        
+
         $result = $tmpresult->baseFetchRow();
-                
+
         if (($result['usr_pwd']) == $cryptpwd)
         {
             $this->setRoleCookie($result['usr_pwd'], $user);
@@ -82,7 +82,7 @@ class BaseUser
             return 1;
         }
     }
-    
+
     function AuthenticateNoCookie($user, $pwd)
     {
        /*
@@ -91,26 +91,26 @@ class BaseUser
         * returns "Failed" on failure or role_id on success.
         */
         $cryptpwd = $this->cryptpassword($pwd);
-        
+
         if ($user == "")
         {
-            // needs to input a user.....   
+            // needs to input a user.....
             return "Failed";
         }
-        
+
         $sql = "SELECT * from base_users where base_users.usr_login ='" . $user ."';";
         $tmpresult = $this->db->baseExecute($sql);
-        
+
         if ( $this->db->baseErrorMessage() != "" )
            return "Failed";
-        
+
         if ($tmpresult->baseRecordCount() == 0)
         {
             return "Failed";
         }
-        
+
         $result = $tmpresult->baseFetchRow();
-                
+
         if (($result['usr_pwd']) == $cryptpwd)
         {
             return $result['role_id'];
@@ -128,11 +128,11 @@ class BaseUser
             // returns unauthorized
             return 0;
         }
-        
+
         return 1;
-        
+
     }
-    
+
     function addUser($user, $role, $password, $name)
     {
         //adds user
@@ -153,7 +153,7 @@ class BaseUser
         $db->baseExecute($sql, -1, -1, false);
         return _ADDEDSF;
     }
-    
+
     function disableUser($user)
     {
         //disables user
@@ -162,7 +162,7 @@ class BaseUser
         $disabled = $db->baseExecute($sql);
         return;
     }
-    
+
     function deleteUser($user)
     {
         //deletes the user
@@ -180,7 +180,7 @@ class BaseUser
         $enabled = $db->baseExecute($sql);
         return;
     }
-    
+
     function updateUser($userarray)
     {
         /* This function accepts an array in the following format
@@ -194,7 +194,7 @@ class BaseUser
         $enabled = $db->baseExecute($sql);
         return;
     }
-    
+
     function changePassword($user, $oldpassword, $newpassword)
     {
         // Changes the user's password
@@ -230,10 +230,10 @@ class BaseUser
             $error = returnErrorMessage(_PWDCANT. $db->baseErrorMessage());
             return $error;
         }
-        
+
         return _PWDDONE;
     }
-    
+
     function returnUser()
     {
         // returns user login from role cookie
@@ -251,7 +251,7 @@ class BaseUser
         $usrid = $rs->baseFetchRow();
         return $usrid[0];
     }
-    
+
     function returnUsers()
     {
         /* returns an array of all users info
@@ -263,7 +263,7 @@ class BaseUser
         $sql = "SELECT usr_id, usr_login, role_id, usr_name, usr_enabled ";
         $sql = $sql . "FROM base_users ORDER BY usr_id;";
         $result = $db->baseExecute($sql);
-        
+
         $i = 0;
         while ( ($myrow = $result->baseFetchRow()) && ($i < $result->baseRecordCount()) )
         {
@@ -273,23 +273,23 @@ class BaseUser
         $result->baseFreeRows();
         return $userarray;
     }
-    
+
     function returnEditUser($userid)
     {
         /* returns an array of all users info
          * each array item is formatted as
          * array[0] = usr_id|usr_login|role_id|usr_name|usr_enabled
         */
-        
+
         $db = $this->db;
         $sql = "SELECT usr_id, usr_login, role_id, usr_name, usr_enabled ";
         $sql = $sql . "FROM base_users WHERE usr_id = '" . $userid . "';";
         $result = $db->baseExecute($sql);
-        
+
         $myrow = $result->baseFetchRow();
         $result->baseFreeRows();
         return $myrow;
-        
+
     }
 
     function roleName($roleID)
@@ -301,7 +301,7 @@ class BaseUser
         $rolename = $result->baseFetchRow();
         return $rolename[0];
     }
-    
+
     function returnRoleNamesDropDown($roleid)
     {
         /* Returns a drop down with all of the role names
@@ -322,7 +322,7 @@ class BaseUser
         return $tmpHTML;
 
     }
-    
+
     function setRoleCookie($passwd, $user)
     {
         //sets a cookie with the md5 summed passwd embedded
@@ -330,7 +330,7 @@ class BaseUser
         $cookievalue = $passwd . "|" . $user . "|";
         setcookie('BASERole', $cookievalue);
     }
-    
+
     function readRoleCookie()
     {
         // reads the roleCookie and returns the role id
@@ -343,13 +343,13 @@ class BaseUser
         $role = $result->row->fields['role_id'];
         return $role;
     }
-    
+
     function cryptpassword($password)
     {
         // accepts a password and returns the md5 hash of it.
-        
+
         $cryptpwd = md5($password);
-        
+
         return $cryptpwd;
     }
 }
@@ -357,7 +357,7 @@ class BaseUser
 class BaseRole
 {
     var $db;
-    
+
     function BaseRole()
     {
         // Constructor
@@ -389,25 +389,25 @@ class BaseRole
         $db->baseExecute($sql, -1, -1, false);
         return _ROLEADDED;
     }
-    
+
     function returnEditRole($roleid)
     {
         /* returns an array of all Role's info
          * each array item is formatted as
          * array[0] = role_id|role_name|role_desc
         */
-        
+
         $db = $this->db;
         $sql = "SELECT role_id, role_name, role_desc ";
         $sql = $sql . "FROM base_roles WHERE role_id = '" . $roleid . "';";
         $result = $db->baseExecute($sql);
-        
+
         $myrow = $result->baseFetchRow();
         $result->baseFreeRows();
         return $myrow;
-        
+
     }
-    
+
     function updateRole($rolearray)
     {
         /* This function accepts an array in the following format
@@ -421,7 +421,7 @@ class BaseRole
         $updated = $db->baseExecute($sql);
         return;
     }
-    
+
     function deleteRole($role)
     {
         //deletes the role
@@ -430,19 +430,19 @@ class BaseRole
         $deleted = $db->baseExecute($sql);
         return;
     }
-    
+
     function returnRoles()
     {
         /* returns an array of all Roles info
          * each array item is formatted as
          * array[] = role_id|role_name|role_desc
         */
-        
+
         $db = $this->db;
         $sql = "SELECT role_id, role_name, role_desc ";
         $sql = $sql . "FROM base_roles ORDER BY role_id;";
         $result = $db->baseExecute($sql);
-        
+
         $i = 0;
         while ( ($myrow = $result->baseFetchRow()) && ($i < $result->baseRecordCount()) )
         {
@@ -453,4 +453,3 @@ class BaseRole
         return $rolearray;
     }
 }
-?>

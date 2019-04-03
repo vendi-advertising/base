@@ -30,7 +30,7 @@ class QueryResultsOutput
   var $qroHeader;
   var $url;
 
-  function QueryResultsOutput($uri)
+  function __construct($uri)
   {
     $this->url = $uri;
   }
@@ -39,7 +39,7 @@ class QueryResultsOutput
                             $desc_sort = " ", $desc_sort_sql1 = "", $desc_sort_sql2 = "")
   {
     $this->qroHeader[$title] = array( $asc_sort  => array( $asc_sort_sql1, $asc_sort_sql2 ),
-                                     $desc_sort => array( $desc_sort_sql1, $desc_sort_sql2 ) ); 
+                                     $desc_sort => array( $desc_sort_sql1, $desc_sort_sql2 ) );
  }
 
   function GetSortSQL($sort, $sort_order)
@@ -51,13 +51,13 @@ class QueryResultsOutput
       {
          $tmp_sort = $title["value"][$sort];
          return $tmp_sort;
-      }      
+      }
     }
 
     /* $sort is not a valid sort type of any header */
     return NULL;
   }
- 
+
   function PrintHeader($text = '')
   {
      /* Client-side Javascript to select all the check-boxes on the screen
@@ -74,7 +74,7 @@ class QueryResultsOutput
                   }
                }
             }
-      
+
             function UnselectAll()
             {
                 for(var i=0;i<document.PacketForm.elements.length;i++)
@@ -90,7 +90,7 @@ class QueryResultsOutput
      if ('' != $text) {
          echo $text;
      }
-     
+
      echo '<TABLE CELLSPACING=0 CELLPADDING=2 BORDER=0 WIDTH="100%" BGCOLOR="#000000">'."\n".
           "<TR><TD>\n".
           '<TABLE CELLSPACING=0 CELLPADDING=0 BORDER=0 WIDTH="100%" BGCOLOR="#FFFFFF">'."\n".
@@ -112,7 +112,7 @@ class QueryResultsOutput
        {
           $print_title = $title["key"];
        }
-    
+
        echo '    <TD CLASS="plfieldhdr">&nbsp;'.$print_title.'&nbsp;</TD>'."\n";
      }
 
@@ -160,5 +160,3 @@ function qroPrintEntryFooter()
 {
   echo '</TR>';
 }
-
-?>

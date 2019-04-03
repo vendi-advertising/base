@@ -11,7 +11,7 @@
 ** Built upon work by Roman Danyliw <rdd@cert.org>, <roman@danyliw.com>
 **
 ** Purpose: manages the necessary state information for
-**          query results 
+**          query results
 ********************************************************************************
 ** Authors:
 ********************************************************************************
@@ -46,7 +46,7 @@ class QueryState
   var $action_chk_lst = NULL;
   var $action_sql;
 
-  function QueryState()
+  function __construct()
   {
     $this->ReadState();
 
@@ -71,7 +71,7 @@ class QueryState
 
   function isCannedQuery()
   {
-    return ( $this->current_canned_query != ""); 
+    return ( $this->current_canned_query != "");
   }
 
   /* returns the name of the current canned query (e.g. "last_tcp") */
@@ -150,8 +150,8 @@ class QueryState
   {
     GLOBAL $show_rows;
 
-    ActOnSelectedAlerts($this->action, $this->valid_action_list, 
-                        $submit, 
+    ActOnSelectedAlerts($this->action, $this->valid_action_list,
+                        $submit,
                         $this->valid_action_op_list, $this->action_arg,
                         $which_page,
                         $this->action_chk_lst, $this->action_lst,
@@ -178,7 +178,7 @@ class QueryState
         }
       }
       else
-      { 
+      {
          if ( $this->isValidCannedQuery($this->current_canned_query) )
          {
             reset($this->canned_query_list);
@@ -189,9 +189,9 @@ class QueryState
                   $this->current_view = 0;
                   $this->num_result_rows = $tmp_canned["value"][0];
                }
-            } 
+            }
          }
-      } 
+      }
   }
 
   function MoveView($submit)
@@ -207,14 +207,14 @@ class QueryState
      if ( $this->isCannedQuery() )
      {
         $this->show_rows_on_screen = $this->GetCurrentCannedQueryCnt();
-        return $db->baseExecute($sql, 0, 
+        return $db->baseExecute($sql, 0,
                                 $this->show_rows_on_screen);
      }
      else
      {
         $this->show_rows_on_screen = $show_rows;
-        return $db->baseExecute($sql, ($this->current_view * $show_rows), 
-                                $show_rows); 
+        return $db->baseExecute($sql, ($this->current_view * $show_rows),
+                                $show_rows);
      }
   }
 
@@ -229,13 +229,13 @@ class QueryState
            echo "<div style='text-align:center;margin:auto'>"._DISPLAYING." ".$this->GetCurrentCannedQueryDesc().
                 "</div><BR>\n";
         }
-        else      
-        {  
+        else
+        {
            printf("<div style='text-align:center;margin:auto'>"._DISPLAYINGTOTAL.
-                  "</div><BR>\n", 
-                  ($this->current_view * $show_rows)+1, 
-                  (($this->current_view * $show_rows) + $show_rows-1) < $this->num_result_rows ? 
-                  (($this->current_view * $show_rows) + $show_rows) : $this->num_result_rows, 
+                  "</div><BR>\n",
+                  ($this->current_view * $show_rows)+1,
+                  (($this->current_view * $show_rows) + $show_rows-1) < $this->num_result_rows ?
+                  (($this->current_view * $show_rows) + $show_rows) : $this->num_result_rows,
                   $this->num_result_rows);
         }
      }
@@ -281,8 +281,8 @@ class QueryState
             echo '<INPUT TYPE="submit" NAME="submit" VALUE="'.$i.'">'."\n";
          else
             echo '['.$i.'] '."\n";
-     }  
-    
+     }
+
      /* Show a '>>' symbol if last view is not visible */
      if ( ($tmp_top) < $tmp_num_views )
         echo ' >> ';
@@ -292,27 +292,27 @@ class QueryState
   }
 
   function PrintAlertActionButtons()
-  { 
+  {
     if ( $this->valid_action_list == NULL )
        return;
 
-    echo "\n\n<!-- Alert Action Buttons -->\n". 
+    echo "\n\n<!-- Alert Action Buttons -->\n".
          "<CENTER>\n".
          " <TABLE BORDER=1>\n".
          "  <TR>\n".
          "   <TD ALIGN=CENTER>"._ACTION."<BR>\n".
-         "\n".   
+         "\n".
          "    <SELECT NAME=\"action\">\n".
          '      <OPTION VALUE=" "         '.chk_select($this->action," ").'>'._DISPACTION."\n";
-     
+
     reset($this->valid_action_list);
     while( $current_action = each($this->valid_action_list) )
     {
        echo '    <OPTION VALUE="'.$current_action["value"].'" '.
               chk_select($this->action,$current_action["value"]).'>'.
-              GetActionDesc($current_action["value"])."\n";      
-    }     
-    
+              GetActionDesc($current_action["value"])."\n";
+    }
+
     echo "    </SELECT>\n".
          "    <INPUT TYPE=\"text\" NAME=\"action_arg\" VALUE=\"".$this->action_arg."\">\n";
 
@@ -320,7 +320,7 @@ class QueryState
     while( $current_op = each($this->valid_action_op_list) )
     {
        echo "    <INPUT TYPE=\"submit\" NAME=\"submit\" VALUE=\"".$current_op["value"]."\">\n";
-    } 
+    }
 
     echo "   </TD>\n".
          "  </TR>\n".
@@ -368,5 +368,3 @@ class QueryState
           action = '$this->action'<BR>";
   }
 }
-
-?>

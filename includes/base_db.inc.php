@@ -24,7 +24,7 @@
 defined( '_BASE_INC' ) or die( 'Accessing this file directly is not allowed.' );
 
 class baseCon {
-  
+
   var $DB;
   var $DB_type;
   var $DB_name;
@@ -35,7 +35,7 @@ class baseCon {
   var $version;
   var $sql_trace;
 
-  function baseCon($type) 
+  function __construct($type)
   {
      $this->DB_type = $type;
   }
@@ -43,7 +43,7 @@ class baseCon {
   function baseDBConnect($method, $database, $host, $port, $username, $password, $force = 0)
   {
     GLOBAL $archive_dbname, $archive_host, $archive_port, $archive_user, $archive_password, $debug_mode;
-    
+
     // Check archive cookie to see if they want to be using the archive tables
     // and check - do we force to use specified database even if archive cookie is set
     if ( (@$_COOKIE['archive'] == 1) && ($force != 1) )
@@ -76,7 +76,7 @@ class baseCon {
   function baseConnect($database, $host, $port, $username, $password)
   {
      GLOBAL $sql_trace_mode, $sql_trace_file;
- 
+
      $this->DB = NewADOConnection();
      $this->DB_name = $database;
      $this->DB_host = $host;
@@ -94,7 +94,7 @@ class baseCon {
      }
 
      $db = $this->DB->Connect( ( ( $port == "") ? $host : ($host.":".$port) ),
-                               $username, $password, $database); 
+                               $username, $password, $database);
 
      if ( !$db )
      {
@@ -104,11 +104,11 @@ class baseCon {
 
         echo $this->baseErrorMessage();
         die();
-     } 
+     }
 
      /* Set the database schema version number */
      $sql = "SELECT vseq FROM schema";
-     if ($this->DB_type == "mysql") $sql = "SELECT vseq FROM `schema`"; 
+     if ($this->DB_type == "mysql") $sql = "SELECT vseq FROM `schema`";
      if ($this->DB_type == "mssql") $sql = "SELECT vseq FROM [schema]";
 
      $result = $this->DB->Execute($sql);
@@ -120,24 +120,24 @@ class baseCon {
         $this->version = $myrow[0];
         $result->Close();
      }
-     
+
      if ( $sql_trace_mode > 0 )
      {
-        fwrite($this->sql_trace, 
-              "\n--------------------------------------------------------------------------------\n");  
+        fwrite($this->sql_trace,
+              "\n--------------------------------------------------------------------------------\n");
         fwrite($this->sql_trace, "Connect [".$this->DB_type."] ".$database."@".$host.":".$port." as ".$username."\n");
         fwrite($this->sql_trace, "[".date ("M d Y H:i:s", time())."] ".$_SERVER["SCRIPT_NAME"]." - db version ".$this->version);
-        fwrite($this->sql_trace, 
+        fwrite($this->sql_trace,
               "\n--------------------------------------------------------------------------------\n\n");
         fflush($this->sql_trace);
-     }     
+     }
 
      return $db;
   }
 
   function basePConnect($database, $host, $port, $username, $password)
   {
-     GLOBAL $sql_trace_mode, $sql_trace_file; 
+     GLOBAL $sql_trace_mode, $sql_trace_file;
 
      $this->DB = NewADOConnection();
      $this->DB_name = $database;
@@ -156,7 +156,7 @@ class baseCon {
      }
 
      $db = $this->DB->PConnect( ( ( $port == "") ? $host : ($host.":".$port) ),
-                               $username, $password, $database); 
+                               $username, $password, $database);
 
      if ( !$db )
      {
@@ -166,10 +166,10 @@ class baseCon {
 
         echo $this->baseErrorMessage();
         die();
-     } 
+     }
 
      /* Set the database schema version number */
-     $sql = "SELECT vseq FROM schema"; 
+     $sql = "SELECT vseq FROM schema";
      if ($this->DB_type == "mssql") $sql = "SELECT vseq FROM [schema]";
      if ($this->DB_type == "mysql") $sql = "SELECT vseq FROM `schema`";
 
@@ -185,14 +185,14 @@ class baseCon {
 
      if ( $sql_trace_mode > 0 )
      {
-        fwrite($this->sql_trace, 
-              "\n--------------------------------------------------------------------------------\n");  
+        fwrite($this->sql_trace,
+              "\n--------------------------------------------------------------------------------\n");
         fwrite($this->sql_trace, "PConnect [".$this->DB_type."] ".$database."@".$host.":".$port." as ".$username."\n");
         fwrite($this->sql_trace, "[".date ("M d Y H:i:s", time())."] ".$_SERVER["SCRIPT_NAME"]." - db version ".$this->version);
-        fwrite($this->sql_trace, 
+        fwrite($this->sql_trace,
               "\n--------------------------------------------------------------------------------\n\n");
         fflush($this->sql_trace);
-     } 
+     }
 
      return $db;
   }
@@ -231,7 +231,7 @@ class baseCon {
         $rs = new baseRS($this->DB->Execute($sql), $this->DB_type);
      else
      {
-        if ( ($this->DB_type == "mysql") || ($this->DB_type == "mysqlt") || 
+        if ( ($this->DB_type == "mysql") || ($this->DB_type == "mysqlt") ||
              ($this->DB_type == "maxsql") )
         {
            $rs =  new baseRS($this->DB->Execute($sql." LIMIT ".$start_row.", ".$num_rows),
@@ -262,7 +262,7 @@ class baseCon {
               $i++;
            }
          }
-     } 
+     }
 
      if ( $sql_trace_mode > 0 )
      {
@@ -301,7 +301,7 @@ class baseCon {
 
      if ( in_array($table, $this->DB->MetaTables()) )
         return 1;
-     else 
+     else
         return 0;
   }
 
@@ -309,23 +309,23 @@ class baseCon {
   {
      if ( in_array($index_name, $this->DB->MetaIndexes($table)) )
         return 1;
-     else 
+     else
         return 0;
   }
 
   function baseInsertID()
   {
   /* Getting the insert ID fails on certain databases (e.g. postgres), but we may use it on the once it works
-   * on.  This function returns -1 if the dbtype is postgres, then we can run a kludge query to get the insert 
+   * on.  This function returns -1 if the dbtype is postgres, then we can run a kludge query to get the insert
    * ID.  That query may vary depending upon which table you are looking at and what variables you have set at
    * the current point, so it can't be here and needs to be in the actual script after calling this function
    *  -- srh (02/01/2001)
    */
-     if ( ($this->DB_type == "mysql") || ($this->DB_type == "mysqlt") || 
+     if ( ($this->DB_type == "mysql") || ($this->DB_type == "mysqlt") ||
           ($this->DB_type == "maxsql") || ($this->DB_type == "mssql"))
         return $this->DB->Insert_ID();
      else if ($this->DB_type == "postgres" ||($this->DB_type == "oci8"))
-        return -1;   
+        return -1;
   }
 
   function baseTimestampFmt($timestamp)
@@ -336,24 +336,24 @@ class baseCon {
 
   function baseSQL_YEAR($func_param, $op, $timestamp)
   {
-     if ( ($this->DB_type == "mysql") || ($this->DB_type == "mysqlt") || 
+     if ( ($this->DB_type == "mysql") || ($this->DB_type == "mysqlt") ||
           ($this->DB_type == "maxsql") || ($this->DB_type == "mssql") )
         return " YEAR($func_param) $op $timestamp ";
      else if( $this->DB_type == "oci8" )
         return " to_number( to_char( $func_param, 'RRRR' ) ) $op $timestamp ";
      else if ( $this->DB_type == "postgres" )
-        return " DATE_PART('year', $func_param) $op $timestamp ";  
+        return " DATE_PART('year', $func_param) $op $timestamp ";
   }
 
   function baseSQL_MONTH($func_param, $op, $timestamp)
   {
-     if ( ($this->DB_type == "mysql") || ($this->DB_type == "mysqlt") || 
+     if ( ($this->DB_type == "mysql") || ($this->DB_type == "mysqlt") ||
           ($this->DB_type == "maxsql") || ($this->DB_type == "mssql") )
         return " MONTH($func_param) $op $timestamp ";
      else if( $this->DB_type == "oci8" )
         return " to_number( to_char( $func_param, 'MM' ) ) $op $timestamp ";
      else if ( $this->DB_type == "postgres" )
-        return " DATE_PART('month', $func_param) $op $timestamp "; 
+        return " DATE_PART('month', $func_param) $op $timestamp ";
   }
 
   function baseSQL_DAY($func_param, $op, $timestamp)
@@ -363,9 +363,9 @@ class baseCon {
      else if($this->DB_type == "oci8")
         return " to_number( to_char( $func_param, 'DD' ) ) $op $timestamp ";
      else if ( $this->DB_type == "postgres" )
-        return " DATE_PART('day', $func_param) $op $timestamp "; 
+        return " DATE_PART('day', $func_param) $op $timestamp ";
      else if ( $this->DB_type == "mssql" )
-        return " DAY($func_param) $op $timestamp ";        
+        return " DAY($func_param) $op $timestamp ";
   }
 
   function baseSQL_HOUR($func_param, $op, $timestamp)
@@ -375,7 +375,7 @@ class baseCon {
      else if($this->DB_type == "oci8")
         return " to_number( to_char( $func_param, 'HH' ) ) $op $timestamp ";
      else if ( $this->DB_type == "postgres" )
-        return " DATE_PART('hour', $func_param) $op $timestamp "; 
+        return " DATE_PART('hour', $func_param) $op $timestamp ";
      else if ( $this->DB_type == "mssql" )
         return " DATEPART(hh, $func_param) $op $timestamp ";
   }
@@ -387,7 +387,7 @@ class baseCon {
      else if($this->DB_type == "oci8")
         return " to_number( to_char( $func_param, 'MI' ) ) $op $timestamp ";
      else if ( $this->DB_type == "postgres" )
-        return " DATE_PART('minute', $func_param) $op $timestamp "; 
+        return " DATE_PART('minute', $func_param) $op $timestamp ";
      else if ( $this->DB_type == "mssql" )
         return " DATEPART(mi, $func_param) $op $timestamp ";
   }
@@ -399,7 +399,7 @@ class baseCon {
      else if($this->DB_type == "oci8")
         return " to_number( to_char( $func_param, 'SS' ) ) $op $timestamp ";
      else if ( $this->DB_type == "postgres" )
-        return " DATE_PART('second', $func_param) $op $timestamp "; 
+        return " DATE_PART('second', $func_param) $op $timestamp ";
      else if ( $this->DB_type == "mssql" )
         return " DATEPART(ss, $func_param) $op $timestamp ";
   }
@@ -422,12 +422,12 @@ class baseCon {
            return " DATE_PART('epoch', $func_param::timestamp) ";
         else
            return " DATE_PART('epoch', $func_param::timestamp) $op $timestamp ";
-     } 
+     }
      else if ($this->DB_type == "mssql")
      {
            return " DATEDIFF(ss, '1970-1-1 00:00:00', $func_param) $op $timestamp ";
      }
-     
+
   }
 
   function baseSQL_TIMESEC($func_param, $op, $timestamp)
@@ -438,21 +438,21 @@ class baseCon {
         return " to_number( $func_param ) $op $timestamp ";
      else if ( $this->DB_type == "postgres" )
      {
-    
+
         if ( ($op == "") && ($timestamp == "") )
            return " DATE_PART('second', DATE_PART('day', '$func_param') ";
         else
            return " DATE_PART('second', DATE_PART('day', $func_param) ) $op $timestamp ";
-     } 
+     }
      else if ( $this->DB_type == "mssql" )
      {
         if ( ($op == "") && ($timestamp == "") )
            return " DATEPART(ss, DATEPART(dd, $func_parm) ";
         else
            return " DATEPART(ss, DATE_PART(dd, $func_param) ) $op $timestamp ";
- 
+
      }
-     
+
   }
 
   function baseGetDBversion()
@@ -479,7 +479,7 @@ class baseRS {
   var $row;
   var $DB_type;
 
-  function baseRS($id, $type) 
+  function baseRS($id, $type)
   {
      $this->row = $id;
      $this->DB_type = $type;
@@ -507,16 +507,16 @@ class baseRS {
          echo "</PRE><BR><BR>";
        }
 
-       return "";	  
+       return "";
      }
      if ( !$this->row->EOF )
      {
-        $temp = $this->row->fields;	
+        $temp = $this->row->fields;
         $this->row->MoveNext();
         return $temp;
      }
      else
-        return ""; 
+        return "";
   }
 
   function baseColCount()
@@ -526,7 +526,7 @@ class baseRS {
   }
 
   function baseRecordCount()
-  {  
+  {
     GLOBAL $debug_mode;
 
     if (!is_object($this->row))
@@ -546,15 +546,15 @@ class baseRS {
 
       return 0;
     }
- 
+
      // Is This if statement necessary?  -- Kevin
-     /* MS SQL Server 7, MySQL, Sybase, and Postgres natively support this function */ 
+     /* MS SQL Server 7, MySQL, Sybase, and Postgres natively support this function */
      if ( ($this->DB_type == "mysql") || ($this->DB_type == "mysqlt") || ($this->DB_type == "maxsql") ||
           ($this->DB_type == "mssql") || ($this->DB_type == "sybase") || ($this->DB_type == "postgres") || ($this->DB_type == "oci8"))
         return $this->row->RecordCount();
 
      /* Otherwise we need to emulate this functionality */
-     else 
+     else
      {
           $i = 0;
           while ( !$this->row->EOF )
@@ -572,7 +572,7 @@ class baseRS {
     GLOBAL $debug_mode;
 
     /* Workaround for the problem, that the database may contain NULL,
-     * although "NOT NULL" had been defined when it had been created. 
+     * although "NOT NULL" had been defined when it had been created.
      * In such a case there's nothing to free(). So we can ignore this
      * row and don't have anything to do. */
     if (!is_object($this->row))
@@ -611,7 +611,7 @@ function VerifyDBAbstractionLib($path)
      {
         echo _ERRSQLDBALLOAD1.'"'.$path.
              '"'._ERRSQLDBALLOAD2;
-  
+
         die();
      }
   }
@@ -632,7 +632,7 @@ function NewBASEDBConnection($path, $type)
   {
      echo "<B>"._ERRSQLDBTYPE."</B>".
             "<P>:"._ERRSQLDBTYPEINFO1."<CODE>'$type'</CODE>. "._ERRSQLDBTYPEINFO2;
-     die(); 
+     die();
   }
 
    /* Export ADODB_DIR for use by ADODB */
@@ -641,7 +641,7 @@ function NewBASEDBConnection($path, $type)
    	define('ADODB_DIR', $path);
    }
    	$GLOBALS['ADODB_DIR'] = $path;
- 
+
    $last_char =  substr($path, strlen($path)-1, 1);
 
    if ( $debug_mode > 1 )
@@ -705,6 +705,5 @@ function ClearDataTables($db)
   $db->baseExecute("DELETE FROM signature");
   $db->baseExecute("DELETE FROM tcphdr");
   $db->baseExecute("DELETE FROM udphdr");
-} 
+}
 // vim:tabstop=2:shiftwidth=2:expandtab
-?>
