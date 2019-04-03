@@ -1,40 +1,26 @@
 <?php
-/*******************************************************************************
-** Basic Analysis and Security Engine (BASE)
-** Copyright (C) 2004 BASE Project Team
-** Copyright (C) 2000 Carnegie Mellon University
-**
-** (see the file 'base_main.php' for license details)
-**
-** Project Leads: Kevin Johnson <kjohnson@secureideas.net>
-**                Sean Muller <samwise_diver@users.sourceforge.net>
-** Built upon work by Roman Danyliw <rdd@cert.org>, <roman@danyliw.com>
-**
-** Purpose: Setup step 4, create the database stuff
-********************************************************************************
-** Authors:
-********************************************************************************
-** Kevin Johnson <kjohnson@secureideas.net>
-** Joel Esler <eslerj@gmail.com>
-**
-********************************************************************************
-*/
+
+use Webmozart\PathUtil\Path;
+use Vendi\Shared\utils as vendi_utils;
+
+require_once dirname(__DIR__) . '/includes/vendi_boot.php';
+
    session_start();
 
    $BASE_path = "..";  // Set this since we don't have a base_conf.php
    define( "_BASE_INC", 1 );
    $BASE_InstallID = 1;
-   
+
   include("../languages/english.lang.php");
   include("../includes/base_constants.inc.php");
   include("../includes/base_include.inc.php");
   include_once("../base_db_common.php");
   include_once("../base_common.php");
   include_once("setup_db.inc.php");
-  
+
 if (file_exists('../base_conf.php'))
 	die ("If you wish to re-run the setup routine, please either move OR delete your previous base_conf file first.");
-   
+
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <!-- Basic Analysis and Security Engine (BASE) -->
@@ -71,8 +57,8 @@ if (file_exists('../base_conf.php'))
   $DBlib_path = $_SESSION['adodbpath'];
   $DBtype = $_SESSION['dbtype'];
 
-  /* Archive database */ 
-  if ( $submit == "Create BASE AG" ) 
+  /* Archive database */
+  if ( $submit == "Create BASE AG" )
   {
     if ($_SESSION['usearchive'] == 1)
     {
@@ -86,14 +72,14 @@ if (file_exists('../base_conf.php'))
         $archive = NewBASEDBConnection($DBlib_path, $DBtype);
         $archive->baseDBConnect(1, $archive_dbname, $archive_host, $archive_port, $archive_user, $archive_password, 1);
         $archive_result = CreateBASEAG($archive);
-        if ($archive_result != 1)					 
+        if ($archive_result != 1)
         {
           error_message("ERROR: Trying to add BASE specific tables to the archive database has failed. <BR>\n");
           if ( $archive->baseErrorMessage() != "" )
           {
             ErrorMessage($archive->baseErrorMessage());
           }
-        } 
+        }
         else if ($debug_mode > 0)
         {
           echo "<BR>";
@@ -108,7 +94,7 @@ if (file_exists('../base_conf.php'))
   $db = NewBASEDBConnection($DBlib_path, $DBtype);
   $db->baseDBConnect(1,$alert_dbname, $alert_host, $alert_port, $alert_user, $alert_password, 1);
 
-  if ( $submit == "Create BASE AG" ) {		
+  if ( $submit == "Create BASE AG" ) {
     $result = CreateBASEAG($db);
     if (($debug_mode > 0) && ($result == 1))
     {
@@ -117,8 +103,8 @@ if (file_exists('../base_conf.php'))
       echo "<BR>\n";
     }
 	}
-  
-  echo '<HR><P>'; 
+
+  echo '<HR><P>';
 
   echo '
   <TABLE WIDTH="100%">
@@ -144,7 +130,7 @@ if (file_exists('../base_conf.php'))
     }
   }
 
-  echo ' 
+  echo '
          </UL>
          </TD>
          <TD VALIGN=TOP>';
@@ -179,22 +165,22 @@ if (file_exists('../base_conf.php'))
                 ErrorMessage("$userdelcnt[0] user(s) matching '$user' was(were) deleted.");
          }
   } else
-     echo '<INPUT TYPE="submit" NAME="submit" VALUE="Create BASE AG">'; 
+     echo '<INPUT TYPE="submit" NAME="submit" VALUE="Create BASE AG">';
 
   echo '
   </TABLE>';
-  
+
   if ($result == 1)
      echo '<P>
            The underlying Alert DB is configured for usage with BASE.
            <P>
            <B>Additional DB permissions</B><BR>
            In order to support Alert purging (the selective ability to permanently delete
-           alerts from the database) and DNS/whois lookup caching, 
+           alerts from the database) and DNS/whois lookup caching,
            the DB user "'.$alert_user.'" must have the DELETE and UPDATE privilege
-           on the database "'.$alert_dbname.'@'.$alert_host.'" 
+           on the database "'.$alert_dbname.'@'.$alert_host.'"
            <P>
-           <center>Now continue to <a href="setup5.php">step 5</a>...</center>'; 
+           <center>Now continue to <a href="setup5.php">step 5</a>...</center>';
 
   //echo "\n</FORM>\n";
 ?>

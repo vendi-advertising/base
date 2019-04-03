@@ -1,4 +1,9 @@
 <?php
+
+require_once __DIR__ . '/includes/vendi_boot.php';
+
+use Vendi\BASE\Criteria\CriteriaState;
+
 /*******************************************************************************
 ** Basic Analysis and Security Engine (BASE)
 ** Copyright (C) 2004 BASE Project Team
@@ -10,11 +15,11 @@
 **                Sean Muller <samwise_diver@users.sourceforge.net>
 ** Built upon work by Roman Danyliw <rdd@cert.org>, <roman@danyliw.com>
 **
-** Purpose: Displays statistics on communication links (IP addresses) 
+** Purpose: Displays statistics on communication links (IP addresses)
 **
 ** Input GET/POST variables
 **   - caller
-**   - submit: 
+**   - submit:
 ********************************************************************************
 ** Authors:
 ********************************************************************************
@@ -32,7 +37,7 @@
 
   $submit = ImportHTTPVar("submit", VAR_ALPHA | VAR_SPACE, array(_SELECTED, _ALLONSCREEN, _ENTIREQUERY));
 	$sort_order=ImportHTTPVar("sort_order", VAR_LETTER | VAR_USCORE);
- 	$action = ImportHTTPVar("action", VAR_ALPHA);	
+ 	$action = ImportHTTPVar("action", VAR_ALPHA);
 
   $et = new EventTiming($debug_time_mode);
   $cs = new CriteriaState("base_stat_iplink.php");
@@ -45,7 +50,7 @@
     base_header("Location: ". $BASE_urlpath . "/index.php");
 
   $qs = new QueryState();
-  $qs->AddCannedQuery("most_frequent", $freq_num_alerts, _MOSTFREQALERTS, "occur_d"); 
+  $qs->AddCannedQuery("most_frequent", $freq_num_alerts, _MOSTFREQALERTS, "occur_d");
   $qs->AddCannedQuery("last_alerts", $last_num_ualerts, _LASTALERTS, "last_d");
 
   $qs->MoveView($submit);             /* increment the view if necessary */
@@ -56,13 +61,13 @@
 		if ($action == "")
 		{
     	PrintBASESubHeader($page_title.": ".$qs->GetCurrentCannedQueryDesc(),
-     	                   $page_title.": ".$qs->GetCurrentCannedQueryDesc(), 
+     	                   $page_title.": ".$qs->GetCurrentCannedQueryDesc(),
       	                 $cs->GetBackLink(), 1);
 		}
 		else
 		{
 			PrintBASESubHeader($page_title.": ".$qs->GetCurrentCannedQueryDesc(),
-     	                   $page_title.": ".$qs->GetCurrentCannedQueryDesc(), 
+     	                   $page_title.": ".$qs->GetCurrentCannedQueryDesc(),
       	                 $cs->GetBackLink(), $refresh_all_pages);
 		}
 	}
@@ -77,7 +82,7 @@
 			PrintBASESubHeader($page_title, $page_title, $cs->GetBackLink(), $refresh_all_pages);
 		}
 	}
-  
+
   /* Connect to the Alert database */
   $db = NewBASEDBConnection($DBlib_path, $DBtype);
   $db->baseDBConnect($db_connect_method,
@@ -85,7 +90,7 @@
 
   if ( $event_cache_auto_update == 1 )  UpdateAlertCache($db);
 
-  $criteria_clauses = ProcessCriteria();  
+  $criteria_clauses = ProcessCriteria();
   PrintCriteria("");
 
   $from = " FROM acid_event ".$criteria_clauses[0];
@@ -118,8 +123,8 @@
   /* Setup the Query Results Table */
   $qro = new QueryResultsOutput("base_stat_iplink.php?caller=".$caller);
 
-  $qro->AddTitle(" "); 
-  $qro->AddTitle(_SIPLSOURCEFGDN); 
+  $qro->AddTitle(" ");
+  $qro->AddTitle(_SIPLSOURCEFGDN);
   $qro->AddTitle(_PSSRCIP,
                  "sip_a", "", " ORDER BY ip_src ASC",
                  "sip_d", "", " ORDER BY ip_src DESC");
@@ -154,7 +159,7 @@
   $qs->PrintResultCnt();
 
   echo '<FORM METHOD="post" NAME="PacketForm" ACTION="base_stat_iplink.php">';
-  
+
   $qro->PrintHeader();
 
   $i = 0;
@@ -162,7 +167,7 @@
   {
      $sip = $myrow[0];
      $dip = $myrow[1];
-     $proto = $myrow[2];  
+     $proto = $myrow[2];
 
 		if ($resolve_IP == 1)
 		{
@@ -171,7 +176,7 @@
 		}
 		else
 		{
-			$sip_fqdn =_PSNODNS; 
+			$sip_fqdn =_PSNODNS;
 			$sip_fqdn =_PSNODNS;
 		}
 
@@ -187,12 +192,12 @@
         $num_occurances = $row[1];
         $num_unique_dport = $row[0];
         $num_unique = $row[2];
-        $result2->baseFreeRows(); 
+        $result2->baseFreeRows();
 
-        /* Print out */ 
+        /* Print out */
         qroPrintEntryHeader($i);
 
-        $tmp_ip_criteria = 
+        $tmp_ip_criteria =
           '&amp;ip_addr%5B0%5D%5B0%5D=+&amp;ip_addr%5B0%5D%5B1%5D=ip_src&amp;ip_addr%5B0%5D%5B2%5D=%3D'.
           '&amp;ip_addr%5B0%5D%5B3%5D='.baseLong2IP($sip).
           '&amp;ip_addr%5B0%5D%5B8%5D=+&amp;ip_addr%5B0%5D%5B9%5D=AND'.
@@ -221,7 +226,7 @@
 
         $tmp = '<A HREF="base_qry_main.php?new=1'.
                       '&amp;num_result_rows=-1'.
-                      '&amp;submit='._QUERYDBP.'&amp;current_view=-1'.$tmp_ip_criteria.'">'; 
+                      '&amp;submit='._QUERYDBP.'&amp;current_view=-1'.$tmp_ip_criteria.'">';
         qroPrintEntry($tmp.$num_occurances.'</A>');
 
         qroPrintEntryFooter();
@@ -238,7 +243,7 @@
   $qs->SaveState();
 	ExportHTTPVar("sort_order", $sort_order);
   echo "\n</FORM>\n";
-  
+
   PrintBASESubFooter();
 
   $et->Mark("Get Query Elements");

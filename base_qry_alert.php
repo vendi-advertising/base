@@ -1,4 +1,9 @@
 <?php
+
+require_once __DIR__ . '/includes/vendi_boot.php';
+
+use Vendi\BASE\Criteria\CriteriaState;
+
 /*******************************************************************************
 ** Basic Analysis and Security Engine (BASE)
 ** Copyright (C) 2004 BASE Project Team
@@ -9,7 +14,7 @@
 ** Project Leads: Kevin Johnson <kjohnson@secureideas.net>
 ** Built upon work by Roman Danyliw <rdd@cert.org>, <roman@danyliw.com>
 **
-** Purpose: displays a single alert   
+** Purpose: displays a single alert
 **
 ** Input GET/POST variables
 **   - caller
@@ -39,8 +44,8 @@
 
   # set cookie for packet display
   if (isset($_GET['asciiclean'])) {
-      1 == $_GET['asciiclean'] ? setcookie('asciiclean', 'clean') : setcookie('asciiclean', 'normal');   
-  }  
+      1 == $_GET['asciiclean'] ? setcookie('asciiclean', 'clean') : setcookie('asciiclean', 'normal');
+  }
 
 	$sf_portscan_flag = 0;
 
@@ -67,7 +72,7 @@ function PrintCleanURL()
     $url.= '&amp;sort_order='.urlencode($sort_order).'&amp;asciiclean=1">'._QAPLAIND.'</a></center>';
     return $url;
   }
-  
+
 }
 
 function PrintBinDownload($db, $cid, $sid){
@@ -150,7 +155,7 @@ function PrintPacketLookupBrowseButtons($seq, $save_sql, $db, &$previous_button,
      $myrow2 = $result2->baseFetchRow();
 
      if ( $myrow2 == "" )
-        $next_button = '[ '._LAST.' ]'."\n"; 
+        $next_button = '[ '._LAST.' ]'."\n";
      else if ( $i == $seq-1 ) {
         $previous_button = '<INPUT TYPE="submit" NAME="submit" VALUE="&lt;&lt; '._PREVIOUS.' #';
         $previous_button.= ($seq-1).'-('.$myrow2[0].'-'.$myrow2[1].')">'."\n";
@@ -165,14 +170,14 @@ function PrintPacketLookupBrowseButtons($seq, $save_sql, $db, &$previous_button,
   $result2->baseFreeRows();
 }
 
-  /* 
+  /*
    *  Need to import $submit and set the $QUERY_STRING early to support
    *  the back button.  Otherwise, the value of $submit will not be passed
    *  to the history.
    */
 
   /* This call can include "#xx-(xx-xx)" values and "submit" values. */
-  $submit = ImportHTTPVar("submit", VAR_DIGIT | VAR_PUNC | VAR_LETTER, array(_SELECTED, _ALLONSCREEN, _ENTIREQUERY)); 
+  $submit = ImportHTTPVar("submit", VAR_DIGIT | VAR_PUNC | VAR_LETTER, array(_SELECTED, _ALLONSCREEN, _ENTIREQUERY));
 
   $_SERVER["QUERY_STRING"] = "submit=".rawurlencode($submit);
 
@@ -191,7 +196,7 @@ function PrintPacketLookupBrowseButtons($seq, $save_sql, $db, &$previous_button,
                      $alert_dbname, $alert_host, $alert_port, $alert_user, $alert_password);
 
   PrintCriteria("");
-  $criteria_clauses = ProcessCriteria();  
+  $criteria_clauses = ProcessCriteria();
 
   $from = " FROM acid_event ".$criteria_clauses[0];
   $where = " WHERE ".$criteria_clauses[1];
@@ -208,16 +213,16 @@ function PrintPacketLookupBrowseButtons($seq, $save_sql, $db, &$previous_button,
   $qs->AddValidActionOp(_SELECTED);
 
   $qs->SetActionSQL($from.$where);
- 
+
   $et->Mark("Initialization");
 
   $qs->RunAction($submit, PAGE_ALERT_DISPLAY, $db);
   $et->Mark("Alert Action");
 
-  /* If get a valid (sid,cid) store it in $caller.  
-   * But if $submit is returning from an alert action 
-   * get the (sid,cid) back from $caller 
-   */ 
+  /* If get a valid (sid,cid) store it in $caller.
+   * But if $submit is returning from an alert action
+   * get the (sid,cid) back from $caller
+   */
   if ( $submit == _SELECTED )
      $submit = ImportHTTPVar("caller", VAR_DIGIT | VAR_PUNC);
   else
@@ -225,7 +230,7 @@ function PrintPacketLookupBrowseButtons($seq, $save_sql, $db, &$previous_button,
 
   /* Setup the Query Results Table -- However, this data structure is not
    * really used for output.  Rather, it duplicates the sort SQL set in
-   *  base_qry_sqlcalls.php 
+   *  base_qry_sqlcalls.php
    */
   $qro = new QueryResultsOutput("");
 
@@ -267,7 +272,7 @@ function PrintPacketLookupBrowseButtons($seq, $save_sql, $db, &$previous_button,
      exit();
   }
 
-  echo "<FORM METHOD=\"GET\" ACTION=\"base_qry_alert.php\">\n"; 
+  echo "<FORM METHOD=\"GET\" ACTION=\"base_qry_alert.php\">\n";
   PrintPacketLookupBrowseButtons($seq, $save_sql, $db, $previous, $next);
   echo "<CENTER>\n<B>"._ALERT." #".($seq)."</B><BR>\n$previous &nbsp&nbsp&nbsp\n$next\n</CENTER>\n";
   echo "<HR>\n";
@@ -310,7 +315,7 @@ function PrintPacketLookupBrowseButtons($seq, $save_sql, $db, &$previous_button,
                         <TD CLASS="plfieldhdr">'._QATRIGGERSIG.'</TD></TR>
                     <TR><TD CLASS="plfield">'.($sid." - ".$cid).'</TD>
                         <TD CLASS="plfield">'.htmlspecialchars($myrow2[1]).'</TD>
-                        <TD CLASS="plfield">'.(GetTagTriger(BuildSigByID($myrow2[0], $db), $db, $sid, $cid)).'</TD></TR>      
+                        <TD CLASS="plfield">'.(GetTagTriger(BuildSigByID($myrow2[0], $db), $db, $sid, $cid)).'</TD></TR>
                   </TABLE>
               </TD>
            </TR>';
@@ -329,7 +334,7 @@ function PrintPacketLookupBrowseButtons($seq, $save_sql, $db, &$previous_button,
                       <TD class="plfield">'.
                       ( ($myrow4[2] == "") ? "&nbsp;<I>"._NONE."</I>&nbsp;" : $myrow4[2] ).'</TD>
                   </TR>
-                 </TABLE>     
+                 </TABLE>
           </TR>';
 
   if ( $resolve_IP == 1 )
@@ -353,7 +358,7 @@ function PrintPacketLookupBrowseButtons($seq, $save_sql, $db, &$previous_button,
      }
      echo '           </TD>
                   </TR>
-                 </TABLE>     
+                 </TABLE>
             </TR>';
   }
 
@@ -369,11 +374,11 @@ function PrintPacketLookupBrowseButtons($seq, $save_sql, $db, &$previous_button,
            <TD>
              <TABLE BORDER=1 CELLPADDING=4>
                <TR><TD CLASS="metatitle" ALIGN=CENTER ROWSPAN='.($num+1).'>'._ALERTGROUP.'</TD>';
-  
+
   if ( $num > 0 )
      echo '        <TD class="plfieldhdr">'._ID.'</TD>
                    <TD class="plfieldhdr">'._NAME.'</TD>
-                   <TD class="plfieldhdr">'._DESC.'</TD></TR>';  
+                   <TD class="plfieldhdr">'._DESC.'</TD></TR>';
   else
      echo '        <TD>&nbsp;&nbsp;<I>'._NONE.'</I>&nbsp;</TD></TR>';
 
@@ -395,7 +400,7 @@ function PrintPacketLookupBrowseButtons($seq, $save_sql, $db, &$previous_button,
 
   /* IP */
   $sql2 = "SELECT ip_src, ip_dst, ".
-          "ip_ver, ip_hlen, ip_tos, ip_len, ip_id, ip_flags, ip_off, ip_ttl, ip_csum, ip_proto". 
+          "ip_ver, ip_hlen, ip_tos, ip_len, ip_id, ip_flags, ip_off, ip_ttl, ip_csum, ip_proto".
           " FROM iphdr  WHERE sid='".$sid."' AND cid='".$cid."'";
 
   $result2 = $db->baseExecute($sql2);
@@ -463,7 +468,7 @@ function PrintPacketLookupBrowseButtons($seq, $save_sql, $db, &$previous_button,
                       (baseGetHostByAddr(baseLong2IP($myrow2[1]),
                                          $db, $dns_cache_lifetime)).'</TD>
                   </TR>
-                 </TABLE>     
+                 </TABLE>
             </TR>';
   }
 
@@ -499,8 +504,8 @@ function PrintPacketLookupBrowseButtons($seq, $save_sql, $db, &$previous_button,
    {
      echo '             <TD> &nbsp&nbsp&nbsp <I>'._NONE.' </I></TD></TR>';
    }
-      echo '         </TABLE></TD></TR>';  
-                       
+      echo '         </TABLE></TD></TR>';
+
 
   echo '</TABLE>';
   $result3->baseFreeRows();
@@ -508,7 +513,7 @@ function PrintPacketLookupBrowseButtons($seq, $save_sql, $db, &$previous_button,
   $result2->baseFreeRows();
 
 
-  /* If we have FLoP's (Fast Logging Project for Snort) extended 
+  /* If we have FLoP's (Fast Logging Project for Snort) extended
    * database schema then we can show mac addresses from `data_header`
    * field from `data` table
    */
@@ -575,11 +580,11 @@ function PrintPacketLookupBrowseButtons($seq, $save_sql, $db, &$previous_button,
       /* from here on $t is in hex format, even if original encoding was base64 */
 
       /* "MACDAD" (ascii code in hex: 4d 41 43 44 41 44) is a key word used by
-       * sfPortscan, rather than a real MAC address; cf. 
+       * sfPortscan, rather than a real MAC address; cf.
        * snort-2.6.0/doc/README.sfportscan
        * snort-2.6.0/src/preprocessors/spp_sfportscan.c
        * snort-2.6.0/src/preprocessors/flow/portscan/flowps_snort.c */
-      if ( strlen($t) >= 24 && strncmp($t, '4d41434441444d4143444144', 24) != 0) 
+      if ( strlen($t) >= 24 && strncmp($t, '4d41434441444d4143444144', 24) != 0)
       {
         $dst_mac = $t[0].$t[1].':'.$t[2].$t[3].':'.$t[4].$t[5].':'.$t[6].$t[7].':'.$t[8].$t[9].':'.$t[10].$t[11];
         $src_mac = $t[12].$t[13].':'.$t[14].$t[15].':'.$t[16].$t[17].':'.$t[18].$t[19].':'.$t[20].$t[21].':'.$t[22].$t[23];
@@ -601,7 +606,7 @@ function PrintPacketLookupBrowseButtons($seq, $save_sql, $db, &$previous_button,
       else
       {
         /* "MACDAD" indicates that this is an sfportscan packet.  This means
-           the database does NOT contain a real packet.  Therefore 
+           the database does NOT contain a real packet.  Therefore
            building a pcap file won't be possible. */
         $sf_portscan_flag = 1;
       }
@@ -610,7 +615,7 @@ function PrintPacketLookupBrowseButtons($seq, $save_sql, $db, &$previous_button,
 
 
   /* TCP */
-  if ( $layer4_proto == "6" )  
+  if ( $layer4_proto == "6" )
   {
      $sql2 = "SELECT tcp_sport, tcp_dport, tcp_seq, tcp_ack, tcp_off, tcp_res, tcp_flags, tcp_win, ".
              "       tcp_csum, tcp_urp FROM tcphdr  WHERE sid='".$sid."' AND cid='".$cid."'";
@@ -650,7 +655,7 @@ function PrintPacketLookupBrowseButtons($seq, $save_sql, $db, &$previous_button,
       $dst_port = $myrow2[1].'<BR>';
       foreach ($external_port_link as $name => $baseurl) {
            $dst_port = $dst_port.'[<A HREF="'.$baseurl.$myrow2[1].'" TARGET="_ACID_PORT_">'.$name.'</A>] ';
-      } 
+      }
       echo '            <TR><TD class="plfield">'.$src_port.'</TD>';
       echo '                <TD class="plfield">'.$dst_port.'</TD>';
       echo '                <TD class="plfield">';
@@ -694,11 +699,11 @@ function PrintPacketLookupBrowseButtons($seq, $save_sql, $db, &$previous_button,
       else
            echo '&nbsp;';
       echo '                    </TD>';
-     
-      echo '                <TD class="plfield">'.$myrow2[2].'</TD>';    
+
+      echo '                <TD class="plfield">'.$myrow2[2].'</TD>';
       echo '                <TD class="plfield">'.$myrow2[3].'</TD>';
 
-	/* data offset is in 32 bit words, cf. RFC 793, 3.1 (= p. 16), 
+	/* data offset is in 32 bit words, cf. RFC 793, 3.1 (= p. 16),
 	 * PrintTCPHeader() in snort-2.6.0/src/log.c
 	 * DecodeTCP() in snort-2.6.0/src/decode.c
 	 * #define TCP_OFFSET(tcph) in snort-2.6.0/src/decode.h
@@ -735,7 +740,7 @@ function PrintPacketLookupBrowseButtons($seq, $save_sql, $db, &$previous_button,
              echo '        <TD class="plfield">'.$myrow3[5].'</TD>';
 	     echo '        <TD class="plfield">';
 
-	     if ($myrow4[0] == 1) 
+	     if ($myrow4[0] == 1)
              /* base64 encoding */
 	     {
 	       if ($myrow3[5] > 0)
@@ -769,7 +774,7 @@ function PrintPacketLookupBrowseButtons($seq, $save_sql, $db, &$previous_button,
 			 $TSecr = hexdec($tmpstr);
 			 echo '        TSecr: ' . $TSecr . '<BR>';
 		 }
-		 
+
 		 echo '        </TD></TR>';
 	       }
 	       else
@@ -792,7 +797,7 @@ function PrintPacketLookupBrowseButtons($seq, $save_sql, $db, &$previous_button,
       {
          echo '             <TD class="plfield"> &nbsp;&nbsp;&nbsp; <I>'._NONE.' </I></TD></TR>';
       }
-      echo '         </TABLE></TD></TR>';                       
+      echo '         </TABLE></TD></TR>';
 
       echo '</TABLE>';
 
@@ -821,11 +826,11 @@ function PrintPacketLookupBrowseButtons($seq, $save_sql, $db, &$previous_button,
      foreach ($external_port_link as $name => $baseurl) {
         $src_port = $src_port.'[<A HREF="'.$baseurl.$myrow2[2].'" TARGET="_ACID_PORT_">'.$name.'</A>] ';
      }
-    
+
      $dst_port = $myrow2[3].'<BR>';
      foreach ($external_port_link as $name => $baseurl) {
         $dst_port = $dst_port.'[<A HREF="'.$baseurl.$myrow2[3].'" TARGET="_ACID_PORT_">'.$name.'</A>] ';
-     } 
+     }
 
      echo '            <TR><TD class="plfield">'.$src_port.'</TD>';
      echo '                <TD class="plfield">'.$dst_port.'</TD>';
@@ -870,7 +875,7 @@ function PrintPacketLookupBrowseButtons($seq, $save_sql, $db, &$previous_button,
 
 		if ($ICMPitype == "5") {
 		 $gateway_numeric_ip = (integer)($myrow2[3] / 256) . "." . ($myrow2[3] % 256) . ".". (integer)($myrow2[4] / 256) . "." . ($myrow2[4] % 256);
-		 $gateway_hostname = basegetHostByAddr($gateway_numeric_ip, $db, $dns_cache_lifetime); 
+		 $gateway_hostname = basegetHostByAddr($gateway_numeric_ip, $db, $dns_cache_lifetime);
 
      echo '                <TD class="plfield"><A HREF="base_stat_ipaddr.php?ip=' . $gateway_numeric_ip . '&amp;netmask=32" TARGET="_PL_SIP">' . $gateway_numeric_ip . '</A></TD>';
 		 echo '                <TD class="plfield">' . $gateway_hostname   . '</TD>';
@@ -883,7 +888,7 @@ function PrintPacketLookupBrowseButtons($seq, $save_sql, $db, &$previous_button,
      echo '         </TABLE>';
      echo '</TABLE>';
 
-     
+
 
      $result2->baseFreeRows();
   }
@@ -917,17 +922,17 @@ function PrintPacketLookupBrowseButtons($seq, $save_sql, $db, &$previous_button,
 
      if ( $layer4_proto == "1" )
      {
-          if ( /* IF ICMP source quench */ 
+          if ( /* IF ICMP source quench */
                ($ICMPitype == "4" && $ICMPicode == "0") ||
                /* IF ICMP redirect */
                ($ICMPitype == "5") ||
                /* IF ICMP parameter problem */
                ($ICMPitype == "12" && $ICMPicode == "0") ||
-               /* IF ( network, host, port unreachable OR 
+               /* IF ( network, host, port unreachable OR
                frag needed OR network admin prohibited OR filtered) */
                ($ICMPitype == "3" || $ICMPitype == "11" ) &&
                $ICMPicode == "0" || $ICMPicode == "1" ||
-               $ICMPicode == "3" || $ICMPicode == "4" || 
+               $ICMPicode == "3" || $ICMPicode == "4" ||
                $ICMPicode == "9" || $ICMPicode == "13" )
           {
               /* 0 == hex, 1 == base64, 2 == ascii; cf. snort-2.4.4/src/plugbase.h */
@@ -944,7 +949,7 @@ function PrintPacketLookupBrowseButtons($seq, $save_sql, $db, &$previous_button,
 
 
 
-              /* 
+              /*
                *  - depending on how the packet logged, 32-bits of NULL padding after
                *    the checksum may still be present.
                */
@@ -957,13 +962,13 @@ function PrintPacketLookupBrowseButtons($seq, $save_sql, $db, &$previous_button,
               else if ( ($ICMPitype == "3") && ($ICMPicode == "4") ) {
                  $offset += 8;
               }
-            
+
 
               $icmp_proto = hexdec($work[18+$offset].$work[19+$offset]);
 
-              $payload_ip_checksum = "0x" . 
+              $payload_ip_checksum = "0x" .
                           ($work[20 + $offset] . $work[21 + $offset]) .
-                          ($work[22 + $offset] . $work[23 + $offset]); 
+                          ($work[22 + $offset] . $work[23 + $offset]);
 
               $icmp_src = hexdec($work[24+$offset].$work[25+$offset]).".".
                           hexdec($work[26+$offset].$work[27+$offset]).".".
@@ -973,8 +978,8 @@ function PrintPacketLookupBrowseButtons($seq, $save_sql, $db, &$previous_button,
                           hexdec($work[34+$offset].$work[35+$offset]).".".
                           hexdec($work[36+$offset].$work[37+$offset]).".".
                           hexdec($work[38+$offset].$work[39+$offset]);
-              
-              
+
+
 
 
 
@@ -992,10 +997,10 @@ function PrintPacketLookupBrowseButtons($seq, $save_sql, $db, &$previous_button,
               }
 
 
- 
+
               echo '<TABLE BORDER=1>';
               echo '<TR>';
-              
+
               echo '<TD class="plfieldhdr">Protocol</TD>';
               echo '<TD class="plfieldhdr">Org.Source<BR>IP</TD>';
               echo '<TD class="plfieldhdr">Org.Source<BR>Name</TD>';
@@ -1019,8 +1024,8 @@ function PrintPacketLookupBrowseButtons($seq, $save_sql, $db, &$previous_button,
               echo '</TR>';
               echo '<TR>';
 
-              
-              
+
+
               echo '<TD class="plfield">'.IPProto2Str($icmp_proto).'</TD>';
               echo '<TD class="plfield">';
               echo '<A HREF="base_stat_ipaddr.php?ip='.$icmp_src.'&amp;netmask=32" TARGET="_PL_SIP">'.$icmp_src.'</A></TD>';
@@ -1068,7 +1073,7 @@ function PrintPacketLookupBrowseButtons($seq, $save_sql, $db, &$previous_button,
   ExportHTTPVar("caller", $caller);
 
   echo "\n</FORM>\n";
-  
+
   PrintBASESubFooter();
 
   $et->Mark("Get Query Elements");

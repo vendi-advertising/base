@@ -1,4 +1,9 @@
 <?php
+
+require_once __DIR__ . '/includes/vendi_boot.php';
+
+use Vendi\BASE\Criteria\CriteriaState;
+
 /*******************************************************************************
 ** Basic Analysis and Security Engine (BASE)
 ** Copyright (C) 2004 BASE Project Team
@@ -11,7 +16,7 @@
 ** Built upon work by Roman Danyliw <rdd@cert.org>, <roman@danyliw.com>
 **
 ** Purpose: Displays statistics on the detected source and
-**          destination IP addresses   
+**          destination IP addresses
 **
 ** Input GET/POST variables
 **   - addr_type: sets the type of address on which stats will
@@ -34,7 +39,7 @@
  include("$BASE_path/includes/base_constants.inc.php");
  include("$BASE_path/includes/base_include.inc.php");
  include_once("$BASE_path/base_db_common.php");
- include_once("$BASE_path/base_common.php"); 
+ include_once("$BASE_path/base_common.php");
  include_once("$BASE_path/base_qry_common.php");
 
  $addr_type = ImportHTTPVar("addr_type", VAR_DIGIT);
@@ -67,11 +72,11 @@ if ( $debug_mode > 0 )
 }
 
  $qs = new QueryState();
- $qs->AddCannedQuery("most_frequent", $freq_num_uaddr, _MOSTFREQADDRS, "occur_d"); 
+ $qs->AddCannedQuery("most_frequent", $freq_num_uaddr, _MOSTFREQADDRS, "occur_d");
 
  $qs->MoveView($submit);             /* increment the view if necessary */
 
-  if ( $addr_type == SOURCE_IP ) 
+  if ( $addr_type == SOURCE_IP )
   {
     $page_title = _UNISADD;
     $results_title = _SUASRCIP;
@@ -89,7 +94,7 @@ if ( $debug_mode > 0 )
   if ( $qs->isCannedQuery() )
 	{
      PrintBASESubHeader($page_title.": ".$qs->GetCurrentCannedQueryDesc(),
-                        $page_title.": ".$qs->GetCurrentCannedQueryDesc(), 
+                        $page_title.": ".$qs->GetCurrentCannedQueryDesc(),
                         $cs->GetBackLink(), 1);
 	}
   else
@@ -103,7 +108,7 @@ if ( $debug_mode > 0 )
     	PrintBASESubHeader($page_title, $page_title, $cs->GetBackLink(), 1);
 		}
 	}
-  
+
   if ( $event_cache_auto_update == 1 )  UpdateAlertCache($db);
 
   $criteria_clauses = ProcessCriteria();
@@ -122,13 +127,13 @@ if ( $debug_mode > 0 )
   $qs->AddValidAction("csv_alert");
   $qs->AddValidAction("archive_alert");
   $qs->AddValidAction("archive_alert2");
-  
+
   $qs->AddValidActionOp(_SELECTED);
   $qs->AddValidActionOp(_ALLONSCREEN);
-  
+
   $qs->SetActionSQL($from.$where);
   $et->Mark("Initialization");
-  
+
   $qs->RunAction($submit, PAGE_STAT_UADDR, $db);
   $et->Mark("Alert Action");
 
@@ -140,24 +145,24 @@ if ( $debug_mode > 0 )
   /* Setup the Query Results Table */
   $qro = new QueryResultsOutput("base_stat_uaddr.php?caller=".$caller."&amp;addr_type=".$addr_type);
 
-  $qro->AddTitle(" "); 
-  $qro->AddTitle($results_title, 
+  $qro->AddTitle(" ");
+  $qro->AddTitle($results_title,
                 "addr_a", " ",
                          " ORDER BY $addr_type_name ASC",
                 "addr_d", " ",
                          " ORDER BY $addr_type_name DESC");
 
   if ( $resolve_IP == 1 )
-    $qro->AddTitle("FQDN"); 
+    $qro->AddTitle("FQDN");
 
   $qro->AddTitle(_SENSOR."&nbsp;#");
-  $qro->AddTitle(_TOTAL."&nbsp;#", 
+  $qro->AddTitle(_TOTAL."&nbsp;#",
                 "occur_a", " ",
                            " ORDER BY num_events ASC",
                 "occur_d", " ",
                            " ORDER BY num_events DESC");
 
-  $qro->AddTitle(_SUAUNIALERTS, 
+  $qro->AddTitle(_SUAUNIALERTS,
                 "sig_a", " ",
                            " ORDER BY num_sig ASC",
                 "sig_d", " ",
@@ -165,7 +170,7 @@ if ( $debug_mode > 0 )
 
   if ( $addr_type == DEST_IP )
   {
-    $qro->AddTitle(_SUASRCADD, 
+    $qro->AddTitle(_SUASRCADD,
                    "saddr_a", " ",
                            " ORDER BY num_sip ASC",
                    "saddr_d", " ",
@@ -173,7 +178,7 @@ if ( $debug_mode > 0 )
   }
   else
   {
-    $qro->AddTitle(_SUADSTADD, 
+    $qro->AddTitle(_SUADSTADD,
                   "daddr_a", "  ",
                            " ORDER BY num_dip ASC",
                   "daddr_d", " ",
@@ -210,9 +215,9 @@ if ( $debug_mode > 0 )
   $qs->PrintResultCnt();
 
   echo '<FORM METHOD="post" NAME="PacketForm" ACTION="base_stat_uaddr.php">';
-  
+
   $qro->PrintHeader();
-  
+
    $i = 0;
    while ( ($myrow = $result->baseFetchRow()) && ($i < $qs->GetDisplayRowCnt()) )
    {
@@ -241,7 +246,7 @@ if ( $debug_mode > 0 )
      else
         qroPrintEntry('&nbsp;&nbsp;'.
                       BuildAddressLink($currentIP, 32).$currentIP.'</A>&nbsp;&nbsp');
-    
+
       if ( $resolve_IP == 1 )
          qroPrintEntry('&nbsp;&nbsp;'.
                         baseGetHostByAddr($currentIP, $db, $dns_cache_lifetime).
@@ -253,7 +258,7 @@ if ( $debug_mode > 0 )
                       '&amp;sort_order='.$sort_order.
                       '&amp;submit='._QUERYDBP.'&amp;current_view=-1&amp;ip_addr_cnt=1';
 
-      $tmp_iplookup2 = 'base_stat_alerts.php?new=1'.   
+      $tmp_iplookup2 = 'base_stat_alerts.php?new=1'.
                        '&amp;num_result_rows=-1'.
                        '&amp;sort_order='.$sort_order.
                        '&amp;submit='._QUERYDBP.'&amp;current_view=-1&amp;ip_addr_cnt=1';
@@ -269,7 +274,7 @@ if ( $debug_mode > 0 )
       {
          if ( $no_ip )
            $url_criteria = BuildDstIpFormVars(NULL_IP);
-         else 
+         else
            $url_criteria = BuildDstIPFormVars($currentIP);
       }
 
@@ -285,7 +290,7 @@ if ( $debug_mode > 0 )
       ++$i;
    }
 
-  $result->baseFreeRows();     
+  $result->baseFreeRows();
 
   $qro->PrintFooter();
 
@@ -298,7 +303,7 @@ if ( $debug_mode > 0 )
   echo "\n</FORM>\n";
   $et->Mark("Get Query Elements");
   $et->PrintTiming();
-  
+
   PrintBASESubFooter();
   echo "</body>\r\n</html>";
 ?>

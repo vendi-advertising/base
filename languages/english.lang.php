@@ -28,9 +28,13 @@ DEFINE('_LOCALESTR2', 'eng_ENG.utf-8');
 DEFINE('_LOCALESTR3', 'english');
 DEFINE('_STRFTIMEFORMAT','%a %B %d, %Y %H:%M:%S'); //see strftime() sintax
 
+if(!isset($BASE_installID)){
+   $BASE_installID = '';
+}
+
 //common phrases
 DEFINE('_CHARSET','iso-8859-1');
-DEFINE('_TITLE','Basic Analysis and Security Engine (BASE) '.$BASE_installID);
+DEFINE('_TITLE','Basic Analysis and Security Engine (BASE) ' . $BASE_installID);
 DEFINE('_FRMLOGIN','Login:');
 DEFINE('_FRMPWD','Password:');
 DEFINE('_SOURCE','Source');
@@ -122,7 +126,7 @@ DEFINE('_LASTTCP','Last TCP Alerts');
 DEFINE('_LASTUDP','Last UDP Alerts');
 DEFINE('_LASTICMP','Last ICMP Alerts');
 DEFINE('_QUERYDB','Query DB');
-DEFINE('_QUERYDBP','Query+DB'); //Equals to _QUERYDB where spaces are '+'s. 
+DEFINE('_QUERYDBP','Query+DB'); //Equals to _QUERYDB where spaces are '+'s.
                                 //Should be something like: DEFINE('_QUERYDBP',str_replace(" ", "+", _QUERYDB));
 DEFINE('_SELECTED','Selected');
 DEFINE('_ALLONSCREEN','ALL on Screen');
@@ -270,9 +274,9 @@ DEFINE('_ALERTSCACHE',' alert(s) to the Alert cache');
 //base_db.inc.php
 DEFINE('_ERRSQLTRACE','Unable to open SQL trace file');
 DEFINE('_ERRSQLCONNECT','Error connecting to DB :');
-DEFINE('_ERRSQLCONNECTINFO','<P>Check the DB connection variables in <I>base_conf.php</I> 
+DEFINE('_ERRSQLCONNECTINFO','<P>Check the DB connection variables in <I>base_conf.php</I>
               <PRE>
-               = $alert_dbname   : MySQL database name where the alerts are stored 
+               = $alert_dbname   : MySQL database name where the alerts are stored
                = $alert_host     : host where the database is stored
                = $alert_port     : port where the database is stored
                = $alert_user     : username into the database
@@ -411,17 +415,17 @@ DEFINE('_ERRPHPERROR','PHP ERROR');
 DEFINE('_ERRPHPERROR1','Incompatible version');
 DEFINE('_ERRVERSION','Version');
 DEFINE('_ERRPHPERROR2','of PHP is too old.  Please upgrade to version 4.0.4 or later');
-DEFINE('_ERRPHPMYSQLSUP','<B>PHP build incomplete</B>: <FONT>the prerequisite MySQL support required to 
-               read the alert database was not built into PHP.  
+DEFINE('_ERRPHPMYSQLSUP','<B>PHP build incomplete</B>: <FONT>the prerequisite MySQL support required to
+               read the alert database was not built into PHP.
                Please recompile PHP with the necessary library (<CODE>--with-mysql</CODE>)</FONT>');
-DEFINE('_ERRPHPPOSTGRESSUP','<B>PHP build incomplete</B>: <FONT>the prerequisite PostgreSQL support required to 
-               read the alert database was not built into PHP.  
+DEFINE('_ERRPHPPOSTGRESSUP','<B>PHP build incomplete</B>: <FONT>the prerequisite PostgreSQL support required to
+               read the alert database was not built into PHP.
                Please recompile PHP with the necessary library (<CODE>--with-pgsql</CODE>)</FONT>');
-DEFINE('_ERRPHPMSSQLSUP','<B>PHP build incomplete</B>: <FONT>the prerequisite MS SQL Server support required to 
-                   read the alert database was not built into PHP.  
+DEFINE('_ERRPHPMSSQLSUP','<B>PHP build incomplete</B>: <FONT>the prerequisite MS SQL Server support required to
+                   read the alert database was not built into PHP.
                    Please recompile PHP with the necessary library (<CODE>--enable-mssql</CODE>)</FONT>');
-DEFINE('_ERRPHPORACLESUP','<B>PHP build incomplete</B>: <FONT>the prerequisite Oracle support required to 
-                   read the alert database was not built into PHP.  
+DEFINE('_ERRPHPORACLESUP','<B>PHP build incomplete</B>: <FONT>the prerequisite Oracle support required to
+                   read the alert database was not built into PHP.
                    Please recompile PHP with the necessary library (<CODE>--with-oci8</CODE>)</FONT>');
 
 //base_graph_form.php

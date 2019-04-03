@@ -1,4 +1,9 @@
 <?php
+
+require_once __DIR__ . '/includes/vendi_boot.php';
+
+use Vendi\BASE\Criteria\CriteriaState;
+
 /*******************************************************************************
 ** Basic Analysis and Security Engine (BASE)
 ** Copyright (C) 2004 BASE Project Team
@@ -10,7 +15,7 @@
 **                Sean Muller <samwise_diver@users.sourceforge.net>
 ** Built upon work by Roman Danyliw <rdd@cert.org>, <roman@danyliw.com>
 **
-** Purpose: Displays statistics on the detected alerts   
+** Purpose: Displays statistics on the detected alerts
 **
 ** Input GET/POST variables
 **   - caller
@@ -43,7 +48,7 @@
     base_header("Location: ". $BASE_urlpath . "/index.php");
 
   $qs = new QueryState();
-  $qs->AddCannedQuery("most_frequent", $freq_num_alerts, _MOSTFREQALERTS, "occur_d"); 
+  $qs->AddCannedQuery("most_frequent", $freq_num_alerts, _MOSTFREQALERTS, "occur_d");
   $qs->AddCannedQuery("last_alerts", $last_num_ualerts, _LASTALERTS, "last_d");
 
   $qs->MoveView($submit);             /* increment the view if necessary */
@@ -54,7 +59,7 @@
                         $page_title.": ".$qs->GetCurrentCannedQueryDesc(), $cs->GetBackLink(), 1);
   else
      PrintBASESubHeader($page_title, $page_title, $cs->GetBackLink(), 1);
-  
+
   /* Connect to the Alert database */
   $db = NewBASEDBConnection($DBlib_path, $DBtype);
   $db->baseDBConnect($db_connect_method,
@@ -75,10 +80,10 @@
 
      	echo '</TD>
            <TD WIDTH="40%" VALIGN="top">';
-      
+
 	PrintFramedBoxHeader(_QSCSUMM, "#669999", "#FFFFFF");
-	PrintGeneralStats($db, 1, $show_summary_stats, 
-                       "$join_sql ", "$where_sql $criteria_sql"); 
+	PrintGeneralStats($db, 1, $show_summary_stats,
+                       "$join_sql ", "$where_sql $criteria_sql");
 	echo('<BR><LI><A HREF="base_stat_time.php">'._QSCTIMEPROF.'</A> '._QSCOFALERTS . "</LI>");
 	PrintFramedBoxFooter();
 
@@ -127,7 +132,7 @@
 
   $qro->AddTitle(" ");
 
-  $qro->AddTitle(_SIGNATURE, 
+  $qro->AddTitle(_SIGNATURE,
                 "sig_a", " ", " ORDER BY sig_name ASC",
                 "sig_d", " ", " ORDER BY sig_name DESC");
 
@@ -136,25 +141,25 @@
                    "class_a", ", MIN(sig_class_id) ",
                               " ORDER BY sig_class_id ASC ",
                    "class_d", ", MIN(sig_class_id) ",
-                              " ORDER BY sig_class_id DESC "); 
+                              " ORDER BY sig_class_id DESC ");
 
-  $qro->AddTitle(_TOTAL."&nbsp;#", 
+  $qro->AddTitle(_TOTAL."&nbsp;#",
                 "occur_a", " ",
                            " ORDER BY sig_cnt ASC",
                 "occur_d", " ",
                            " ORDER BY sig_cnt DESC");
   $qro->AddTitle(_SENSOR."&nbsp;#");
-  $qro->AddTitle(_NBSOURCEADDR, 
+  $qro->AddTitle(_NBSOURCEADDR,
                 "saddr_a", ", count(DISTINCT ip_src) AS saddr_cnt ",
                            " ORDER BY saddr_cnt ASC",
                 "saddr_d", ", count(DISTINCT ip_src) AS saddr_cnt ",
                            " ORDER BY saddr_cnt DESC");
-  $qro->AddTitle(_NBDESTADDR, 
+  $qro->AddTitle(_NBDESTADDR,
                 "daddr_a", ", count(DISTINCT ip_dst) AS daddr_cnt ",
                            " ORDER BY daddr_cnt ASC",
                 "daddr_d", ", count(DISTINCT ip_dst) AS daddr_cnt ",
                            " ORDER BY daddr_cnt DESC");
-  $qro->AddTitle(_FIRST, 
+  $qro->AddTitle(_FIRST,
                 "first_a", ", min(timestamp) AS first_timestamp ",
                            " ORDER BY first_timestamp ASC",
                 "first_d", ", min(timestamp) AS first_timestamp ",
@@ -163,7 +168,7 @@
   if ( $show_previous_alert == 1 )
      $qro->AddTitle("Previous");
 
-  $qro->AddTitle(_LAST, 
+  $qro->AddTitle(_LAST,
                 "last_a", ", max(timestamp) AS last_timestamp ",
                            " ORDER BY last_timestamp ASC",
                 "last_d", ", max(timestamp) AS last_timestamp ",
@@ -192,7 +197,7 @@
   $qs->PrintResultCnt();
 
   echo '<FORM METHOD="post" NAME="PacketForm" ACTION="base_stat_alerts.php">';
-  
+
   $qro->PrintHeader();
 
   $i = 0;
@@ -225,8 +230,8 @@
        $last = $result2->baseFetchRow();
        $last_num = $total_occurances - 1;
 
-       /* Getting the previous timestamp of this signature 
-        * (I.E. The occurances before Last Timestamp) 
+       /* Getting the previous timestamp of this signature
+        * (I.E. The occurances before Last Timestamp)
         */
        if ( $show_previous_alert == 1 )
        {
@@ -249,12 +254,12 @@
      if ($show_first_last_links == 1) {
        /* Doing the same as above for the first entry that we are searching for.
         * The reason for doing this is because some older DB's such as ones using ODBC
-        * probably don't support the move() function. Therefore, for the older DB's 
-        * to get the first entry from the $temp variable above, we would need to 
-        * continue to call MoveNext() for each and every entry for that signature. For 
+        * probably don't support the move() function. Therefore, for the older DB's
+        * to get the first entry from the $temp variable above, we would need to
+        * continue to call MoveNext() for each and every entry for that signature. For
         * signatures with a large amount of alerts(i.e. >1000), this could cause a severe
         * performance hit for those users.
-        */ 
+        */
        $temp = "SELECT timestamp, acid_event.sid, acid_event.cid ".$from.$where.$and.
                "signature='".$sig_id."'
                ORDER BY timestamp ASC";
@@ -264,7 +269,7 @@
        $result2->baseFreeRows();
      }
 
-     /* Print out (Colored Version) -- Alejandro */ 
+     /* Print out (Colored Version) -- Alejandro */
       qroPrintEntryHeader( (($colored_alerts == 1) ?
                 GetSignaturePriority($sig_id, $db) : $i),
                 $colored_alerts);
@@ -338,7 +343,7 @@
   $qs->PrintAlertActionButtons();
   $qs->SaveState();
   echo "\n</FORM>\n";
-  
+
   PrintBASESubFooter();
 
   if ($debug_time_mode >= 1) {

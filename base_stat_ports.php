@@ -1,4 +1,9 @@
 <?php
+
+require_once __DIR__ . '/includes/vendi_boot.php';
+
+use Vendi\BASE\Criteria\CriteriaState;
+
 /*******************************************************************************
 ** Basic Analysis and Security Engine (BASE)
 ** Copyright (C) 2004 BASE Project Team
@@ -11,14 +16,14 @@
 ** Built upon work by Roman Danyliw <rdd@cert.org>, <roman@danyliw.com>
 **
 ** Purpose: Displays statistics on the detected source and
-**          destination TCP/UDP ports   
+**          destination TCP/UDP ports
 **
 ** Input GET/POST variables
 **   - port_type: sets the type of address on which stats will
 **                be generated
 **          = 1: source port
 **          = 2: destination port
-**   - proto: sets the protocol 
+**   - proto: sets the protocol
 **          = 6: TCP
 **          = 17: UDP
 **          = -1: either
@@ -37,7 +42,7 @@
   include("$BASE_path/includes/base_constants.inc.php");
   include("$BASE_path/includes/base_include.inc.php");
   include_once("$BASE_path/base_db_common.php");
-  include_once("$BASE_path/base_common.php"); 
+  include_once("$BASE_path/base_common.php");
   include_once("$BASE_path/base_qry_common.php");
 
   $et = new EventTiming($debug_time_mode);
@@ -99,13 +104,13 @@
 		if ($action == "")
 		{
      	PrintBASESubHeader($page_title.": ".$qs->GetCurrentCannedQueryDesc(),
-                         $page_title.": ".$qs->GetCurrentCannedQueryDesc(), 
+                         $page_title.": ".$qs->GetCurrentCannedQueryDesc(),
                          $cs->GetBackLink(), 1);
 		}
 		else
 		{
 			PrintBASESubHeader($page_title.": ".$qs->GetCurrentCannedQueryDesc(),
-                         $page_title.": ".$qs->GetCurrentCannedQueryDesc(), 
+                         $page_title.": ".$qs->GetCurrentCannedQueryDesc(),
                          $cs->GetBackLink(), $refresh_all_pages);
 		}
 	}
@@ -137,12 +142,12 @@
   $qs->AddValidAction("csv_alert");
   $qs->AddValidAction("archive_alert");
   $qs->AddValidAction("archive_alert2");
- 
+
   $qs->AddValidActionOp(_SELECTED);
   $qs->AddValidActionOp(_ALLONSCREEN);
- 
+
   $et->Mark("Initialization");
-  
+
   $qs->RunAction($submit, PAGE_STAT_PORTS, $db);
   $et->Mark("Alert Action");
 
@@ -152,7 +157,7 @@
        $proto_sql = " ip_proto = ".TCP;
        break;
      case UDP:
-       $proto_sql = " ip_proto = ".UDP; 
+       $proto_sql = " ip_proto = ".UDP;
        break;
      default:
        $proto_sql = " ip_proto IN (".TCP.", ".UDP.")";
@@ -161,7 +166,7 @@
 
   if ( $criteria_clauses[1] != "" )
      $proto_sql = $proto_sql." AND ";
-  
+
   switch($port_type)
   {
      case SOURCE_PORT:
@@ -188,28 +193,28 @@
                                 "&amp;port_type=$port_type&amp;proto=$proto");
 
   $qro->AddTitle(" ");
-  $qro->AddTitle(_PORT, 
+  $qro->AddTitle(_PORT,
                 "port_a", " ", " ORDER BY $port_type_sql ASC",
                 "port_d", " ", " ORDER BY $port_type_sql DESC");
-  $qro->AddTitle(_SENSOR, 
+  $qro->AddTitle(_SENSOR,
                 "sensor_a", " ", " ORDER BY num_sensors ASC",
                 "sensor_d", " ", " ORDER BY num_sensors DESC");
-  $qro->AddTitle(_OCCURRENCES, 
+  $qro->AddTitle(_OCCURRENCES,
                 "occur_a", " ", " ORDER BY num_events ASC",
                 "occur_d", " ", " ORDER BY num_events DESC");
-  $qro->AddTitle(_UNIALERTS, 
+  $qro->AddTitle(_UNIALERTS,
                 "alerts_a", " ", " ORDER BY num_sig ASC",
                 "alerts_d", " ", " ORDER BY num_sig DESC");
-  $qro->AddTitle(_SUASRCADD, 
+  $qro->AddTitle(_SUASRCADD,
                 "sip_a", " ", " ORDER BY num_sip ASC",
                 "sip_d", " ", " ORDER BY num_sip DESC");
-  $qro->AddTitle(_SUADSTADD, 
+  $qro->AddTitle(_SUADSTADD,
                 "dip_a", " ", " ORDER BY num_dip ASC",
                 "dip_d", " ", " ORDER BY num_dip DESC");
-  $qro->AddTitle(_FIRST, 
+  $qro->AddTitle(_FIRST,
                 "first_a", " ", " ORDER BY first_timestamp ASC",
                 "first_d", " ", " ORDER BY first_timestamp DESC");
-  $qro->AddTitle(_LAST, 
+  $qro->AddTitle(_LAST,
                 "last_a", " ", " ORDER BY last_timestamp ASC",
                 "last_d", " ", " ORDER BY last_timestamp DESC");
 
@@ -252,7 +257,7 @@
 
   $qro->PrintHeader();
 
-  echo "<input type='hidden' name='port_type' value='$port_type'>\n"; 
+  echo "<input type='hidden' name='port_type' value='$port_type'>\n";
 
    $i = 0;
    while ( ($myrow = $result->baseFetchRow()) && ($i < $qs->GetDisplayRowCnt()) )
@@ -280,12 +285,12 @@
       $last_time = $myrow[8];
 
       if ( $port_proto == TCP )
-      { 
+      {
         $url_port_type = "tcp";
         $url_layer4 = "TCP";
       }
       if ( $port_proto == UDP )
-      { 
+      {
         $url_port_type = "udp";
         $url_layer4 = "UDP";
       }
@@ -310,7 +315,7 @@
             $tmp_rowid = UDP ."_";
       else
             $tmp_rowid = -1 ."_";
-      
+
       ($port_type == SOURCE_PORT) ? ($tmp_rowid .= SOURCE_PORT) : ($tmp_rowid .= DEST_PORT);
       $tmp_rowid .= "_" . $myrow[0];
 
@@ -334,7 +339,7 @@
       ++$i;
    }
 
-  $result->baseFreeRows();     
+  $result->baseFreeRows();
 
   $qro->PrintFooter();
 
@@ -343,10 +348,10 @@
   $qs->SaveState();
   ExportHTTPVar("port_type", $port_type);
   ExportHTTPVar("proto", $proto);
-	ExportHTTPVar("sort_order", $sort_order);	
+	ExportHTTPVar("sort_order", $sort_order);
 
   echo "\n</FORM>\n";
-  
+
   PrintBASESubFooter();
 
   $et->Mark("Get Query Elements");

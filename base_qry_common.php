@@ -1,4 +1,9 @@
 <?php
+
+require_once __DIR__ . '/includes/vendi_boot.php';
+
+use Vendi\BASE\Criteria\CriteriaState;
+
 /*******************************************************************************
 ** Basic Analysis and Security Engine (BASE)
 ** Copyright (C) 2004 BASE Project Team
@@ -60,7 +65,7 @@ function PrintCriteriaState()
    if ( $GLOBALS['debug_mode'] >= 1 )
    {
       echo "<PRE>
-            <B>new:</B> '$new'   
+            <B>new:</B> '$new'
             <B>submit:</B> '$submit'
             <B>sort_order:</B> '$sort_order'
             <B>num_result_rows:</B> '$num_result_rows'  <B>current_view:</B> '$current_view'
@@ -107,7 +112,7 @@ function FieldRows2sql($field, $cnt, &$s_sql)
   return 0;
 }
 
-function FormatTimeDigit($time_digit) 
+function FormatTimeDigit($time_digit)
 {
 	if(strlen(trim($time_digit))==1)
 		$time_digit = "0".trim($time_digit);
@@ -124,7 +129,7 @@ function DateTimeRows2sql($field, $cnt, &$s_sql)
   GLOBAL $db;
   $tmp2 = "";
   $allempty = FALSE;
-  $time_field = array("mysql"    => ":", 
+  $time_field = array("mysql"    => ":",
                       "mssql"    => ":",
                       "postgres" => ":"
                 );
@@ -136,7 +141,7 @@ function DateTimeRows2sql($field, $cnt, &$s_sql)
       if ( isset($field[$i]) && $field[$i][1] != " " && $field[$i][1] != "")
       {
          $op = $field[$i][1];
-     
+
          $t = "";
 
          /* Build the SQL string when >, >=, <, <= operator is used */
@@ -152,49 +157,49 @@ function DateTimeRows2sql($field, $cnt, &$s_sql)
                   $t = $t."-".$field[$i][2];                       /* month */
 				  echo "<!-- \n\n\n\n\n\n\n dia: -".$field[$i][3]."- -->\n\n\n\n\n\n";
                   if ( $field[$i][3] != "" )
-                     $t = $t."-".FormatTimeDigit($field[$i][3]);   /* day */                
+                     $t = $t."-".FormatTimeDigit($field[$i][3]);   /* day */
                   else
 				  	$t = (($i == 0) ? $t."-01" : $t = $t."-31");
-						
+
                }
                else
                   $t = $t."-01-01";
             }
             /* time */
-            // For MSSQL, you must have colons in the time fields. 
+            // For MSSQL, you must have colons in the time fields.
             // Otherwise, the DATEDIFF function will return Arithmetic Overflow
             if ( $field[$i][5] != "" )
             {
                $t = $t." ".FormatTimeDigit($field[$i][5]);         /* hour */
                if ( $field[$i][6] != "" )
                {
-                  $t = $t . $time_field[$db->DB_type] . FormatTimeDigit($field[$i][6]); /* minute */		
-					
+                  $t = $t . $time_field[$db->DB_type] . FormatTimeDigit($field[$i][6]); /* minute */
+
                   if ( $field[$i][7] != "" )
-                      $t = $t . $time_field[$db->DB_type] . FormatTimeDigit($field[$i][6]);					   
+                      $t = $t . $time_field[$db->DB_type] . FormatTimeDigit($field[$i][6]);
                   else
                       $t = $t . $time_field[$db->DB_type] . $minsec[$op];
                }
                else
                   $t = $t . $time_field[$db->DB_type] . $minsec[$op] . $time_field[$db->DB_type] . $minsec[$op];
             }
-			
+
             /* fixup if have a > by adding an extra day */
             else if ( $op == ">" && $field[$i][4] != " " )
                 $t = $t." 23:59:59";
             /* fixup if have a <= by adding an extra day */
             else if ( $op == "<=" && $field[$i][4] != " " )
                 $t = $t." 23:59:59";
-            
+
             /* neither date or time */
             if ( $field[$i][4] == " " && $field[$i][5] == "" )
                ErrorMessage("<B>"._QCERRCRITWARN."</B> "._QCERROPER." '".$field[$i][1].
                             "' "._QCERRDATEVALUE);
-         
+
             /* date or date/time */
              else if ( ($field[$i][4] != " " && $field[$i][5] != "") || $field[$i][4] != " ") {
                if( $db->DB_type == "oci8" ) {
-                 $tmp = $field[$i][0]." timestamp ".$op."to_date( '$t', 'YYYY-MM-DD HH24MISS' )".$field[$i][8].' '.$field[$i][9]; 
+                 $tmp = $field[$i][0]." timestamp ".$op."to_date( '$t', 'YYYY-MM-DD HH24MISS' )".$field[$i][8].' '.$field[$i][9];
                } else {
 			if (count($field) > 1) {
 			// Better fix for bug #1199128
@@ -224,12 +229,12 @@ function DateTimeRows2sql($field, $cnt, &$s_sql)
 					continue;
 				else {
 					// Otherwise process it
-					$tmp = $field[$i][0]." timestamp ".$op."'$t'".$field[$i][8].' '.CleanVariable($field[$i][9], VAR_ALPHA); 
-					  
+					$tmp = $field[$i][0]." timestamp ".$op."'$t'".$field[$i][8].' '.CleanVariable($field[$i][9], VAR_ALPHA);
+
 				}
                  	} else {
 				// If we just have one criteria line, then do with it what we must
-				$tmp = $field[$i][0]." timestamp ".$op."'$t'".$field[$i][8].' '.CleanVariable($field[$i][9], VAR_ALPHA); 
+				$tmp = $field[$i][0]." timestamp ".$op."'$t'".$field[$i][8].' '.CleanVariable($field[$i][9], VAR_ALPHA);
 			}
 		}
              }
@@ -245,19 +250,19 @@ function DateTimeRows2sql($field, $cnt, &$s_sql)
          else
          {
             /* date */
-            if ( $field[$i][4] != " " ) 
+            if ( $field[$i][4] != " " )
                addSQLItem($tmp, $db->baseSQL_YEAR("timestamp", "=", $field[$i][4]) );
-            if ( $field[$i][2] != " " ) 
+            if ( $field[$i][2] != " " )
                addSQLItem($tmp, $db->baseSQL_MONTH("timestamp", "=", $field[$i][2]) );
-            if ( $field[$i][3] != ""  ) 
+            if ( $field[$i][3] != ""  )
                addSQLItem($tmp, $db->baseSQL_DAY("timestamp", "=", $field[$i][3]) );
 
             /* time */
-            if ( $field[$i][5] != "" ) 
+            if ( $field[$i][5] != "" )
                addSQLItem($tmp, $db->baseSQL_HOUR("timestamp", "=", $field[$i][5]) );
-            if ( $field[$i][6] != "" ) 
+            if ( $field[$i][6] != "" )
                addSQLItem($tmp, $db->baseSQL_MINUTE("timestamp", "=", $field[$i][6]) );
-            if ( $field[$i][7] != "" ) 
+            if ( $field[$i][7] != "" )
                addSQLItem($tmp, $db->baseSQL_SECOND("timestamp", "=", $field[$i][7]) );
 
             /* neither date or time */
@@ -272,7 +277,7 @@ function DateTimeRows2sql($field, $cnt, &$s_sql)
       {
          if ( isset($field[$i]) )
          {
-           if ( ($field[$i][2] != "" || $field[$i][3] != "" || $field[$i][4] != "") && 
+           if ( ($field[$i][2] != "" || $field[$i][3] != "" || $field[$i][4] != "") &&
                $field[$i][1] == "")
               ErrorMessage("<B>"._QCERRCRITWARN."</B> "._QCERRDATETIME." '".
                             $field[$i][2]."-".$field[$i][3]."-".$field[$i][4]." ".
@@ -298,7 +303,7 @@ function DateTimeRows2sql($field, $cnt, &$s_sql)
 function FormatPayload($payload_str, $data_encode)
 /* Accepts a payload string and decides whether any conversion is necessary
    to create a sql call into the DB.  Currently we only are concerned with
-   hex <=> ascii. 
+   hex <=> ascii.
  */
 {
   /* if the source is hex strip out any spaces and \n */
@@ -322,7 +327,7 @@ function FormatPayload($payload_str, $data_encode)
         for ( $i = 0; $i < strlen($payload_str); $i += 2)
         {
             $t = hexdec($payload_str[$i].$payload_str[$i+1]);
-                 
+
             if ( $t > 32 && $t < ord("z"))
                  $tmp = $tmp.chr($t);
             else
@@ -377,7 +382,7 @@ function PrintCriteria($caller)
 {
   GLOBAL $db, $cs, $last_num_alerts, $save_criteria;
 
-  /* Generate the Criteria entered into a human readable form */  
+  /* Generate the Criteria entered into a human readable form */
   $save_criteria = '
    <TABLE CELLSPACING=1 CELLPADDING=2 BORDER=0 BGCOLOR="#FFFFFF">
     <TR>
@@ -385,19 +390,19 @@ function PrintCriteria($caller)
         <TD>';
 
   /* If printing any of the LAST-X stats then ignore all the other criteria */
-  if (  $caller == "last_tcp" || $caller == "last_udp" || 
-        $caller == "last_icmp" || $caller == "last_any" ) 
+  if (  $caller == "last_tcp" || $caller == "last_udp" ||
+        $caller == "last_icmp" || $caller == "last_any" )
   {
     $save_criteria = $save_criteria.'&nbsp;&nbsp;';
     if ( $caller == "last_tcp" )
-       $save_criteria .= _LAST.' '.$last_num_alerts.' TCP '._ALERT; 
+       $save_criteria .= _LAST.' '.$last_num_alerts.' TCP '._ALERT;
     else if ( $caller == "last_udp" )
-       $save_criteria .= _LAST.' '.$last_num_alerts.' UDP '._ALERT; 
+       $save_criteria .= _LAST.' '.$last_num_alerts.' UDP '._ALERT;
     else if ( $caller == "last_icmp" )
-       $save_criteria .= _LAST.' '.$last_num_alerts.' ICMP '._ALERT; 
+       $save_criteria .= _LAST.' '.$last_num_alerts.' ICMP '._ALERT;
     else if ( $caller == "last_any" )
        $save_criteria .= _LAST.' '.$last_num_alerts.' '._ALERT;
-    
+
     $save_criteria .= '&nbsp;&nbsp;</TD></TR></TABLE>';
     echo $save_criteria;
     return;
@@ -413,7 +418,7 @@ function PrintCriteria($caller)
 
      $save_criteria .= $cs->criteria['time']->Description();
 
-    if ( $tmp_len == strlen($save_criteria) ) 
+    if ( $tmp_len == strlen($save_criteria) )
        $save_criteria .= '<I> &nbsp&nbsp '._ANY.' </I>';
 
   $save_criteria .= '&nbsp;&nbsp;</TD></TR>';
@@ -428,7 +433,7 @@ function PrintCriteria($caller)
      $save_criteria .= $cs->criteria['ip_field']->Description();
   }
   else
-     $save_criteria .= '<I> &nbsp;&nbsp; '._ANY.' </I>';    
+     $save_criteria .= '<I> &nbsp;&nbsp; '._ANY.' </I>';
 
   $save_criteria .= '&nbsp;&nbsp;</TD></TR>';
 
@@ -440,7 +445,7 @@ function PrintCriteria($caller)
   {
      if ( !$cs->criteria['tcp_port']->isEmpty() || !$cs->criteria['tcp_flags']->isEmpty() || !$cs->criteria['tcp_field']->isEmpty() )
      {
-        $save_criteria .= $cs->criteria['tcp_port']->Description();       
+        $save_criteria .= $cs->criteria['tcp_port']->Description();
         $save_criteria .= $cs->criteria['tcp_flags']->Description();
         $save_criteria .= $cs->criteria['tcp_field']->Description();
      }
@@ -473,7 +478,7 @@ function PrintCriteria($caller)
         $save_criteria .= '<I> &nbsp;&nbsp; '._ANY.' </I>';
 
      $save_criteria .= '&nbsp;&nbsp;</TD></TR>';
-   } 
+   }
 
   else if ( $cs->criteria['layer4']->Get() == "RawIP" )
    {
@@ -483,7 +488,7 @@ function PrintCriteria($caller)
       }
       else
          $save_criteria .= '<I> &nbsp&nbsp '._ANY.' </I>';
-   
+
       $save_criteria .= '&nbsp;&nbsp;</TD></TR>';
   }
 
@@ -497,24 +502,24 @@ function PrintCriteria($caller)
         <TD CLASS="payloadtitle">'._QCPAYCRIT.'</TD>
         <TD>';
 
-  if ( !$cs->criteria['data']->isEmpty() )       
+  if ( !$cs->criteria['data']->isEmpty() )
      $save_criteria .= $cs->criteria['data']->Description();
   else
      $save_criteria .= '<I> &nbsp;&nbsp; '._ANY.' </I>';
 
   $save_criteria .= '&nbsp;&nbsp;</TD></TR>';
 
-  
-  $save_criteria .= '</TABLE>'; 
+
+  $save_criteria .= '</TABLE>';
 
   if (!setlocale (LC_TIME, _LOCALESTR1))
        	if (!setlocale (LC_TIME, _LOCALESTR2))
 	        setlocale (LC_TIME, _LOCALESTR3);
-  
+
   $save_criteria = '&nbsp;<B>'._QUERIED.'</B><FONT> : '.strftime(_STRFTIMEFORMAT).'</FONT>'.
                    '<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=2 BGCOLOR="#000000">'.
                    '<TR><TD>'.
-         
+
                    '<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1 BGCOLOR="#DDDDDD"><TR><TD>'.
 
                    $save_criteria.
@@ -540,13 +545,13 @@ function ProcessCriteria()
   $icmp_join_sql= " LEFT JOIN icmphdr ON acid_event.sid=icmphdr.sid AND acid_event.cid=icmphdr.cid ";
   $rawip_join_sql= " LEFT JOIN iphdr ON acid_event.sid=iphdr.sid AND acid_event.cid=iphdr.cid ";
   $data_join_sql= " LEFT JOIN data ON acid_event.sid=data.sid AND acid_event.cid=data.cid ";
-  $ag_join_sql  = " LEFT JOIN acid_ag_alert ON acid_event.sid=acid_ag_alert.ag_sid AND acid_event.cid=acid_ag_alert.ag_cid "; 
+  $ag_join_sql  = " LEFT JOIN acid_ag_alert ON acid_event.sid=acid_ag_alert.ag_sid AND acid_event.cid=acid_ag_alert.ag_cid ";
 
   $sig_join_sql = "";
 
   $sql = "SELECT acid_event.sid, acid_event.cid, signature, timestamp, ".
          "acid_event.ip_src, acid_event.ip_dst, acid_event.ip_proto FROM acid_event";
- 
+
   // This needs to be examined!!! -- Kevin
   $where_sql = " WHERE ";
   //$where_sql = "";
@@ -589,7 +594,7 @@ function ProcessCriteria()
   $data_cnt = $cs->criteria['data']->GetFormItemCnt();
   $data_encode = $cs->criteria['data']->data_encode;
 
-  
+
   $tmp_meta = "";
   /* Sensor */
   if ( $sensor != "" && $sensor != " " )
@@ -609,7 +614,7 @@ function ProcessCriteria()
   /* Signature */
   /* xxx jl */
   if ($debug_mode > 0)
-  { 
+  {
     print "<BR>\n\$_SESSION['sig'] = <PRE>\n";
     print_r($_SESSION['sig']);
     print "</PRE>\n";
@@ -620,8 +625,8 @@ function ProcessCriteria()
     print "<BR>\n";
   }
 
-  if ( 
-       (isset($sig[0]) && $sig[0] != " " && $sig[0] != "") && 
+  if (
+       (isset($sig[0]) && $sig[0] != " " && $sig[0] != "") &&
        (
          (isset($sig[1]) && $sig[1] != "" && $sig[1] != NULL) ||
          (isset($sig[3]) && $sig[3] != "" && $sig[3] != NULL)
@@ -664,7 +669,7 @@ function ProcessCriteria()
               {
                 $tmp_meta = $tmp_meta." AND ".$sig_neg." (sig_name='". $sig_name . "') ";
               }
-              else 
+              else
               {
                 $tmp_meta = $tmp_meta." AND ".$sig_neg." (sig_name LIKE '".MssqlKludgeValue($sig_name) . "') ";
               }
@@ -723,7 +728,7 @@ function ProcessCriteria()
 
   $criteria_sql = $criteria_sql.$tmp_meta;
 
-  /* ********************** IP Criteria ********************************************** */ 
+  /* ********************** IP Criteria ********************************************** */
 
   /* IP Addresses */
   $tmp2 = "";
@@ -749,27 +754,27 @@ function ProcessCriteria()
              if ( $ip_addr[$i][10] == "" )
              {
              $tmp = $tmp." acid_event.".$ip_addr[$i][1].$ip_addr[$i][2]."'".
-                    baseIP2long($ip_addr[$i][3].".". 
+                    baseIP2long($ip_addr[$i][3].".".
                                 $ip_addr[$i][4].".".
                                 $ip_addr[$i][5].".".
                                 $ip_addr[$i][6])."' ";
              }
              else
              {
-                $mask = getIPMask($ip_addr[$i][3].".". 
+                $mask = getIPMask($ip_addr[$i][3].".".
                                   $ip_addr[$i][4].".".
                                   $ip_addr[$i][5].".".
                                   $ip_addr[$i][6], $ip_addr[$i][10]);
                 if ( $ip_addr[$i][2] == "!=" )
                    $tmp_op = " NOT ";
-                else 
+                else
                    $tmp_op = "";
 
                 $tmp = $tmp.$tmp_op." (acid_event.".$ip_addr[$i][1].">= '".
                                baseIP2long($mask[0])."' AND ".
                                "acid_event.".$ip_addr[$i][1]."<= '".
-                               baseIP2long($mask[1])."')"; 
-             }       
+                               baseIP2long($mask[1])."')";
+             }
            }
         }
         /* if have chosen the address type to be both source and destination */
@@ -777,20 +782,20 @@ function ProcessCriteria()
         {
            $tmp_src = ereg_replace("ip_both","ip_src",$tmp);
            $tmp_dst = ereg_replace("ip_both","ip_dst",$tmp);
-           
+
            if ( $ip_addr[$i][2] == '=' )
              $tmp = "(".$tmp_src.') OR ('.$tmp_dst.')';
            else
              $tmp = "(".$tmp_src.') AND ('.$tmp_dst.')';
         }
-    
-        if ( $tmp != "" )       
+
+        if ( $tmp != "" )
            $tmp = $ip_addr[$i][0]."(".$tmp.")".$ip_addr[$i][8].$ip_addr[$i][9];
      }
      else if ( (isset($ip_addr[$i][3]) && $ip_addr[$i][3] != "" ) || $ip_addr[$i][1] != " " )
      {
         /* IP_addr_type, but MALFORMED IP address */
-        if ( $ip_addr[$i][1] != " " && $ip_addr[$i][3] == "" && 
+        if ( $ip_addr[$i][1] != " " && $ip_addr[$i][3] == "" &&
              ($ip_addr[$i][4] != "" || $ip_addr[$i][5] != "" || $ip_addr[$i][6] != "" ) )
             ErrorMessage("<B>"._QCERRCRITWARN."</B> "._QCERRINVIPCRIT." ' *.".
                          $ip_addr[$i][4].".".$ip_addr[$i][5].".".$ip_addr[$i][6]." '");
@@ -813,7 +818,7 @@ function ProcessCriteria()
   }
 
   if ( $tmp2 != "" )
-     $criteria_sql = $criteria_sql." AND ( ".$tmp2." )";  
+     $criteria_sql = $criteria_sql." AND ( ".$tmp2." )";
   else
      $cs->criteria['ip_addr']->SetFormItemCnt(0);
 
@@ -823,7 +828,7 @@ function ProcessCriteria()
 
   /* Layer-4 encapsulation */
   if ( $layer4 == "TCP" )
-     $criteria_sql = $criteria_sql." AND acid_event.ip_proto= '6'";  
+     $criteria_sql = $criteria_sql." AND acid_event.ip_proto= '6'";
   else if ( $layer4 == "UDP" )
      $criteria_sql = $criteria_sql." AND acid_event.ip_proto= '17'";
   else if ( $layer4 == "ICMP" )
@@ -844,9 +849,9 @@ if ( $layer4 == "TCP" )
   /* TCP Ports */
   if ( FieldRows2sql($tcp_port, $tcp_port_cnt, $proto_tmp) == 0 )
      $cs->criteria['tcp_port']->SetFormItemCnt(0);
- 
+
   $criteria_sql = $criteria_sql.$proto_tmp;
-  
+
   $proto_tmp = "";
   /* TCP Flags */
   if ( isset($tcp_flags) && sizeof($tcp_flags) == 8)
@@ -859,7 +864,7 @@ if ( $layer4 == "TCP" )
         $proto_tmp = $proto_tmp.' AND tcp_flags='.$flag_tmp;
       else if ( $tcp_flags[0] == "contains" )
         $proto_tmp = $proto_tmp.' AND (tcp_flags & '.$flag_tmp.' = '.$flag_tmp." )";
-      else 
+      else
         $proto_tmp = "";
     }
   }
@@ -868,7 +873,7 @@ if ( $layer4 == "TCP" )
   if ( FieldRows2sql($tcp_field, $tcp_field_cnt, $proto_tmp) == 0 )
      $cs->criteria['tcp_field']->SetFormItemCnt(0);
 
-  /* TCP Options 
+  /* TCP Options
    *  - not implemented
    */
 
@@ -936,7 +941,7 @@ if ( $layer4 == "RawIP" )
   }
 }
 
-  /* ********************** Payload Criteria ***************************************** */  
+  /* ********************** Payload Criteria ***************************************** */
 
   $tmp_payload = "";
   if ( DataRows2sql($data, $data_cnt, $data_encode, $tmp_payload) == 0 )
@@ -947,7 +952,7 @@ if ( $layer4 == "RawIP" )
      $criteria_sql = $criteria_sql.$tmp_payload;
      $join_sql = $data_join_sql.$join_sql;
   }
- 
+
   $csql[0] = $join_sql;
   $csql[1] = $criteria_sql;
 

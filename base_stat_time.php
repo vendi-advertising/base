@@ -1,4 +1,9 @@
 <?php
+
+require_once __DIR__ . '/includes/vendi_boot.php';
+
+use Vendi\BASE\Criteria\CriteriaState;
+
 /*******************************************************************************
 ** Basic Analysis and Security Engine (BASE)
 ** Copyright (C) 2004 BASE Project Team
@@ -23,7 +28,7 @@
 */
 
 function StoreAlertNum($sql, $label, $time_sep, $i_year, $i_month, $i_day, $i_hour)
-{  
+{
   GLOBAL $db, $cnt, $label_lst, $value_lst, $value_POST_lst, $debug_mode;
 
   $label_lst [ $cnt ] = $label;
@@ -31,7 +36,7 @@ function StoreAlertNum($sql, $label, $time_sep, $i_year, $i_month, $i_day, $i_ho
   if (sizeof($time_sep) == 0) {
       $time_sep = array(0 => '', 1 => '');
   }
-  
+
   if ( $debug_mode > 0 )
      echo $sql."<BR>";
 
@@ -61,7 +66,7 @@ function StoreAlertNum($sql, $label, $time_sep, $i_year, $i_month, $i_day, $i_ho
 
      /* add no parentheses and no operator */
      $value_POST_lst[$cnt] = $value_POST_lst[$cnt].'&amp;time%5B0%5D%5B8%5D=+&amp;time%5B0%5D%5B9%5D=+';
- 
+
      $cnt++;
   }
   else
@@ -98,7 +103,7 @@ function PrintTimeProfile()
        echo '<TR>
                  <TD>';
 
-       if ( $value_lst[$i] == 0 ) 
+       if ( $value_lst[$i] == 0 )
           echo $label_lst[$i];
        else
           echo '<A HREF="'.$value_POST_lst[$i].'">'.$label_lst[$i].'</A>';
@@ -181,7 +186,7 @@ function PrintTimeProfile()
          <OPTION VALUE="on" '.@chk_select($time_sep[1], "on").'>'._TIMEON.'
          <OPTION VALUE="between"'.@chk_select($time_sep[1], "between").'>'._TIMEBETWEEN.'
         </SELECT>';
- 
+
   for ( $i = 0; $i < 2; $i++ )
   {
       echo '<SELECT NAME="time['.$i.'][0]">
@@ -199,7 +204,7 @@ function PrintTimeProfile()
              <OPTION VALUE="11" '.chk_select($time[$i][0],"11").'>'._NOVEMBER.'
              <OPTION VALUE="12" '.chk_select($time[$i][0],"12").'>'._DECEMBER.'
             </SELECT>';
-      
+
       echo '<INPUT TYPE="text" NAME="time['.$i.'][1]" SIZE=2 VALUE="'.$time[$i][1].'"> &nbsp;'."\n";
       echo '<SELECT NAME="time['.$i.'][2]">'.
              dispYearOptions($time[$i][2])
@@ -215,7 +220,7 @@ function PrintTimeProfile()
         <P><HR>';
 
   if ( $submit != "" && @$time_sep[0] == "" )
-     echo _BSTERRPROFILECRIT;     
+     echo _BSTERRPROFILECRIT;
   else if ( $submit != "" && $time_sep[1] == " " )
      echo _BSTERRTIMETYPE;
 
@@ -229,9 +234,9 @@ function PrintTimeProfile()
 
   else if ( $submit != "" && $time_sep[0] != "" && $time_sep[1] == "between" &&
             ($time[1][0] == " " || $time[0][0] == " ") )
-     echo _BSTERRNOMONTH; 
- 
-  else if ( $submit != "" && ($time_sep[0] != "") 
+     echo _BSTERRNOMONTH;
+
+  else if ( $submit != "" && ($time_sep[0] != "")
             && $time_sep[1] == "between" && ($time[1][1] == "" || $time[0][1] == "") )
      echo _BSTERRNODAY;
 
@@ -239,7 +244,7 @@ function PrintTimeProfile()
   {
 
   /* Dump the results of the above specified query */
-           
+
   $year_start = $year_end = NULL;
   $month_start = $month_end = NULL;
   $day_start = $day_end = NULL;
@@ -247,32 +252,32 @@ function PrintTimeProfile()
 
   if ( $time_sep[1] == "between" )
   {
-     if ($time_sep[0] == "hour")       
-     { 
+     if ($time_sep[0] == "hour")
+     {
         $year_start = $time[0][2];  $year_end = $time[1][2];
         $month_start = $time[0][0]; $month_end = $time[1][0];
         $day_start = $time[0][1]; $day_end = $time[1][1];
-        $hour_start = 0; $hour_end = 23; 
+        $hour_start = 0; $hour_end = 23;
      }
-     else if ($time_sep[0] == "day")          
-     { 
+     else if ($time_sep[0] == "day")
+     {
         $year_start = $time[0][2];  $year_end = $time[1][2];
         $month_start = $time[0][0]; $month_end = $time[1][0];
         $day_start = $time[0][1]; $day_end = $time[1][1];
-        $hour_start = -1; 
+        $hour_start = -1;
      }
-     else if ($time_sep[0] == "month")           
-     { 
+     else if ($time_sep[0] == "month")
+     {
         $year_start = $time[0][2];  $year_end = $time[1][2];
         $month_start = $time[0][0]; $month_end = $time[1][0];
         $day_start = -1;
-        $hour_start = -1; 
+        $hour_start = -1;
      }
   }
   else if ( $time_sep[1] == "on" )
   {
-     if ($time_sep[0] == "hour")       
-     { 
+     if ($time_sep[0] == "hour")
+     {
         $year_start = $time[0][2];  $year_end = $time[0][2];
         if ( $time[0][0] != " " )
         {   $month_start = $time[0][0]; $month_end = $time[0][0];  }
@@ -283,10 +288,10 @@ function PrintTimeProfile()
         {  $day_start = $time[0][1]; $day_end = $time[0][1];  }
         else
         {  $day_start = 1; $day_end = 31;  }
-        $hour_start = 0; $hour_end = 23; 
+        $hour_start = 0; $hour_end = 23;
      }
-     else if ($time_sep[0] == "day")          
-     { 
+     else if ($time_sep[0] == "day")
+     {
         $year_start = $time[0][2];  $year_end = $time[0][2];
         if ( $time[0][0] != " " )
         {   $month_start = $time[0][0]; $month_end = $time[0][0];  }
@@ -298,17 +303,17 @@ function PrintTimeProfile()
         else
         {  $day_start = 1; $day_end = 31;  }
 
-        $hour_start = -1; 
+        $hour_start = -1;
      }
-     else if ($time_sep[0] == "month")           
-     { 
+     else if ($time_sep[0] == "month")
+     {
         $year_start = $time[0][2];  $year_end = $time[0][2];
         if ( $time[0][0] != " " )
         {   $month_start = $time[0][0]; $month_end = $time[0][0];  }
         else
-        {   $month_start = 1; $month_end = 12;  }  
+        {   $month_start = 1; $month_end = 12;  }
         $day_start = -1;
-        $hour_start = -1; 
+        $hour_start = -1;
      }
   }
 
@@ -371,7 +376,7 @@ function PrintTimeProfile()
                                   $db->baseSQL_HOUR("timestamp", "=", $i_hour);
 
                            StoreAlertNum($sql, $i_month."/".$i_day."/".$i_year." ".
-                                               $i_hour.":00:00 - ".$i_hour.":59:59", 
+                                               $i_hour.":00:00 - ".$i_hour.":59:59",
                                          $time_sep, $i_year, $i_month, $i_day, $i_hour);
                        }  // end hour
                     }

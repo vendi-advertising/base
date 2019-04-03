@@ -1,4 +1,10 @@
 <?php
+
+use Webmozart\PathUtil\Path;
+use Vendi\Shared\utils as vendi_utils;
+
+require_once dirname(__DIR__) . '/includes/vendi_boot.php';
+
 /*******************************************************************************
 ** Basic Analysis and Security Engine (BASE)
 ** Copyright (C) 2004 BASE Project Team
@@ -39,7 +45,7 @@ function InitArray(&$a, $dim1, $dim2, $value)
    $a = "";
    /* determine the number of dimensions in the array */
    if ( $dim2 == 0 )   /* 1-dim */
-      for ( $i = 0; $i < $dim1; $i++ ) 
+      for ( $i = 0; $i < $dim1; $i++ )
          $a[$i] = $value;
    else                /* 2-dim */
       for ( $i = 0; $i < $dim1; $i++ )
@@ -110,7 +116,7 @@ function RegisterGlobalState()
 function CleanVariable($item, $valid_data, $exception = "")
 {
 
-   /* Determine whether a variable is set */        
+   /* Determine whether a variable is set */
    if (!isset($item))
       return $item;
 
@@ -138,50 +144,50 @@ function CleanVariable($item, $valid_data, $exception = "")
    if ( ($valid_data & VAR_LETTER) > 0 )
       $regex_mask = $regex_mask . "A-Za-z";
 
-   if ( ($valid_data & VAR_ULETTER) > 0 ) 
+   if ( ($valid_data & VAR_ULETTER) > 0 )
       $regex_mask = $regex_mask . "A-Z";
 
-   if ( ($valid_data & VAR_LLETTER) > 0 ) 
+   if ( ($valid_data & VAR_LLETTER) > 0 )
       $regex_mask = $regex_mask . "a-z";
 
-   if ( ($valid_data & VAR_ALPHA) > 0 ) 
+   if ( ($valid_data & VAR_ALPHA) > 0 )
       $regex_mask = $regex_mask . "0-9A-Za-z";
 
-   if ( ($valid_data & VAR_SPACE) > 0 ) 
+   if ( ($valid_data & VAR_SPACE) > 0 )
       $regex_mask = $regex_mask . "\ ";
 
-   if ( ($valid_data & VAR_PERIOD) > 0 ) 
+   if ( ($valid_data & VAR_PERIOD) > 0 )
       $regex_mask = $regex_mask . "\.";
 
-   if ( ($valid_data & VAR_FSLASH) > 0 ) 
+   if ( ($valid_data & VAR_FSLASH) > 0 )
       $regex_mask = $regex_mask . "\/";
 
-   if ( ($valid_data & VAR_OPAREN) > 0 ) 
+   if ( ($valid_data & VAR_OPAREN) > 0 )
       $regex_mask = $regex_mask . "\(";
 
-   if ( ($valid_data & VAR_CPAREN) > 0 ) 
+   if ( ($valid_data & VAR_CPAREN) > 0 )
       $regex_mask = $regex_mask . "\)";
 
-   if ( ($valid_data & VAR_BOOLEAN) > 0 ) 
+   if ( ($valid_data & VAR_BOOLEAN) > 0 )
       $regex_mask = $regex_mask . "\)";
 
-   if ( ($valid_data & VAR_OPERATOR) > 0 ) 
+   if ( ($valid_data & VAR_OPERATOR) > 0 )
       $regex_mask = $regex_mask . "\)";
 
-   if ( ($valid_data & VAR_USCORE) > 0 ) 
+   if ( ($valid_data & VAR_USCORE) > 0 )
       $regex_mask = $regex_mask . "\_";
 
-   if ( ($valid_data & VAR_AT) > 0 ) 
+   if ( ($valid_data & VAR_AT) > 0 )
       $regex_mask = $regex_mask . "\@";
 
    /* Score (\-) always must be at the end of the character class */
-   if ( ($valid_data & VAR_PUNC) > 0 ) 
+   if ( ($valid_data & VAR_PUNC) > 0 )
       $regex_mask = $regex_mask . "\~\!\#\$\%\^\&\*\_\=\+\:\;\,\.\?\ \(\))\-";
 
-   if ( ($valid_data & VAR_SCORE) > 0 ) 
+   if ( ($valid_data & VAR_SCORE) > 0 )
       $regex_mask = $regex_mask . "\-";
 
-   return ereg_replace("[^".$regex_mask."]", "", $item);
+   return preg_replace("/[^".$regex_mask."]/", "", $item);
 }
 
 /* ***********************************************************************
@@ -192,12 +198,12 @@ function CleanVariable($item, $valid_data, $exception = "")
  *      updates passed through POST/GET and resolving this with values
  *      that may already have been set and stored in the session.
  *
- *      All criteria variables need invoke this function before they are 
+ *      All criteria variables need invoke this function before they are
  *      used for the first time to extract their previously stored values,
  *      and process potential updates to their value.
  *
  *      Note: Validation of user input is not performed by this routine.
- *     
+ *
  * @param $var_name  name of the persistant session variable to retrieve
  *
  * @return the updated value of the persistant session variable named
@@ -206,45 +212,51 @@ function CleanVariable($item, $valid_data, $exception = "")
  ************************************************************************/
 function SetSessionVar($var_name)
 {
-   if ( isset($_POST[$var_name]) ) 
-   {
-      if ( $GLOBALS['debug_mode'] > 0 )  echo "importing POST var '$var_name'<BR>";
-      return $_POST[$var_name];
+   if (vendi_utils::get_post_value($var_name)){
+      if ( $GLOBALS['debug_mode'] > 0 )  {
+         echo "importing POST var '$var_name'<BR>";
+      }
+      return vendi_utils::get_post_value($var_name);
    }
-   else if ( isset($_GET[$var_name]) )
-   { 
-      if ( $GLOBALS['debug_mode'] > 0 )  echo "importing GET var '$var_name'<BR>";
-      return $_GET[$var_name];
+
+   if (vendi_utils::get_get_value($var_name)){
+      if ( $GLOBALS['debug_mode'] > 0 ){
+         echo "importing GET var '$var_name'<BR>";
+      }
+      return vendi_utils::get_get_value($var_name);
    }
-   else if ( isset($_SESSION[$var_name]) )
-   { 
-      if ( $GLOBALS['debug_mode'] > 0 )  echo "importing SESSION var '$var_name'<BR>";
-      return $_SESSION[$var_name];
+
+   if(vendi_utils::get_session_value($var_name)){
+      if ( $GLOBALS['debug_mode'] > 0 ){
+         echo "importing SESSION var '$var_name'<BR>";
+      }
+      return vendi_utils::get_session_value($var_name);
    }
-   else
-      return "";
+
+
+   return "";
 }
 
 /* ***********************************************************************
  * Function: ImportHTTPVar()
  *
- * @doc Handles retrieving temporary state variables needed to present a 
+ * @doc Handles retrieving temporary state variables needed to present a
  *      given set of results (e.g., sort order, current record).  The
  *      values of these variables are never persistantly stored.  Rather,
  *      they are passed as HTTP POST and GET parameters.
  *
- *      All temporary variables need invoke this function before they are 
+ *      All temporary variables need invoke this function before they are
  *      used for the first time to extract their value.
  *
  *      Optionally, sanitization parameters can be set, ala CleanVariable()
  *      syntax to validate the user input.
- *     
+ *
  * @param $var_name     name of the temporary state variable to retrieve
- * @param $valid_data   (optional) list of valid character types 
+ * @param $valid_data   (optional) list of valid character types
  *                                 (see CleanVariable)
  * @param $exception    (optional) array of explicit values the imported
  *                      variable must be set to
- * 
+ *
  * @see CleanVariable
  *
  * @return the sanitized value of the temporary state variable named
@@ -253,20 +265,13 @@ function SetSessionVar($var_name)
  ************************************************************************/
 function ImportHTTPVar($var_name, $valid_data = "", $exception = "")
 {
-   $tmp = "";
+   $tmp = '';
 
-   if ( isset($_POST[$var_name]) ) 
-   {
-      //if ( $debug_mode > 0 )  echo "importing POST var '$var_name'<BR>";
+   if ( null !== vendi_utils::get_post_value($var_name, null)) {
       $tmp = $_POST[$var_name];
-   }
-   else if ( isset($_GET[$var_name]) )
-   { 
-      //if ( $debug_mode > 0 )  echo "importing GET var '$var_name'<BR>";
+   } elseif(null !== vendi_utils::get_get_value($var_name, null)) {
       $tmp = $_GET[$var_name];
    }
-   else
-      $tmp = "";
 
    return CleanVariable($tmp, $valid_data, $exception);
 }
@@ -274,17 +279,17 @@ function ImportHTTPVar($var_name, $valid_data = "", $exception = "")
 /* ***********************************************************************
  * Function: ExportHTTPVar()
  *
- * @doc Handles export of a temporary state variables needed to present a 
+ * @doc Handles export of a temporary state variables needed to present a
  *      given set of results (e.g., sort order, current record).  This
  *      routine creates a hidden HTML form variable.
  *
  *      Note: The user is responsible for generating the appropriate HTML
  *            form code.
  *
- *      Security Note: Only, temporary variables should make use of this 
- *                     function. These values are exposed in HTML to the 
+ *      Security Note: Only, temporary variables should make use of this
+ *                     function. These values are exposed in HTML to the
  *                     user; he is free to modify them.
- * 
+ *
  * @param $var_name     name of the temporary state variable to export
  * @param $var_value   value of the temporary state variable
  *
@@ -308,13 +313,13 @@ function ExportHTTPVar ($var_name, $var_value)
  ************************************************************************/
 function filterSql ($item, $force_alert_db=0)
 {
-   GLOBAL $DBlib_path, $DBtype, $db_connect_method, $alert_dbname, 
+   GLOBAL $DBlib_path, $DBtype, $db_connect_method, $alert_dbname,
           $alert_host, $alert_port, $alert_user, $alert_password;
 
    /* Determine whether a variable is set */
    if (!isset($item))
       return $item;
- 
+
    /* Recursively filter array elements -- nikns */
    if (is_array($item)) {
       for ($i = 0; $i < count($item); $i++)
@@ -323,7 +328,7 @@ function filterSql ($item, $force_alert_db=0)
    }
 
    $db = NewBASEDBConnection($DBlib_path, $DBtype);
-   $db->baseDBConnect($db_connect_method, $alert_dbname, $alert_host, 
+   $db->baseDBConnect($db_connect_method, $alert_dbname, $alert_host,
                       $alert_port, $alert_user, $alert_password, $force_alert_db);
 
    /* magic_quotes_gpc safe adodb qmagic() returns escaped $item in quotes */
@@ -347,7 +352,7 @@ function filterSql ($item, $force_alert_db=0)
 function XSSPrintSafe($item)
 {
 
-   /* Determine whether a variable is set */        
+   /* Determine whether a variable is set */
    if (!isset($item))
       return $item;
 

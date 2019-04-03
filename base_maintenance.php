@@ -1,4 +1,9 @@
 <?php
+
+require_once __DIR__ . '/includes/vendi_boot.php';
+
+use Vendi\BASE\Criteria\CriteriaState;
+
 /*******************************************************************************
 ** Basic Analysis and Security Engine (BASE)
 ** Copyright (C) 2004 BASE Project Team
@@ -10,7 +15,7 @@
 **                Sean Muller <samwise_diver@users.sourceforge.net>
 ** Built upon work by Roman Danyliw <rdd@cert.org>, <roman@danyliw.com>
 **
-** Purpose: status and event/dns/whois cache maintenance 
+** Purpose: status and event/dns/whois cache maintenance
 ********************************************************************************
 ** Authors:
 ********************************************************************************
@@ -72,7 +77,7 @@
   $repair_output = NULL;
   if ( $submit == "Update Alert Cache" )
   {
-     UpdateAlertCache($db);     
+     UpdateAlertCache($db);
   }
   else if ( $submit == "Rebuild Alert Cache" )
   {
@@ -81,7 +86,7 @@
   }
   else if ( $submit == "Update IP Cache" )
   {
-     UpdateDNSCache($db);     
+     UpdateDNSCache($db);
   }
   else if ( $submit == "Rebuild IP Cache" )
   {
@@ -90,7 +95,7 @@
   }
   else if ( $submit == "Update Whois Cache" )
   {
-     UpdateWhoisCache($db);     
+     UpdateWhoisCache($db);
   }
   else if ( $submit == "Rebuild Whois Cache" )
   {
@@ -108,12 +113,12 @@
   }
 
   echo '<TABLE WIDTH="100%" CELLSPACING=0 CELLPADDING=2 BORDER=0 BGCOLOR="#669999">
-         <TR><TD> 
+         <TR><TD>
            <TABLE WIDTH="100%" CELLSPACING=0 CELLPADDING=2 BORDER=0 BGCOLOR="#FFFFFF">
               <TR><TD class="sectiontitle">'._MNTPHP.'</TD></TR>
               <TR><TD>
          <B>'._MNTCLIENT.'</B> '.XSSPrintSafe($_SERVER['HTTP_USER_AGENT']).'<BR>
-         <B>'._MNTSERVER.'</B> '.XSSPrintSafe($_SERVER['SERVER_SOFTWARE']).'<BR> 
+         <B>'._MNTSERVER.'</B> '.XSSPrintSafe($_SERVER['SERVER_SOFTWARE']).'<BR>
          <B>'._MNTSERVERHW.'</B> '.php_uname().'<BR>
          <B>'._MNTPHPVER.'</B> '.phpversion().'<BR>
          <B>PHP API:</B> '.php_sapi_name().'<BR>';
@@ -157,14 +162,14 @@
         </TABLE><P>';
 
   echo '<TABLE WIDTH="100%" CELLSPACING=0 CELLPADDING=2 BORDER=0 BGCOLOR="#669999">
-         <TR><TD> 
+         <TR><TD>
            <TABLE WIDTH="100%" CELLSPACING=0 CELLPADDING=2 BORDER=0 BGCOLOR="#FFFFFF">
               <TR><TD class="sectiontitle">'._DATABASE.'</TD></TR>
               <TR><TD>';
-     
+
   GLOBAL $ADODB_vers;
 
-  echo "<B>"._MNTDBTYPE."</B> $DBtype <BR>  
+  echo "<B>"._MNTDBTYPE."</B> $DBtype <BR>
         <B>"._MNTDBALV."</B> $ADODB_vers <BR>
         <B>"._MNTDBALERTNAME."</B> $alert_dbname <BR>
         <B>"._MNTDBARCHNAME."</B> $archive_dbname <BR>
@@ -181,7 +186,7 @@
         </TABLE><P>';
 
   echo '<TABLE WIDTH="100%" CELLSPACING=0 CELLPADDING=2 BORDER=0 BGCOLOR="#669999">
-         <TR><TD> 
+         <TR><TD>
            <TABLE WIDTH="100%" CELLSPACING=0 CELLPADDING=2 BORDER=0 BGCOLOR="#FFFFFF">
               <TR><TD class="sectiontitle">'._MNTAIC.'</TD></TR>
               <TR><TD>';
@@ -209,14 +214,14 @@
         </TABLE><P>';
 
   echo '<TABLE WIDTH="100%" CELLSPACING=0 CELLPADDING=2 BORDER=0 BGCOLOR="#669999">
-         <TR><TD> 
+         <TR><TD>
            <TABLE WIDTH="100%" CELLSPACING=0 CELLPADDING=2 BORDER=0 BGCOLOR="#FFFFFF">
               <TR><TD class="sectiontitle">'._MNTIPAC.'</TD></TR>
               <TR><TD>';
 
   $uncached_sip_cnt = UniqueSrcIPCnt($db);
   $uncached_dip_cnt = UniqueDstIPCnt($db);
-  
+
   $ip_result = $db->baseExecute("SELECT COUNT(DISTINCT ip_src) FROM acid_event ".
                                 "INNER JOIN acid_ip_cache ON ipc_ip = ip_src ".
                                 "WHERE ipc_fqdn is not NULL");
@@ -255,14 +260,14 @@
         <INPUT TYPE="submit" NAME="submit" VALUE="Update Whois Cache"><BR>
         <INPUT TYPE="submit" NAME="submit" VALUE="Rebuild IP Cache">&nbsp;
         <INPUT TYPE="submit" NAME="submit" VALUE="Rebuild Whois Cache"><BR>';
-       
+
   echo '   </TD></TR>
            </TABLE>
          </TD></TR>
         </TABLE><P>';
 
   echo "\n</FORM>\n";
-  
+
   PrintBASESubFooter();
 
   $et->PrintTiming();

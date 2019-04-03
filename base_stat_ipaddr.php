@@ -1,4 +1,9 @@
 <?php
+
+require_once __DIR__ . '/includes/vendi_boot.php';
+
+use Vendi\BASE\Criteria\CriteriaState;
+
 /*******************************************************************************
 ** Basic Analysis and Security Engine (BASE)
 ** Copyright (C) 2004 BASE Project Team
@@ -10,7 +15,7 @@
 **                Sean Muller <samwise_diver@users.sourceforge.net>
 ** Built upon work by Roman Danyliw <rdd@cert.org>, <roman@danyliw.com>
 **
-** Purpose: Displays stats on an individual IP address   
+** Purpose: Displays stats on an individual IP address
 **
 ** Input GET/POST variables
 **   - action:
@@ -27,7 +32,7 @@
 
   $start = time();
   $sig   = array();
-  
+
   include("base_conf.php");
   include("$BASE_path/includes/base_constants.inc.php");
   include("$BASE_path/includes/base_include.inc.php");
@@ -41,7 +46,7 @@
   $ip = ImportHTTPVar("ip", VAR_DIGIT | VAR_PERIOD);
   $netmask = ImportHTTPVar("netmask", VAR_DIGIT);
   $action = ImportHTTPVar("action", VAR_ALPHA);
-  $submit = ImportHTTPVar("submit", VAR_ALPHA | VAR_SPACE);  
+  $submit = ImportHTTPVar("submit", VAR_ALPHA | VAR_SPACE);
 
    // Check role out and redirect if needed -- Kevin
   $roleneeded = 10000;
@@ -60,7 +65,7 @@
   }
   elseif (empty($ip))
   {
-    ErrorMessage(__FILE__ . ":" . __LINE__ . ": \$ip has been defined, but it is empty. Ignoring."); 
+    ErrorMessage(__FILE__ . ":" . __LINE__ . ": \$ip has been defined, but it is empty. Ignoring.");
     $debug_str = "<BR><PRE>\n\n" . debug_print_backtrace() . "\n\n</PRE><BR>\n";
     ErrorMessage($debug_str);
   }
@@ -79,7 +84,7 @@ function PrintPortscanEvents($db, $ip)
   if (!is_file($portscan_file))
   {
      ErrorMessage(_PSEVENTERR._PSEVENTERROPENFILE . " '" . $portscan_file . "': This file could not be found. Maybe a wrong path or a wrong filename?");
-    return;    
+    return;
   }
 
   if (!is_readable($portscan_file))
@@ -127,7 +132,7 @@ function PrintPortscanEvents($db, $ip)
 
   while ( !feof($fp) )
   {
-   $contents = fgets($fp, 255);   
+   $contents = fgets($fp, 255);
 
    /*
    print "<BR>\n<PRE>";
@@ -260,7 +265,7 @@ function PrintEventsByIP($db, $ip)
   $unique_event_cnt = count($unique_events);
 
  printf ("<B>"._PSDETECTAMONG."/32</B><BR>", $unique_event_cnt,$event_cnt,$ip);
-   
+
   /* Print the Statistics on Each of the Unique Alerts */
   echo '<TABLE BORDER=1>
         <TR>
@@ -271,7 +276,7 @@ function PrintEventsByIP($db, $ip)
            <TD CLASS="plfieldhdr">'._PSLASTOCC.'</TD>
         </TR>';
 
- for ( $i = 0; $i < $unique_event_cnt; $i++ ) 
+ for ( $i = 0; $i < $unique_event_cnt; $i++ )
  {
    $current_event = $unique_events[$i];
 
@@ -280,7 +285,7 @@ function PrintEventsByIP($db, $ip)
    $start_time = StartTimeForUniqueEventByAddr($db, $ip, $current_event);
    $stop_time = StopTimeForUniqueEventByAddr($db, $ip, $current_event);
 
-   /* Print out */ 
+   /* Print out */
    echo '<TR>';
    if ($debug_mode > 1)
    {
@@ -322,7 +327,7 @@ function PrintEventsByIP($db, $ip)
   if ( sizeof($sig) != 0 && strstr($sig[1], "spp_portscan") )
      $sig[1] = "";
 
-  /*  Build new link for criteria-based sensor page 
+  /*  Build new link for criteria-based sensor page
    *                    -- ALS <aschroll@mitre.org>
    */
    $tmp_sensor_lookup = 'base_stat_sensor.php?ip_addr_cnt=2'.
@@ -344,10 +349,10 @@ function PrintEventsByIP($db, $ip)
                           '&amp;submit='._QUERYDBP.'&amp;current_view=-1&amp;ip_addr_cnt=1'.
                           BuildDstIPFormVars($ip);
   echo '<CENTER>';
-  printf ("<FONT>"._PSALLALERTSAS.":</FONT>",$ip,$netmask); 
+  printf ("<FONT>"._PSALLALERTSAS.":</FONT>",$ip,$netmask);
   echo '
- <A HREF="'.$tmp_src_iplookup.'">'._SCSOURCE.'</A> | 
- <A HREF="'.$tmp_dst_iplookup.'">'._SCDEST.'</A> | 
+ <A HREF="'.$tmp_src_iplookup.'">'._SCSOURCE.'</A> |
+ <A HREF="'.$tmp_dst_iplookup.'">'._SCDEST.'</A> |
  <A HREF="'.$tmp_srcdst_iplookup.'">'._SCSOURCE.'/'._SCDEST.'</A><BR>';
 
  echo _PSSHOW.':
@@ -374,12 +379,12 @@ function PrintEventsByIP($db, $ip)
       '<A HREF="http://www.trustedsource.org/query.php?q='.$ip.'" target="_NEW">TrustedSource.org IP Info</A> | '.
       '<A HREF="http://isc.sans.org/ipinfo.html?ip='.$ip.'" target="_NEW">ISC Source/Subnet Report</A><BR> </FONT>';
 
-  
+
   echo '</CENTER>';
   echo '<HR>';
 
   echo '<FORM METHOD="POST" ACTION="base_stat_ipaddr.php">';
-  
+
   if ( $debug_mode >= 1 )
      echo '<TABLE BORDER=1>
              <TR><TD>action</TD><TD>submit</TD><TD>ip</TD><TD>netmask</TD></TR>
@@ -389,7 +394,7 @@ function PrintEventsByIP($db, $ip)
 
   /* Print the Statistics the IP address */
   echo '<CENTER><B>'.$ip.'</B><BR>FQDN: <B>';
-  
+
   if ( $resolve_IP == 0 )
      echo '  ('._PSNODNS.')';
   else
@@ -398,11 +403,11 @@ function PrintEventsByIP($db, $ip)
         echo baseGetHostByAddr($ip, $db, $dns_cache_lifetime);
      else
         echo $ip.' (Broadcast)';
-  } 
+  }
 
   if ( VerifySocketSupport() )
      echo '&nbsp;&nbsp;( <A HREF="base_stat_ipaddr.php?ip='.$ip.'&amp;netmask='.$netmask.'&amp;action=whois">local whois</A> )';
- 
+
   echo    '</B>
         <TABLE BORDER=1>
         <TR>
@@ -417,38 +422,38 @@ function PrintEventsByIP($db, $ip)
   $ip_dst32 = $ip_src32;
 
   /* Number of Sensors, First, and Last timestamp */
-  $temp = "SELECT COUNT(DISTINCT sid), MIN(timestamp), MAX(timestamp) FROM acid_event ".  
+  $temp = "SELECT COUNT(DISTINCT sid), MIN(timestamp), MAX(timestamp) FROM acid_event ".
           "WHERE (ip_src = '$ip_src32' OR ip_dst = '$ip_dst32' )";
   $result2 = $db->baseExecute($temp);
   $row2 = $result2->baseFetchRow();
 
   $num_sensors = $row2[0];
-  $start_time = $row2[1]; 
+  $start_time = $row2[1];
   $stop_time = $row2[2];
   $result2->baseFreeRows();
 
   /* Unique instances as Source Address  */
-  $temp = "SELECT COUNT(sid) from acid_event WHERE ip_src='$ip_src32'";  
+  $temp = "SELECT COUNT(sid) from acid_event WHERE ip_src='$ip_src32'";
   $result2 = $db->baseExecute($temp);
   $row2 = $result2->baseFetchRow();
   $num_src_ip = $row2[0];
-  $result2->baseFreeRows(); 
+  $result2->baseFreeRows();
 
   /* Unique instances Dest. Address  */
   $temp = "SELECT COUNT(sid) from acid_event WHERE ip_dst='$ip_dst32'";
   $result2 = $db->baseExecute($temp);
   $row2 = $result2->baseFetchRow();
   $num_dst_ip = $row2[0];
-  $result2->baseFreeRows(); 
+  $result2->baseFreeRows();
 
-  /* Print out */ 
+  /* Print out */
   echo '<TR>
          <TD ALIGN="center"><A HREF="'.$tmp_sensor_lookup.'">'.$num_sensors.'</A>';
   if ( $num_src_ip == 0 )
          echo '<TD ALIGN="center">'.$num_src_ip;
   else
          echo '<TD ALIGN="center"><A HREF="'.$tmp_src_iplookup.'">'.$num_src_ip.'</A>';
-  if ( $num_dst_ip == 0 )         
+  if ( $num_dst_ip == 0 )
          echo '<TD ALIGN="center">'.$num_dst_ip;
   else
          echo '<TD ALIGN="center"><A HREF="'.$tmp_dst_iplookup.'">'.$num_dst_ip.'</A>';
@@ -463,7 +468,7 @@ function PrintEventsByIP($db, $ip)
      echo '<HR>
             <CENTER><P>';
      PrintEventsByIP($db, $ip);
-     echo ' </CENTER>';	
+     echo ' </CENTER>';
   }
   else if ( $action == "whois" )
   {
@@ -475,12 +480,12 @@ function PrintEventsByIP($db, $ip)
      echo '<HR>
             <CENTER><P>';
      PrintPortscanEvents($db, $ip);
-     echo ' </CENTER>';	
-  }  
+     echo ' </CENTER>';
+  }
 
 
   echo "\n</FORM>\n";
-  
+
   PrintBASESubFooter();
 
   $et->PrintTiming();

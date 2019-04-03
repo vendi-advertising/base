@@ -1,4 +1,9 @@
 <?php
+
+require_once __DIR__ . '/includes/vendi_boot.php';
+
+use Vendi\BASE\Criteria\CriteriaState;
+
 /*******************************************************************************
 ** Basic Analysis and Security Engine (BASE)
 ** Copyright (C) 2004 BASE Project Team
@@ -85,7 +90,7 @@
         }
     	}
     }
-    
+
     if ($ok != 1)
     {
       ErrorMessage("ERROR: The worldmap function is not available, because world_map6.png and world_map6.txt could not be found. Go into the \"PEAR directory\", as can be found by \"pear config-show\", and then into the subdirectory Image/Graph/Images/Maps/. This is the location where world_map6.png and world_map6.txt must be installed.<BR>\n");
@@ -105,7 +110,7 @@
   ($debug_time_mode >= 1) ? $et = new EventTiming($debug_time_mode) : '';
   $cs = new CriteriaState("base_stat_alerts.php");
   $cs->ReadState();
-  
+
   $submit = ImportHTTPVar("submit", VAR_ALPHA | VAR_SPACE);
 
   /**
@@ -135,7 +140,7 @@
   * store it in local variables for use later
   */
     $height       = ImportHTTPVar("height", VAR_DIGIT);
-    $width        = ImportHTTPVar("width", VAR_DIGIT);  
+    $width        = ImportHTTPVar("width", VAR_DIGIT);
     $pmargin0     = ImportHTTPVar("pmargin0", VAR_DIGIT);
     $pmargin1     = ImportHTTPVar("pmargin1", VAR_DIGIT);
     $pmargin2     = ImportHTTPVar("pmargin2", VAR_DIGIT);
@@ -174,7 +179,7 @@
   PrintBASESubHeader($page_title, $page_title, $cs->GetBackLink(), $refresh_all_pages);
 
   // Check if Image_Graph install is ok -- Alejandro
-  VerifyGraphingLib();  
+  VerifyGraphingLib();
 
   /* Connect to the Alert database */
   $db = NewBASEDBConnection($DBlib_path, $DBtype);
@@ -210,13 +215,13 @@
      }
 
      /* Building Criteria */
-     $time_constraint = ProcessChartTimeConstraint($chart_begin_hour, 
-                                                   $chart_begin_day, 
-                                                   $chart_begin_month, 
+     $time_constraint = ProcessChartTimeConstraint($chart_begin_hour,
+                                                   $chart_begin_day,
+                                                   $chart_begin_month,
                                                    $chart_begin_year,
-                                                   $chart_end_hour,  
-                                                   $chart_end_day,  
-                                                   $chart_end_month, 
+                                                   $chart_end_hour,
+                                                   $chart_end_day,
+                                                   $chart_end_month,
                                                    $chart_end_year );
 
      $criteria = array(2);
@@ -227,7 +232,7 @@
         $criteria[1] = "acid_ag_alert.ag_id = $data_source";
 
         if (!empty($time_constraint))
-           $criteria[1] = $criteria[1].$time_constraint; 
+           $criteria[1] = $criteria[1].$time_constraint;
      }
      else
      {
@@ -240,7 +245,7 @@
           $criteria[1] = " 1 = 1 " . $time_constraint;
      }
 
-     if ( $debug_mode > 0 ) 
+     if ( $debug_mode > 0 )
      {
        echo "<H3>Chart criteria</H3><PRE>";
        print_r($criteria);
@@ -266,7 +271,7 @@
             $data_pnt_cnt = GetTimeDataSet($xdata, $chart_type, $data_source, $min_size, $criteria);
             /* Any kinds of special characters, like slashes, two points
              * and so on seem to NOT work with Image_Graph */
-            //$chart_title = $chart_title."\n ( ".$xdata[0][0]." - ".$xdata[count($xdata)-1][0]." )";      
+            //$chart_title = $chart_title."\n ( ".$xdata[0][0]." - ".$xdata[count($xdata)-1][0]." )";
             //$xaxis_label .= " from ". $xdata[0][0] . " to " . $xdata[count($xdata)-1][0] . " ";
             break;
          }
@@ -288,7 +293,7 @@
             $data_pnt_cnt = GetIPDataSet($xdata, $chart_type, $data_source, $min_size, $criteria);
             break;
          }
-     case CHARTTYPE_DST_UDP_PORT:  // UDP Port vs. Num Alerts 
+     case CHARTTYPE_DST_UDP_PORT:  // UDP Port vs. Num Alerts
          {
             $chart_title = _CHRTUDPPORTNUMBER;
             $xaxis_label = _CHRTDUDPPORT;
@@ -297,7 +302,7 @@
             $data_pnt_cnt = GetPortDataSet($xdata, $chart_type, $data_source, $min_size, $criteria);
             break;
          }
-     case CHARTTYPE_SRC_UDP_PORT:  // UDP Port vs. Num Alerts 
+     case CHARTTYPE_SRC_UDP_PORT:  // UDP Port vs. Num Alerts
          {
             $chart_title = _CHRTSUDPPORTNUMBER;
             $xaxis_label = _CHRTSUDPPORT;
@@ -306,7 +311,7 @@
             $data_pnt_cnt = GetPortDataSet($xdata, $chart_type, $data_source, $min_size, $criteria);
             break;
          }
-     case CHARTTYPE_DST_TCP_PORT:  // TCP Port vs. Num Alerts 
+     case CHARTTYPE_DST_TCP_PORT:  // TCP Port vs. Num Alerts
          {
             $chart_title = _CHRTPORTDESTNUMBER;
             $xaxis_label = _CHRTPORTDEST;
@@ -315,7 +320,7 @@
             $data_pnt_cnt = GetPortDataSet($xdata, $chart_type, $data_source, $min_size, $criteria);
             break;
          }
-     case CHARTTYPE_SRC_TCP_PORT:  // TCP Port vs. Num Alerts 
+     case CHARTTYPE_SRC_TCP_PORT:  // TCP Port vs. Num Alerts
          {
             $chart_title = _CHRTPORTSRCNUMBER;
             $xaxis_label = _CHRTPORTSRC;
@@ -324,7 +329,7 @@
             $data_pnt_cnt = GetPortDataSet($xdata, $chart_type, $data_source, $min_size, $criteria);
             break;
          }
-     case CHARTTYPE_CLASSIFICATION:  // Classification vs. Num Alerts 
+     case CHARTTYPE_CLASSIFICATION:  // Classification vs. Num Alerts
          {
             $chart_title = _CHRTSIGNUMBER;
             $xaxis_label = _CHRTCLASS;
@@ -333,7 +338,7 @@
             $data_pnt_cnt = GetClassificationDataSet($xdata, $chart_type, $data_source, $min_size, $criteria);
             break;
          }
-     case CHARTTYPE_SENSOR:  // Sensor vs. Num Alerts 
+     case CHARTTYPE_SENSOR:  // Sensor vs. Num Alerts
          {
             $chart_title = _CHRTSENSORNUMBER;
             $xaxis_label = _SENSOR;
@@ -393,7 +398,7 @@
        }
     }
 
-    
+
 
 
     if ( $data_pnt_cnt > 0 )
@@ -411,7 +416,7 @@
 
       if ( $chart_interval || $number_array_elements) {
 
-        // quick validity check 
+        // quick validity check
         if ($element_start >= $number_array_elements)
         {
           if ($debug_mode > 0)
@@ -431,8 +436,8 @@
 
         // From which element on should the "for"-loop start:
         if (
-             (ctype_digit($element_start)) && 
-             ($element_start > 0) && 
+             (ctype_digit($element_start)) &&
+             ($element_start > 0) &&
              ($element_start < $number_array_elements)
            )
         {
@@ -452,9 +457,9 @@
         }
 
         // set up array
-        for ($j = 0; 
+        for ($j = 0;
              $i < $number_array_elements;
-             $i++, $j++) 
+             $i++, $j++)
         {
           // "How many columns/elements do you want to see?"
           if ($chart_interval > 0)
@@ -473,7 +478,7 @@
 
           // define x-axis value:
           if (isset($xdata[$i][0]))
-          { 
+          {
             $chart_array [$j][0] = $xdata[$i][0];
           }
           else
@@ -499,10 +504,10 @@
              (
                ($chart_style == "bar") ||
                ($chart_style == "line")
-             ) && 
+             ) &&
              (count($chart_array) == 1)
            )
-        /* then there's is a bug in PEAR::Image_Graph; 
+        /* then there's is a bug in PEAR::Image_Graph;
          * Cf. http://pear.php.net/bugs/bug.php?id=12763
          *     http://pear.php.net/bugs/7423
          * the following
@@ -515,14 +520,14 @@
           }
 
           $chart_array[1][0] = "";
-          $chart_array[1][1] = 0;          
+          $chart_array[1][1] = 0;
         }
 
         // finally, set up xdata
-        $xdata = $chart_array;     
+        $xdata = $chart_array;
       } //  if ( $chart_interval || $number_array_elements) {
 
-      if ( $debug_mode > 0 )     
+      if ( $debug_mode > 0 )
       {
         print "count(xdata) = " . count($xdata) . "<BR>\n";
         // disabled because does not work as expected
@@ -542,8 +547,8 @@
        // bars (lines) displayed, that do NOT have an empty string
        // in $xdata[$i][0] (and even not a space!). I'm inclined to
        // consider this as one more bug of Image_Graph library.
-       /*  
-       // Apply the X-Axis label clean-up -- 
+       /*
+       // Apply the X-Axis label clean-up --
        // only write every N axis labels (erase the rest)
        if (($xaxis_label_inc != 0) && ( ($i % $xaxis_label_inc ) != 0 ))
        {
@@ -551,9 +556,9 @@
        }
        */
       }
-     
 
-      if ( $debug_mode > 0 ) 
+
+      if ( $debug_mode > 0 )
       {
         echo "<H3>"._CHRTDRAW." ($width x $height)</H3>";
       }
@@ -600,7 +605,7 @@
            "&amp;yaxis_grid=".$yaxis_grid.
            "&amp;chart_type=".$chart_type.
            "&amp;style=".$chart_style."\">";
-          
+
       if (($chart_type == CHARTTYPE_SRC_COUNTRY_ON_MAP) || ($chart_type == CHARTTYPE_DST_COUNTRY_ON_MAP))
       {
         echo "</A><BR>\n";
@@ -616,7 +621,7 @@
         echo '(click at the image or - after it has been reloaded - click at it for a second time to get a bigger size of it)<BR><BR>';
       }
       echo '</CENTER>';
-      
+
       ($debug_time_mode >= 1) ? $et->Mark("Rendering graph") : '';
     }
     else
@@ -628,6 +633,6 @@
   PrintBASESubFooter();
   echo "</body>\r\n</html>";
 
-// vim:shiftwidth=2:tabstop=2:expandtab 
+// vim:shiftwidth=2:tabstop=2:expandtab
 ?>
 

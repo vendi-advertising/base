@@ -1,4 +1,9 @@
 <?php
+
+require_once __DIR__ . '/includes/vendi_boot.php';
+
+use Vendi\BASE\Criteria\CriteriaState;
+
 /*******************************************************************************
 ** Basic Analysis and Security Engine (BASE)
 ** Copyright (C) 2004 BASE Project Team
@@ -58,7 +63,7 @@
 	{
 		PrintBASESubHeader($page_title, $page_title, $cs->GetBackLink(), $refresh_all_pages);
 	}
-  
+
   /* Connect to the Alert database */
   $db = NewBASEDBConnection($DBlib_path, $DBtype);
   $db->baseDBConnect($db_connect_method,
@@ -66,7 +71,7 @@
 
   if ( $event_cache_auto_update == 1 )  UpdateAlertCache($db);
 
-  $criteria_clauses = ProcessCriteria();  
+  $criteria_clauses = ProcessCriteria();
   PrintCriteria("");
 
   $from = " FROM acid_event ".$criteria_clauses[0];
@@ -102,35 +107,35 @@
   $qro = new QueryResultsOutput("base_stat_sensor.php?x=x");
 
   $qro->AddTitle(" ");
-  $qro->AddTitle(_SENSOR, 
+  $qro->AddTitle(_SENSOR,
                 "sid_a", " ",
                          " ORDER BY acid_event.sid ASC",
                 "sid_d", " ",
-                         " ORDER BY acid_event.sid DESC");  
-  $qro->AddTitle(_NAME, 
+                         " ORDER BY acid_event.sid DESC");
+  $qro->AddTitle(_NAME,
                 "sname_a", " ",
                          " ORDER BY sensor.name ASC",
                 "sname_d", " ",
                          " ORDER BY sensor.name DESC");
-  $qro->AddTitle(_SIPLTOTALEVENTS, 
+  $qro->AddTitle(_SIPLTOTALEVENTS,
                 "occur_a", " ",
                          " ",
                 "occur_d", " ",
-                         " ");  
+                         " ");
 
-  $qro->AddTitle(_SIPLUNIEVENTS, 
+  $qro->AddTitle(_SIPLUNIEVENTS,
                 "occur_a", "", " ORDER BY sig_cnt ASC",
                 "occur_d", "", " ORDER BY sig_cnt DESC");
-  $qro->AddTitle(_SUASRCADD, 
+  $qro->AddTitle(_SUASRCADD,
                 "saddr_a", "", " ORDER BY saddr_cnt ASC",
                 "saddr_d", "", " ORDER BY saddr_cnt DESC");
-  $qro->AddTitle(_SUADSTADD, 
+  $qro->AddTitle(_SUADSTADD,
                 "daddr_a", "", " ORDER BY daddr_cnt ASC",
                 "daddr_d", "", " ORDER BY daddr_cnt DESC");
-  $qro->AddTitle(_FIRST, 
+  $qro->AddTitle(_FIRST,
                 "first_a", "", " ORDER BY first_timestamp ASC",
                 "first_d", "", " ORDER BY first_timestamp DESC");
-  $qro->AddTitle(_LAST, 
+  $qro->AddTitle(_LAST,
                 "last_a", "", " ORDER BY last_timestamp ASC",
                 "last_d", "", " ORDER BY last_timestamp DESC");
 
@@ -170,8 +175,8 @@
     $start_time = $myrow[5];
     $stop_time = $myrow[6];
 
-    /* Print out */ 
-    qroPrintEntryHeader($i);    
+    /* Print out */
+    qroPrintEntryHeader($i);
 
     $tmp_rowid = $sensor_id;
     echo '    <TD><INPUT TYPE="checkbox" NAME="action_chk_lst['.$i.']" VALUE="'.$tmp_rowid.'">';
@@ -203,7 +208,7 @@
   $qs->SaveState();
 	ExportHTTPVar("sort_order", $sort_order);
   echo "\n</FORM>\n";
-  
+
   PrintBASESubFooter();
 
   $et->Mark("Get Query Elements");

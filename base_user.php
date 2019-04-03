@@ -1,4 +1,9 @@
 <?php
+
+require_once __DIR__ . '/includes/vendi_boot.php';
+
+use Vendi\BASE\Criteria\CriteriaState;
+
 /*******************************************************************************
 ** Basic Analysis and Security Engine (BASE)
 ** Copyright (C) 2004 BASE Project Team
@@ -18,7 +23,7 @@
 **
 ********************************************************************************
 */
-  
+
   include("base_conf.php");
   include("$BASE_path/includes/base_constants.inc.php");
   include("$BASE_path/includes/base_include.inc.php");
@@ -38,9 +43,9 @@
   $cs->ReadState();
   $userprefs = new BaseUserPrefs();
   $userobj = new BaseUser();
-  
+
   $username = $userobj->returnUser();
-  
+
   $page_title = _BASEUSERTITLE;
   PrintBASESubHeader($page_title, $page_title, $cs->GetBackLink(), $refresh_all_pages);
   if (isset($_GET['action']))
@@ -59,7 +64,7 @@
         {
           $page_body = _BASEUSERERRPWD;
         }
-      
+
       case "changepassword":
         $form = "<form action='base_user.php?action=change' Method='POST'>";
         $form = $form . "<table border=1 class='query'>";
@@ -73,7 +78,7 @@
         $form = $form . "</tr></table>";
         $page_body = $page_body . $form;
         break;
-      
+
       case "display":
         $user = new BaseUser();
         $userlogin = $user->returnUser();
@@ -89,14 +94,14 @@
         $form = $form . "<tr><td width='25%' align='right'>"._FRMROLE."</td>";
         $form = $form . "<td align='left'>" . $user->roleName($userinfo[2]) ."</td></tr>";
         $form = $form . "</tr></table>";
-       
+
         $page_body = $form;
         break;
-        
+
       default:
         $page_body = $page_body . " ";
     }
-    
+
   }
 
 ?>

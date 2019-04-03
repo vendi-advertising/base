@@ -1,25 +1,8 @@
 <?php
-/*******************************************************************************
-** Basic Analysis and Security Engine (BASE)
-** Copyright (C) 2004 BASE Project Team
-** Copyright (C) 2000 Carnegie Mellon University
-**
-** (see the file 'base_main.php' for license details)
-**
-** Project Leads: Kevin Johnson <kjohnson@secureideas.net>
-** Built upon work by Roman Danyliw <rdd@cert.org>, <roman@danyliw.com>
-**
-** Purpose: Input GET/POST variables
-**   - caller: specifies the canned snapshot to run
-**   - submit:
-********************************************************************************
-** Authors:
-********************************************************************************
-** Kevin Johnson <kjohnson@secureideas.net
-** Chris Shepherd <chsh>
-**
-********************************************************************************
-*/
+
+require_once __DIR__ . '/includes/vendi_boot.php';
+
+use Vendi\BASE\Criteria\CriteriaState;
 
 /*
  * $caller: an auxiliary variable used to determine the how the search parameters were entered (i.e.
@@ -34,7 +17,7 @@
  *
  * $submit: used to determine the next action which should be taken when the form is submitted.
  *  - _QUERYDB         : triggers a query into the database
- *  - _ADDTIME         : adds another date/time row 
+ *  - _ADDTIME         : adds another date/time row
  *  - _ADDADDR         : adds another IP address row
  *  - _ADDIPFIELD      : adds another IP field row
  *  - _ADDTCPPORT      : adds another TCP port row
@@ -53,7 +36,7 @@
  *
  * $save_criteria: HTML-human readable criteria of the $save_sql string
  *
- * $num_result_rows: rows in the entire record set retried under the current 
+ * $num_result_rows: rows in the entire record set retried under the current
  *                   query
  *
  * $current_view: current view of the result set
@@ -96,7 +79,7 @@
 
   // Set the sort order to the new sort order if one has been selected
   $sort_order = ImportHTTPVar("sort_order", VAR_LETTER | VAR_USCORE);
-  if ($sort_order == "" || !isset($sort_order)) 
+  if ($sort_order == "" || !isset($sort_order))
   {
     // If one wasn't picked, try the prev_sort_order
     $sort_order = ImportHTTPVar("prev_sort_order", VAR_LETTER | VAR_USCORE);
@@ -111,8 +94,8 @@
 /* Code to correct 'interesting' (read: unexplained) browser behavior */
 
 /* Something with Netscape 4.75 such that the $submit variable is no recognized
- * under certain circumstances.  This one is a result of using HTTPS and 
- * clicking on TCP traffic profile from base_main.php 
+ * under certain circumstances.  This one is a result of using HTTPS and
+ * clicking on TCP traffic profile from base_main.php
  */
   if ( $cs->criteria['layer4']->Get() != "" && $submit == "" )
     $submit = _QUERYDB;
@@ -139,7 +122,7 @@
   $cs->ReadState();
 
   $qs = new QueryState();
-  $qs->AddCannedQuery("last_tcp", $last_num_alerts, _LASTTCP, "time_d"); 
+  $qs->AddCannedQuery("last_tcp", $last_num_alerts, _LASTTCP, "time_d");
   $qs->AddCannedQuery("last_udp", $last_num_alerts, _LASTUDP, "time_d");
   $qs->AddCannedQuery("last_icmp", $last_num_alerts, _LASTICMP, "time_d");
   $qs->AddCannedQuery("last_any", $last_num_alerts, _LASTALERTS, "time_d");
@@ -190,19 +173,19 @@ if (
      ($submit == "TCP") ||
      ($submit == "UDP") ||
      ($submit == "ICMP") ||
-     ($submit == _NOLAYER4) 
+     ($submit == _NOLAYER4)
    )
 {
   include("$BASE_path/base_qry_form.php");
 }
 /* Run the SQL Query and get results */
 elseif ( $submit == _QUERYDB || $submit == _QUERYDBP ||
-     $submit == _SELECTED || $submit == _ALLONSCREEN || $submit == _ENTIREQUERY || 
-     $qs->isCannedQuery() || 
+     $submit == _SELECTED || $submit == _ALLONSCREEN || $submit == _ENTIREQUERY ||
+     $qs->isCannedQuery() ||
      $qs->GetCurrentSort() != "" )
 {
   /* Init and run the action */
-  $criteria_clauses = ProcessCriteria();  
+  $criteria_clauses = ProcessCriteria();
 
   $from = "FROM acid_event ".$criteria_clauses[0];
   $where = "";
@@ -242,7 +225,7 @@ else
    $qs->SaveState();
 
   echo "\n</FORM>\n";
-  
+
   PrintBASESubFooter();
 
   $et->Mark("Get Query Elements");

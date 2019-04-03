@@ -49,7 +49,7 @@ function EventCnt($db, $join = "", $where = "")
    if ( $join == "" && $where == "" )
       $result = $db->baseExecute("SELECT count(*) FROM acid_event");
    else
-      $result = $db->baseExecute("SELECT COUNT(acid_event.sid) FROM acid_event $join $where");  
+      $result = $db->baseExecute("SELECT COUNT(acid_event.sid) FROM acid_event $join $where");
 
    $myrow = $result->baseFetchRow();
    $num = $myrow[0];
@@ -59,11 +59,11 @@ function EventCnt($db, $join = "", $where = "")
 }
 
 /*
- * Takes: Numeric sensor ID from the Sensor table (SID), and 
+ * Takes: Numeric sensor ID from the Sensor table (SID), and
  *	  database connection.
- * 
- * Returns: The number of unique alert descriptions for the 
- * 	    given sensor ID. 
+ *
+ * Returns: The number of unique alert descriptions for the
+ * 	    given sensor ID.
  *
  */
 function UniqueCntBySensor($sensorID, $db)
@@ -73,7 +73,7 @@ function UniqueCntBySensor($sensorID, $db)
   $query = "SELECT COUNT(DISTINCT signature) FROM acid_event WHERE sid = '" . $sensorID . "'";
   $result = $db->baseExecute($query);
 
-  if ( $result ) 
+  if ( $result )
   {
      $row = $result->baseFetchRow();
      $num = $row[0];
@@ -86,11 +86,11 @@ function UniqueCntBySensor($sensorID, $db)
 }
 
 /*
- * Takes: Numeric sensor ID from the Sensor table (SID), and 
+ * Takes: Numeric sensor ID from the Sensor table (SID), and
  *        database connection.
- * 
+ *
  * Returns: The total number of alerts for the given sensor ID
- */ 
+ */
 function EventCntBySensor($sensorID, $db)
 {
    $query = "SELECT count(*) FROM acid_event where sid = '" .$sensorID. "'";
@@ -248,7 +248,7 @@ function StartStopTime(&$start_time, &$stop_time, $db)
 function UniqueAlertCnt($db, $join = "", $where = "")
 {
    $result = $db->baseExecute("SELECT COUNT(DISTINCT acid_event.signature) FROM acid_event $join ".
-                                 "$where");    
+                                 "$where");
 
    $row = $result->baseFetchRow();
    $num = $row[0];
@@ -328,12 +328,12 @@ function UniqueLinkCnt($db, $join = "", $where = "")
        $result = $db->baseExecute("SELECT DISTINCT acid_event.ip_src, acid_event.ip_dst, acid_event.ip_proto FROM acid_event");
      else
        $result = $db->baseExecute("SELECT DISTINCT acid_event.ip_src, acid_event.ip_dst, acid_event.ip_proto FROM acid_event $join $where");
-   
+
      $row[0] = $result->baseRecordCount();
-     $result->baseFreeRows();     
+     $result->baseFreeRows();
    }
 
-   return $row[0];  
+   return $row[0];
 }
 
 function PrintGeneralStats($db, $compact, $show_stats, $join = "", $where = "", $show_total_events = false)
@@ -371,7 +371,7 @@ function PrintGeneralStats($db, $compact, $show_stats, $join = "", $where = "", 
    $sensor_cnt_info[2] = "</a> / ";
 
    $unique_alert_cnt_info[0] = "<strong>"._UNIALERTS.":</strong>\n";
-   $unique_alert_cnt_info[1] = "<a href=\"base_stat_alerts.php\">"; 
+   $unique_alert_cnt_info[1] = "<a href=\"base_stat_alerts.php\">";
    $unique_alert_cnt_info[2] = "</a>";
 
    $event_cnt_info[0] = "<strong>"._SCTOTALNUMALERTS."</strong>\n";
@@ -390,10 +390,10 @@ function PrintGeneralStats($db, $compact, $show_stats, $join = "", $where = "", 
    $unique_links_info[1] = " <a href=\"base_stat_iplink.php\">";
    $unique_links_info[2] = "</a>";
 
-   $unique_src_port_cnt_info[0] = _SCSRCPORTS; 
+   $unique_src_port_cnt_info[0] = _SCSRCPORTS;
    $unique_src_port_cnt_info[1] = " <a href=\"base_stat_ports.php?port_type=1&amp;proto=-1\">";
    $unique_src_port_cnt_info[2] = "</a>";
-   $unique_dst_port_cnt_info[0] = _SCDSTPORTS; 
+   $unique_dst_port_cnt_info[0] = _SCDSTPORTS;
    $unique_dst_port_cnt_info[1] = " <a href=\"base_stat_ports.php?port_type=2&amp;proto=-1\">";
    $unique_dst_port_cnt_info[2] = "</a>";
 
@@ -443,14 +443,14 @@ function PrintGeneralStats($db, $compact, $show_stats, $join = "", $where = "", 
 
    echo "<li>".
         $unique_src_ip_cnt_info[0].
-        $unique_src_ip_cnt_info[1]. 
+        $unique_src_ip_cnt_info[1].
         $unique_ip_cnt[0].
         $unique_src_ip_cnt_info[2] .
         "</li>";
 
    echo "<li>".
         $unique_dst_ip_cnt_info[0].
-        $unique_dst_ip_cnt_info[1]. 
+        $unique_dst_ip_cnt_info[1].
         $unique_ip_cnt[1].
         $unique_dst_ip_cnt_info[2] .
         "</li>";
@@ -465,11 +465,11 @@ function PrintGeneralStats($db, $compact, $show_stats, $join = "", $where = "", 
    echo "<li>";
        if ( $compact == 0 )
            echo "<p>";
-           
+
    echo $unique_src_port_cnt_info[0].
-        $unique_src_port_cnt_info[1]. 
+        $unique_src_port_cnt_info[1].
         $unique_port_cnt[0].
-        $unique_src_port_cnt_info[2] . 
+        $unique_src_port_cnt_info[2] .
         "</li>";
 
    if ( $compact == 0 )
@@ -478,21 +478,21 @@ function PrintGeneralStats($db, $compact, $show_stats, $join = "", $where = "", 
      echo "<li>&nbsp;&nbsp;--&nbsp;&nbsp;";
 
    echo $unique_tcp_src_port_cnt_info[0].
-        $unique_tcp_src_port_cnt_info[1]. 
+        $unique_tcp_src_port_cnt_info[1].
         $unique_tcp_port_cnt[0].
         $unique_tcp_src_port_cnt_info[2].
         "&nbsp;&nbsp;".
         $unique_udp_src_port_cnt_info[0].
-        $unique_udp_src_port_cnt_info[1]. 
+        $unique_udp_src_port_cnt_info[1].
         $unique_udp_port_cnt[0].
         $unique_udp_src_port_cnt_info[2];
-   
+
    if ( $compact == 0 )
      echo "</li></ul></li>";
 
    echo "<li>".
         $unique_dst_port_cnt_info[0].
-        $unique_dst_port_cnt_info[1]. 
+        $unique_dst_port_cnt_info[1].
         $unique_port_cnt[1].
         $unique_dst_port_cnt_info[2] .
         "</li>";
@@ -503,12 +503,12 @@ function PrintGeneralStats($db, $compact, $show_stats, $join = "", $where = "", 
      echo "<li>&nbsp;&nbsp;--&nbsp;&nbsp;";
 
    echo $unique_tcp_dst_port_cnt_info[0].
-        $unique_tcp_dst_port_cnt_info[1]. 
+        $unique_tcp_dst_port_cnt_info[1].
         $unique_tcp_port_cnt[1].
         $unique_tcp_dst_port_cnt_info[2].
         "&nbsp;&nbsp;".
         $unique_udp_dst_port_cnt_info[0].
-        $unique_udp_dst_port_cnt_info[1]. 
+        $unique_udp_dst_port_cnt_info[1].
         $unique_udp_port_cnt[1].
         $unique_udp_dst_port_cnt_info[2];
 
@@ -529,12 +529,12 @@ function PrintGeneralStats($db, $compact, $show_stats, $join = "", $where = "", 
                $event_cnt_info[2]."</li><li><p>";
       }
       echo "<ul style='padding-left:20px'>" .
-           "  <li>".$sensor_cnt_info[1]._SCSENSORS. "</a></li>" . 
+           "  <li>".$sensor_cnt_info[1]._SCSENSORS. "</a></li>" .
            "  <li>".$unique_alert_cnt_info[1]._UNIALERTS.$unique_alert_cnt_info[2] . "</li>";
-   
+
      if ( $db->baseGetDBversion() >= 103 )
         echo "<li>&nbsp;&nbsp;&nbsp;( ".$class_cnt_info[1]._SCCLASS."</a> )</li>";
-       echo 
+       echo
            "  <li>"._SCUNIADDRESS.
              $unique_src_ip_cnt_info[1]._SCSOURCE.' | '.$unique_src_ip_cnt_info[2].
              $unique_dst_ip_cnt_info[1]._SCDEST.$unique_dst_ip_cnt_info[2].
