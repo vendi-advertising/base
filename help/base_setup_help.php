@@ -27,7 +27,7 @@ elseif (file_exists('../base_conf.php'))
 {
   include("../base_conf.php");
 }
-elseif (file_exists("$BASE_path/base_conf.php"))
+elseif (isset($BASE_path) && file_exists("$BASE_path/base_conf.php"))
 {
   include("$BASE_path/base_conf.php");
 }
@@ -40,7 +40,7 @@ else
 
 
 echo '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">' . "\n\n" .
-     '<!-- Basic Analysis and Security Engine (BASE) ' . $BASE_VERSION . ' -->' . "\n" . 
+     '<!-- Basic Analysis and Security Engine (BASE) ' . $BASE_VERSION . ' -->' . "\n" .
      '<!-- BASE_path = ' . $BASE_path . "\n" .
      '     BASE_urlpath = ' . $BASE_urlpath .  "\n" .
      '     BASE_VERSION = ' . $BASE_VERSION .  "\n" .
@@ -58,7 +58,7 @@ echo '  </HEAD> ' ;
 <a name="language"><b>Language Selection:</b><br>
 This is the language that the program will be displayed in.  Currently this is a global setting.<hr>
 <br><a name="adodb"><b>Path to ADODB:</b><br>
-Path to the DB abstraction library 
+Path to the DB abstraction library
   (Note: DO NOT include a trailing backslash after the directory)
    e.g. <ul><li>"/tmp"      [OK]
         <li>"/tmp/"     [WRONG]
