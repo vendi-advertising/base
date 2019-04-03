@@ -3,7 +3,7 @@
 ** Basic Analysis and Security Engine (BASE)
 ** Copyright (C) 2004 BASE Project Team
 ** Copyright (C) 2000 Carnegie Mellon University
-** 
+**
 ** (see the file "base_main.php" for license details)
 **
 ** Project Leads: Kevin Johnson <kjohnson@secureideas.net>
@@ -61,8 +61,9 @@ $BASE_installID = '';
  */
 
 $sessionName = str_replace(' ', '_', $BASE_installID . session_name());
-session_name($sessionName);
-
+session_write_close();
+session_id($sessionName);
+session_start();
 
 /* Custom footer addition.  The below variable, if set, will cause
  *  base_main.php to include what ever file is specified.
@@ -70,7 +71,7 @@ session_name($sessionName);
  */
 $base_custom_footer = '';
 
-/* Path to the DB abstraction library 
+/* Path to the DB abstraction library
  *  (Note: DO NOT include a trailing backslash after the directory)
  *   e.g. $foo = '/tmp'      [OK]
  *        $foo = '/tmp/'     [OK]
@@ -81,7 +82,7 @@ $DBlib_path = '';
 
 
 /* The type of underlying alert database
- * 
+ *
  *  MySQL       : 'mysql'
  *  PostgresSQL : 'postgres'
  *  MS SQL Server : 'mssql'
@@ -140,9 +141,9 @@ $use_referential_integrity = 0;
  *
  * # pear install --alldeps mail
  *
- * 
+ *
  * - action_email_smtp_host : Which smtp server to use
- * - action_email_smtp_localhost : What name to use for this server in the 
+ * - action_email_smtp_localhost : What name to use for this server in the
  *   SMTP HELO statement. You will likely need to replace this with the name
  *   of the machine running BASE when connecting to a remote mail server.
  * - action_email_smtp_auth : Whether or not to authenticate with
@@ -215,7 +216,7 @@ $max_scroll_buttons = 12;
  *
  * HTML no cache - whether a no-cache directive should be sent
  *                 to the browser (should be = 1 for IE)
- * 
+ *
  * SQL trace file - file to log SQL traces
  */
 $debug_mode = 0;
@@ -243,10 +244,10 @@ $stat_page_refresh_time = 180;
  */
 $show_previous_alert = 0;
 
-/* Sets maximum execution time (in seconds) of any particular page. 
- * Note: this overrides the PHP configuration file variable 
+/* Sets maximum execution time (in seconds) of any particular page.
+ * Note: this overrides the PHP configuration file variable
  *       max_execution_time.  Thus script can run for a total of
- *       ($max_script_runtime + max_execution_time) seconds 
+ *       ($max_script_runtime + max_execution_time) seconds
  */
 $max_script_runtime = 180;
 
@@ -264,17 +265,17 @@ $ip_address_input = 2;
  */
 $use_sig_list = 0;
 
-/* Resolve IP to FQDN (on certain queries?) 
+/* Resolve IP to FQDN (on certain queries?)
  *    1 : yes
- *    0 : no 
+ *    0 : no
  */
 $resolve_IP = 0;
 
-/* automatically expand the IP Criteria and Payload Criteria sections on the Search screen?)  
+/* automatically expand the IP Criteria and Payload Criteria sections on the Search screen?)
  *    1 : yes
  *    0 : no - you need to click on them to see them
  */
-$show_expanded_query = 0;     
+$show_expanded_query = 0;
 
 /* Should summary stats be calculated on every Query Results page
  * (Enabling this option will slow page loading time)
@@ -330,7 +331,7 @@ $maintain_history = 1;
  */
 $main_page_detail = 1;
 
-/* avoid count(*) whenever possible 
+/* avoid count(*) whenever possible
  *
  * Note: On some databases (e.g., postgres) this can greatly increase
  * performance if you have a large number of events. On other databases
@@ -341,9 +342,9 @@ $main_page_detail = 1;
  */
 $avoid_counts = 0;
 
-/* show links to first/last/previous event on alert screen 
+/* show links to first/last/previous event on alert screen
  *
- * Note: Enabling this can slow down loading of the alert screen on large 
+ * Note: Enabling this can slow down loading of the alert screen on large
  * databases
  */
 $show_first_last_links = 0;
@@ -440,17 +441,17 @@ $priority_colors = array ('FF0000','FFFF00','FF9900','999999','FFFFFF','006600')
  * are broken.
  *
  * Better would be a scalable font, like DejaVuSans or Verdana.  A scalable
- * font would allow us to get different (more appropriate) font sizes.  
- * However, this won't work without minor or major modifications of 
+ * font would allow us to get different (more appropriate) font sizes.
+ * However, this won't work without minor or major modifications of
  * these libraries.
  * See docs/README.graph_alert_data for details.
- * 
+ *
  * If you do NOT manage to tweak these libraries to get a proper font,
- * choose "Image_Graph_Font".  However, this font is not scalable, 
- * i.e. a headline would have the same font size as a small label. 
+ * choose "Image_Graph_Font".  However, this font is not scalable,
+ * i.e. a headline would have the same font size as a small label.
  *
  * Image_Graph_Font used to be a fail-safe font name.  But for php
- * versions >= 5.3 even this does not seem to be true, any more.  
+ * versions >= 5.3 even this does not seem to be true, any more.
  * So, as last resort, choose an empty string.
  */
 // $graph_font_name = "Verdana";
@@ -475,7 +476,7 @@ $graph_font_name = "DejaVuSans";
  //$Geo_IPfree_file_ascii = "/var/www/html/ips-ascii.txt";
 
 /** 2. Second method for the mapping of ip addresses to country names:
- * 
+ *
  * If you have installed the perl module IP::Country
  * http://search.cpan.org/dist/IP-Country/
  * (requires Geography::Countries as well),
