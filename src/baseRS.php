@@ -76,7 +76,7 @@ class baseRS {
 
         // Is This if statement necessary?  -- Kevin
         /* MS SQL Server 7, MySQL, Sybase, and Postgres natively support this function */
-        if(in_array($this->DB_type, DatabaseTypes::get_support_database_types)){
+        if(in_array($this->DB_type, DatabaseTypes::get_support_database_types())){
             return $this->row->RecordCount();
         }
 

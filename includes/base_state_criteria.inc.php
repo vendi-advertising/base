@@ -3,6 +3,8 @@
 use Vendi\BASE\Criteria\AlertGroupCriteria;
 use Vendi\Shared\utils as vendi_utils;
 
+require_once dirname(__DIR__) . '/includes/vendi_boot.php';
+
 /*******************************************************************************
 ** Basic Analysis and Security Engine (BASE)
 ** Copyright (C) 2004 BASE Project Team

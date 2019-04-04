@@ -1,4 +1,7 @@
 <?php
+
+require_once dirname(__DIR__) . '/includes/vendi_boot.php';
+
 /*******************************************************************************
 ** Basic Analysis and Security Engine (BASE)
 ** Copyright (C) 2004 BASE Project Team
@@ -132,13 +135,15 @@ class QueryState
         // We do nothing here because we are looking at the archive tables
         // We do not want to add the archive actions to this list -- Kevin
       } else {
-        $this->valid_action_list[ count($this->valid_action_list) ] = $action;
+         $num = \is_countable($this->valid_action_list) ? count($this->valid_action_list) : 0;
+        $this->valid_action_list[ $num ] = $action;
       }
   }
 
   function AddValidActionOp($action_op)
   {
-     $this->valid_action_op_list[ count($this->valid_action_op_list) ] = $action_op;
+     $num = \is_countable($this->valid_action_list) ? count($this->valid_action_list) : 0;
+     $this->valid_action_op_list[ $num ] = $action_op;
   }
 
   function SetActionSQL($sql)
@@ -306,21 +311,43 @@ class QueryState
          '      <OPTION VALUE=" "         '.chk_select($this->action," ").'>'._DISPACTION."\n";
 
     reset($this->valid_action_list);
+    //TODO: This was converted from each() to foreach()
+    foreach($this->valid_action_list as $current_action){
+       //TODO: This guard was added by I don't know what it is failing in the first place
+       if(!is_array($current_action) || !array_key_exists('value', $current_action)){
+          continue;
+       }
+       echo '    <OPTION VALUE="'.$current_action["value"].'" '.
+              chk_select($this->action,$current_action["value"]).'>'.
+              GetActionDesc($current_action["value"])."\n";
+    }
+    /*
     while( $current_action = each($this->valid_action_list) )
     {
        echo '    <OPTION VALUE="'.$current_action["value"].'" '.
               chk_select($this->action,$current_action["value"]).'>'.
               GetActionDesc($current_action["value"])."\n";
     }
+    */
 
     echo "    </SELECT>\n".
          "    <INPUT TYPE=\"text\" NAME=\"action_arg\" VALUE=\"".$this->action_arg."\">\n";
 
     reset($this->valid_action_op_list);
+    //TODO: This was converted from each() to foreach()
+    foreach($this->valid_action_op_list as $current_op){
+       //TODO: This guard was added by I don't know what it is failing in the first place
+       if(!is_array($current_op) || !array_key_exists('value', $current_op)){
+          continue;
+       }
+       echo "    <INPUT TYPE=\"submit\" NAME=\"submit\" VALUE=\"".$current_op["value"]."\">\n";
+    }
+    /*
     while( $current_op = each($this->valid_action_op_list) )
     {
        echo "    <INPUT TYPE=\"submit\" NAME=\"submit\" VALUE=\"".$current_op["value"]."\">\n";
     }
+    */
 
     echo "   </TD>\n".
          "  </TR>\n".

@@ -855,7 +855,7 @@ if ( $layer4 == "TCP" )
 
   $proto_tmp = "";
   /* TCP Flags */
-  if ( isset($tcp_flags) && sizeof($tcp_flags) == 8)
+  if ( isset($tcp_flags) && \is_countable($tcp_flags) && count($tcp_flags) == 8)
   {
     if ( $tcp_flags[0] == "contains" || $tcp_flags[0] == "is" )
     {
