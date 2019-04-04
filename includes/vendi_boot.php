@@ -10,7 +10,7 @@ spl_autoload_register(
                             //PSR-4 compliant autoloader
                             //See http://www.php-fig.org/psr/psr-4/
                             $prefixes = array(
-                                                'Vendi\\BASE' => TPP_THEME_PATH . '/src/',
+                                                'Vendi\\BASE' => VENDI_BASE_ROOT_DIR . '/src/',
                                             );
                             foreach( $prefixes as $prefix => $base_dir )
                             {
