@@ -101,7 +101,7 @@ class SignatureCriteria extends SingleElementCriteria
    {
    }
 
-   function Description($human_fields)
+   function Description($human_fields = null)
    {
       $tmp = $tmp_human = "";
 

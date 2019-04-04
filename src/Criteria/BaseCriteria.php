@@ -52,7 +52,7 @@ abstract class BaseCriteria
       abstract function ToSQL();
 
       /* generate human-readable description of this criteria */
-      abstract function Description($human_fields);
+      abstract function Description($human_fields = null);
 
       /* returns if the criteria is empty */
       abstract function isEmpty();

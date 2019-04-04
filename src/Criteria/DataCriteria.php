@@ -109,7 +109,7 @@ class DataCriteria extends MultipleElementCriteria
      /* convert this criteria to SQL */
    }
 
-   function Description($human_fields)
+   function Description($human_fields = null)
    {
       $human_fields["LIKE"] = _CONTAINS;
       $human_fields["NOT LIKE"] = _DOESNTCONTAIN;

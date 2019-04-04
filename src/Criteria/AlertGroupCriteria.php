@@ -43,7 +43,7 @@ class AlertGroupCriteria extends SingleElementCriteria
     /* convert this criteria to SQL */
    }
 
-   function Description($human_fields)
+   function Description($human_fields = null)
    {
       $tmp = "";
 

@@ -121,7 +121,7 @@ class IPAddressCriteria extends MultipleElementCriteria
      /* convert this criteria to SQL */
    }
 
-   function Description($human_fields)
+   function Description($human_fields = null)
    {
       $human_fields["ip_src"] = _SOURCE;
       $human_fields["ip_dst"] = _DEST;

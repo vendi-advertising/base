@@ -94,7 +94,7 @@ class TimeCriteria extends MultipleElementCriteria
      /* convert this criteria to SQL */
    }
 
-   function Description($human_fields)
+   function Description($human_fields = null)
    {
      $tmp = "";
      for ($i = 0; $i < $this->criteria_cnt; $i++)

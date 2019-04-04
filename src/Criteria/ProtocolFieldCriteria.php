@@ -30,7 +30,7 @@ class ProtocolFieldCriteria extends MultipleElementCriteria
       unset($curArr);
    }
 
-   function Description($human_fields)
+   function Description($human_fields = null)
    {
       $tmp = "";
       for ( $i = 0; $i < $this->criteria_cnt; $i++ )

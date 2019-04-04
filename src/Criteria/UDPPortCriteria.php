@@ -33,7 +33,7 @@ class UDPPortCriteria extends ProtocolFieldCriteria
      /* convert this criteria to SQL */
    }
 
-   function Description($human_fields)
+   function Description($human_fields = null)
    {
       return parent::Description(array_merge( array("" => "",
                                                     "=" => "="), $this->valid_field_list) );

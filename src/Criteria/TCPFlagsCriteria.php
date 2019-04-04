@@ -52,7 +52,7 @@ class TCPFlagsCriteria extends SingleElementCriteria
      /* convert this criteria to SQL */
    }
 
-   function Description($human_fields)
+   function Description($human_fields = null)
    {
       $human_fields["1"] = "F";
       $human_fields["2"] = "S";
