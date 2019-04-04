@@ -42,15 +42,24 @@ defined( '_BASE_INC' ) or die( 'Accessing this file directly is not allowed.' );
  ************************************************************************/
 function InitArray(&$a, $dim1, $dim2, $value)
 {
-   $a = "";
-   /* determine the number of dimensions in the array */
-   if ( $dim2 == 0 )   /* 1-dim */
-      for ( $i = 0; $i < $dim1; $i++ )
+   $a = [];
+
+   /* 1-dim */
+   if ( $dim2 == 0 ) {
+      for ( $i = 0; $i < $dim1; $i++ ){
          $a[$i] = $value;
-   else                /* 2-dim */
-      for ( $i = 0; $i < $dim1; $i++ )
-         for ( $j = 0; $j < $dim2; $j++ )
+      }
+
+   /* 2-dim */
+   } else {
+      for ( $i = 0; $i < $dim1; $i++ ){
+         $a[$i] = [];
+         for ( $j = 0; $j < $dim2; $j++ ){
             $a[$i][$j] = $value;
+         }
+      }
+   }
+
 }
 
 /* ***********************************************************************
@@ -365,5 +374,3 @@ function XSSPrintSafe($item)
 
    return htmlspecialchars($item);
 }
-
-?>

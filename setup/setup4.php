@@ -11,6 +11,8 @@ require_once dirname(__DIR__) . '/includes/vendi_boot.php';
    define( "_BASE_INC", 1 );
    $BASE_InstallID = 1;
 
+   $result = null;
+
   include("../languages/english.lang.php");
   include("../includes/base_constants.inc.php");
   include("../includes/base_include.inc.php");

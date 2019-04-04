@@ -1,4 +1,9 @@
 <?php
+
+use Vendi\BASE\DatabaseTypes;
+
+require_once __DIR__ . '/includes/vendi_boot.php';
+
 /*******************************************************************************
 ** Basic Analysis and Security Engine (BASE)
 ** Copyright (C) 2004 BASE Project Team
@@ -81,14 +86,16 @@ $base_custom_footer = '';
 $DBlib_path = '';
 
 
-/* The type of underlying alert database
+/* The type of underlying alert database.
+ * NOTE: Do NOT use these constants, instead only use types found
+ * in \Vendi\BASE\DatabaseTypes
  *
  *  MySQL       : 'mysql'
  *  PostgresSQL : 'postgres'
  *  MS SQL Server : 'mssql'
  *  Oracle      : 'oci8'
  */
-$DBtype = 'mysql';
+$DBtype = DatabaseTypes::MYSQL;
 
 /* Alert DB connection parameters
  *   - $alert_dbname   : MySQL database name of Snort alert DB

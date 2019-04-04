@@ -1,7 +1,11 @@
 <?php
+
+use Vendi\BASE\BaseUser;
+
+require_once __DIR__ . '/includes/vendi_boot.php';
+
    $start = time();
    require("base_conf.php");
-   include_once("$BASE_path/includes/base_auth.inc.php");
    include_once("$BASE_path/includes/base_db.inc.php");
    include_once("$BASE_path/includes/base_output_html.inc.php");
    include_once("$BASE_path/base_common.php");

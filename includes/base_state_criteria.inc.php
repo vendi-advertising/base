@@ -1,6 +1,8 @@
 <?php
 
 use Vendi\BASE\Criteria\AlertGroupCriteria;
+use Vendi\Shared\utils as vendi_utils;
+
 /*******************************************************************************
 ** Basic Analysis and Security Engine (BASE)
 ** Copyright (C) 2004 BASE Project Team
@@ -121,14 +123,25 @@ function PushHistory()
    $_SESSION['back_list'] = $tmp_back_list;
    $_SESSION['back_list_cnt'] = $tmp_back_list_cnt;
 
-   $query_string = CleanVariable($_SERVER["QUERY_STRING"], VAR_PERIOD | VAR_DIGIT | VAR_PUNC | VAR_LETTER);
-   if ( isset($_POST['caller']) ) $query_string .= "&amp;caller=".$_POST['caller'];
-   if ( isset($_POST['num_result_rows']) ) $query_string .= "&amp;num_result_rows=".$_POST['num_result_rows'];
-   if ( isset($_POST['sort_order']) ) $query_string .= "&amp;sort_order=".$_POST['sort_order'];
-   if ( isset($_POST['current_view']) ) $query_string .= "&amp;current_view=".$_POST['current_view'];
-   if ( isset($_POST['submit']) ) $query_string .= "&amp;submit=".$_POST['submit'];
+   $query_string = CleanVariable(vendi_utils::get_server_value("QUERY_STRING"), VAR_PERIOD | VAR_DIGIT | VAR_PUNC | VAR_LETTER);
+   if(vendi_utils::get_post_value('caller')){
+      $query_string .= "&amp;caller=".vendi_utils::get_post_value('caller');
+   }
+   if(vendi_utils::get_post_value('num_result_rows')){
+      $query_string .= "&amp;num_result_rows=".vendi_utils::get_post_value('num_result_rows');
+   }
+   if(vendi_utils::get_post_value('sort_order')){
+      $query_string .= "&amp;sort_order=".vendi_utils::get_post_value('sort_order');
+   }
+   if(vendi_utils::get_post_value('current_view')){
+      $query_string .= "&amp;current_view=".vendi_utils::get_post_value('current_view');
+   }
+   if(vendi_utils::get_post_value('submit')){
+      $query_string .= "&amp;submit=".vendi_utils::get_post_value('submit');
+   }
 
-   $query_string = ereg_replace("back=1&", "", CleanVariable($query_string, VAR_PERIOD | VAR_DIGIT | VAR_PUNC | VAR_LETTER));
+   //TODO: Validate this conversion from ereg_replace
+   $query_string = preg_replace("/back=1&/", "", CleanVariable($query_string, VAR_PERIOD | VAR_DIGIT | VAR_PUNC | VAR_LETTER));
 
    ++$_SESSION['back_list_cnt'];
    $_SESSION['back_list'][$_SESSION['back_list_cnt']] =

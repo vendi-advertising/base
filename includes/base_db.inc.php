@@ -32,9 +32,15 @@ function NewBASEDBConnection($path, $type)
 {
   GLOBAL $debug_mode;
   if(!in_array($type, DatabaseTypes::get_support_database_types())) {
-     echo "<B>"._ERRSQLDBTYPE."</B>".
-            "<P>:"._ERRSQLDBTYPEINFO1."<CODE>'$type'</CODE>. "._ERRSQLDBTYPEINFO2;
-     die();
+      throw new \Exception(
+         sprintf(
+            '%1$s: %2$s %3$s %4$s',
+            _ERRSQLDBTYPE,
+            _ERRSQLDBTYPEINFO1,
+            $type,
+            _ERRSQLDBTYPEINFO2
+         )
+      );
   }
 
    /* Export ADODB_DIR for use by ADODB */

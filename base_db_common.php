@@ -85,37 +85,45 @@ function verify_php_build($DBtype)
             " "._ERRPHPERROR2."</FONT>";
   }
 
-  if ( ($DBtype == DatabaseTypes::MYSQL) )
-  {
-     if ( !(function_exists("mysqli_connect")) )
-     {
-        return "<FONT COLOR=\"#FF0000\">"._ERRPHPERROR."</FONT>: "._ERRPHPMYSQLSUP;
-     }
-  }
-  else if ( $DBtype == DatabaseTypes::POSTGRES )
-  {
-     if ( !(function_exists("pg_connect")) )
-     {
-        return "<FONT COLOR=\"#FF0000\">"._ERRPHPERROR."</FONT>: "._ERRPHPPOSTGRESSUP;
-     }
-  }
-  else if ( $DBtype == DatabaseTypes::MSSQL )
-  {
-      if ( !(function_exists("mssql_connect")) )
-       {
-            return "<FONT COLOR=\"#FF0000\">"._ERRPHPERROR."</FONT>: "._ERRPHPMSSQLSUP;
-       }
-  }
-  else if ( $DBtype == DatabaseTypes::ORACLE )
-  {
-      if ( !(function_exists("ocilogon")) )
-       {
-            return "<FONT COLOR=\"#FF0000\">"._ERRPHPERROR."</FONT>: "._ERRPHPORACLESUP;
-       }
-  }
-  else
-     return "<B>"._ERRSQLDBTYPE."</B>: "._ERRSQLDBTYPEINFO1."'$DBtype'.". _ERRSQLDBTYPEINFO2;
-  return "";
+   switch($DBtype){
+      case DatabaseTypes::MYSQL:
+         if(!function_exists("mysqli_connect")){
+            throw new \Exception(_ERRPHPMYSQLSUP);
+         }
+         break;
+
+      case DatabaseTypes::POSTGRES:
+         if(!function_exists("pg_connect")){
+            throw new \Exception(_ERRPHPPOSTGRESSUP);
+         }
+         break;
+
+      case DatabaseTypes::MSSQL:
+         if(!function_exists("mssql_connect")){
+            throw new \Exception(_ERRPHPMSSQLSUP);
+         }
+         break;
+
+      case DatabaseTypes::ORACLE:
+         if(!function_exists("ocilogon")){
+            throw new \Exception(_ERRPHPORACLESUP);
+         }
+         break;
+
+      default:
+         throw new \Exception(
+            sprintf(
+               '%1$s: %2$s %3$s %4$s',
+               _ERRSQLDBTYPE,
+               _ERRSQLDBTYPEINFO1,
+               $DBtype,
+               _ERRSQLDBTYPEINFO2
+            )
+         );
+
+   }
+
+     return "";
 }
 
 /* ******************* DB Query Routines ************************************ */
