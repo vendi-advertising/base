@@ -1,6 +1,9 @@
 <?php
 
 use Vendi\BASE\baseCon;
+use Vendi\BASE\DatabaseTypes;
+
+require_once dirname(__DIR__) . '/includes/vendi_boot.php';
 
 defined( '_BASE_INC' ) or die( 'Accessing this file directly is not allowed.' );
 
@@ -28,16 +31,7 @@ function VerifyDBAbstractionLib($path)
 function NewBASEDBConnection($path, $type)
 {
   GLOBAL $debug_mode;
-  if ( !(
-          ($type == "mysql") ||
-	  ($type == "mysqlt") ||
-	  ($type == "maxsql") ||
-          ($type == "postgres") ||
-	  ($type == "mssql") ||
-	  ($type == "oci8")
-	)
-     )
-  {
+  if(!in_array($type, DatabaseTypes::get_support_database_types())) {
      echo "<B>"._ERRSQLDBTYPE."</B>".
             "<P>:"._ERRSQLDBTYPEINFO1."<CODE>'$type'</CODE>. "._ERRSQLDBTYPEINFO2;
      die();

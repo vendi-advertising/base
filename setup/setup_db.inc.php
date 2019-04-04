@@ -1,4 +1,9 @@
 <?php
+
+use Vendi\BASE\DatabaseTypes;
+
+require_once dirname(__DIR__) . '/includes/vendi_boot.php';
+
 /*******************************************************************************
 ** Basic Analysis and Security Engine (BASE)
 ** Copyright (C) 2004 BASE Project Team
@@ -25,7 +30,7 @@ defined( '_BASE_INC' ) or die( 'Accessing this file directly is not allowed.' );
 
 function CreateBASEAG($db) {
      global $debug_mode;
-     
+
      $tblBaseAG_present = $db->baseTableExists("acid_ag");
      $tblBaseAGAlert_present = $db->baseTableExists("acid_ag_alert");
      $tblBaseIPCache_present = $db->baseTableExists("acid_ip_cache");
@@ -36,7 +41,7 @@ function CreateBASEAG($db) {
      if ( $debug_mode > 0 ) {
        echo "\$submit = $submit <BR>
               database: $db->DB_name <BR>
-              table acid_ag present? $tblBaseAG_present <BR>  
+              table acid_ag present? $tblBaseAG_present <BR>
               table acid_ag_alert present? $tblBaseAGAlert_present <BR>
               table acid_ip_cache present? $tblBaseIPCache_present <BR>
               table acid_event present? $tblBaseEvent_present <BR>
@@ -45,7 +50,7 @@ function CreateBASEAG($db) {
      }
 
      if ( !$tblBaseAG_present ) {
-        if ( $db->DB_type == "mysql" ) {
+        if ( $db->DB_type == DatabaseTypes::MYSQL ) {
            $sql = 'CREATE TABLE acid_ag ( ag_id               INT           UNSIGNED NOT NULL AUTO_INCREMENT,
                                           ag_name             VARCHAR(40),
                                           ag_desc             TEXT,
@@ -53,14 +58,14 @@ function CreateBASEAG($db) {
                                           ag_ltime            DATETIME,
                                           PRIMARY KEY         (ag_id),
                                           INDEX               (ag_id))';
-        } else if ($db->DB_type == "postgres") {
+        } else if ($db->DB_type == DatabaseTypes::POSTGRES) {
            $sql = 'CREATE TABLE acid_ag ( ag_id               SERIAL NOT NULL,
                                           ag_name             TEXT,
                                           ag_desc             TEXT,
                                           ag_ctime            TIMESTAMP,
                                           ag_ltime            TIMESTAMP,
                                           PRIMARY KEY         (ag_id))';
-        } else if ($db->DB_type == "mssql") {
+        } else if ($db->DB_type == DatabaseTypes::MSSQL) {
            /* Microsoft recommends specifying NULL if NULL is permitted */
            /* Otherwise it will unpredictably change the nullability. */
            $sql = 'CREATE TABLE acid_ag ( ag_id              NUMERIC(10,0) IDENTITY(1,1) NOT NULL,
@@ -69,7 +74,7 @@ function CreateBASEAG($db) {
                                           ag_ctime           DATETIME NULL,
                                           ag_ltime           DATETIME NULL,
                                           PRIMARY KEY        (ag_id))';
-        } else if ($db->DB_type == "oci8") {
+        } else if ($db->DB_type == DatabaseTypes::ORACLE) {
            $sql = 'CREATE TABLE acid_ag ( ag_id               INT NOT NULL,
                                           ag_name             VARCHAR2(40),
                                           ag_desc             BLOB,
@@ -103,7 +108,7 @@ function CreateBASEAG($db) {
 	}
 
         /* Run query to create table 'acid_ag' */
-        if( $db->DB_type != "oci8" ) {
+        if( $db->DB_type != DatabaseTypes::ORACLE ) {
            $db->baseExecute($sql, -1, -1, false);
            if ( $db->baseErrorMessage() != "" )
               ErrorMessage("Unable to CREATE table 'acid_ag': ".$db->baseErrorMessage());
@@ -114,28 +119,28 @@ function CreateBASEAG($db) {
      }
 
      if ( !$tblBaseAGAlert_present ) {
-        if ( $db->DB_type == "mysql" ) {
+        if ( $db->DB_type == DatabaseTypes::MYSQL ) {
            $sql = 'CREATE TABLE acid_ag_alert( ag_id               INT           UNSIGNED NOT NULL,
                                                ag_sid              INT           UNSIGNED NOT NULL,
                                                ag_cid              INT           UNSIGNED NOT NULL,
                                                PRIMARY KEY         (ag_id, ag_sid, ag_cid),
                                                INDEX               (ag_id),
                                                INDEX               (ag_sid, ag_cid))';
-        } else if ($db->DB_type == "postgres") {
+        } else if ($db->DB_type == DatabaseTypes::POSTGRES) {
            $sql = 'CREATE TABLE acid_ag_alert ( ag_id               INT8 NOT NULL,
                                                 ag_sid              INT4 NOT NULL,
                                                 ag_cid              INT8 NOT NULL,
                                                 PRIMARY KEY         (ag_id, ag_sid, ag_cid) );
                    CREATE INDEX acid_ag_alert_aid_idx ON acid_ag_alert (ag_id);
                    CREATE INDEX acid_ag_alert_id_idx ON acid_ag_alert (ag_sid, ag_cid);';
-        } else if ($db->DB_type == "mssql") {
+        } else if ($db->DB_type == DatabaseTypes::MSSQL) {
            /* Microsoft recommends specifying NULL if NULL is permitted */
            /* Otherwise it will unpredictably change the nullability. */
            $sql = 'CREATE TABLE acid_ag_alert ( ag_id        NUMERIC(10,0) NOT NULL,
                                                 ag_sid       NUMERIC(10,0) NOT NULL,
                                                 ag_cid       NUMERIC(10,0) NOT NULL,
                                                 PRIMARY KEY  (ag_id, ag_sid, ag_cid) )';
-        } else if( $db->DB_type == "oci8" ) {
+        } else if( $db->DB_type == DatabaseTypes::ORACLE ) {
            $sql = 'CREATE TABLE acid_ag_alert ( ag_id  INT NOT NULL,
                                                 ag_sid INT NOT NULL,
                                                 ag_cid INT NOT NULL,
@@ -151,7 +156,7 @@ function CreateBASEAG($db) {
      }
 
      if ( !$tblBaseIPCache_present ) {
-        if ( $db->DB_type == "mysql" ) {
+        if ( $db->DB_type == DatabaseTypes::MYSQL ) {
            $sql = 'CREATE TABLE acid_ip_cache( ipc_ip                  INT UNSIGNED NOT NULL,
                                                ipc_fqdn                VARCHAR(50),
                                                ipc_dns_timestamp       DATETIME,
@@ -159,14 +164,14 @@ function CreateBASEAG($db) {
                                                ipc_whois_timestamp     DATETIME,
                                                PRIMARY KEY         (ipc_ip),
                                                INDEX               (ipc_ip))';
-        } else if ($db->DB_type == "postgres") {
+        } else if ($db->DB_type == DatabaseTypes::POSTGRES) {
            $sql = 'CREATE TABLE acid_ip_cache( ipc_ip                  INT8 NOT NULL,
                                                ipc_fqdn                TEXT,
                                                ipc_dns_timestamp       TIMESTAMP,
                                                ipc_whois               TEXT,
                                                ipc_whois_timestamp     TIMESTAMP,
                                                PRIMARY KEY         (ipc_ip) );';
-        } else if ($db->DB_type == "mssql") {
+        } else if ($db->DB_type == DatabaseTypes::MSSQL) {
            /* Microsoft recommends specifying NULL if NULL is permitted */
            /* Otherwise it will unpredictably change the nullability. */
            $sql = 'CREATE TABLE acid_ip_cache ( ipc_ip   NUMERIC(10,0) NOT NULL,
@@ -175,7 +180,7 @@ function CreateBASEAG($db) {
                                                 ipc_whois      TEXT NULL,
                                                 ipc_whois_timestamp  DATETIME NULL,
                                                 PRIMARY KEY     (ipc_ip) )';
-        } else if ($db->DB_type == "oci8") {
+        } else if ($db->DB_type == DatabaseTypes::ORACLE) {
            $sql = 'CREATE TABLE acid_ip_cache( ipc_ip              INT NOT NULL,
                                                ipc_fqdn            VARCHAR2(50),
                                                ipc_dns_timestamp   DATE,
@@ -193,14 +198,14 @@ function CreateBASEAG($db) {
      }
 
      if ( !$tblBaseEvent_present ) {
-           if ( $db->DB_type == "mysql" ) {  
+           if ( $db->DB_type == DatabaseTypes::MYSQL ) {
               if ( $db->baseGetDBversion() < 100 )
                  $sig_ddl = "signature      VARCHAR(255) NOT NULL,";
               else
                  $sig_ddl = "signature      INT UNSIGNED NOT NULL,";
               $sql = 'CREATE TABLE acid_event ( sid                 INT UNSIGNED NOT NULL,
                                                 cid                 INT UNSIGNED NOT NULL,'.
-                                                $sig_ddl.'     
+                                                $sig_ddl.'
                                                 sig_name            VARCHAR(255),
                                                 sig_class_id        INT UNSIGNED,
                                                 sig_priority        INT UNSIGNED,
@@ -221,8 +226,8 @@ function CreateBASEAG($db) {
                                                 INDEX               (ip_proto),
                                                 INDEX               (layer4_sport),
                                                 INDEX               (layer4_dport) )';
-           
-           } else if ($db->DB_type == "postgres") {
+
+           } else if ($db->DB_type == DatabaseTypes::POSTGRES) {
               if ( $db->baseGetDBversion() < 100 )
                  $sig_ddl = "signature      TEXT NOT NULL,";
               else
@@ -247,11 +252,11 @@ function CreateBASEAG($db) {
                       CREATE INDEX acid_event_sig_priority ON acid_event (sig_priority);
                       CREATE INDEX acid_event_timestamp ON acid_event (timestamp);
                       CREATE INDEX acid_event_ip_src ON acid_event (ip_src);
-                      CREATE INDEX acid_event_ip_dst ON acid_event (ip_dst); 
+                      CREATE INDEX acid_event_ip_dst ON acid_event (ip_dst);
                       CREATE INDEX acid_event_ip_proto ON acid_event (ip_proto);
                       CREATE INDEX acid_event_layer4_sport ON acid_event (layer4_sport);
                       CREATE INDEX acid_event_layer4_dport ON acid_event (layer4_dport);';
-           } else if ($db->DB_type == "mssql") {
+           } else if ($db->DB_type == DatabaseTypes::MSSQL) {
            /* Microsoft recommends specifying NULL if NULL is permitted */
            /* Otherwise it will unpredictably change the nullability. */
               if ( $db->baseGetDBversion() < 100 )
@@ -271,7 +276,7 @@ function CreateBASEAG($db) {
                                                 layer4_sport        NUMERIC(10,0) NULL,
                                                 layer4_dport        NUMERIC(10,0) NULL,
                                                 PRIMARY KEY         (sid,cid))';
-           } else if ($db->DB_type == "oci8") {
+           } else if ($db->DB_type == DatabaseTypes::ORACLE) {
               $sql = 'CREATE TABLE acid_event ( sid                 INT NOT NULL,
                                                 cid                 INT NOT NULL,
                                                 signature           INT NOT NULL,
@@ -295,13 +300,13 @@ function CreateBASEAG($db) {
            $tblBaseEvent_present = $db->baseTableExists("acid_event");
      }
 
-     if ($db->DB_type == "mssql") {
+     if ($db->DB_type == DatabaseTypes::MSSQL) {
            /* Sheesh! If you create the indexes at the same time you create the */
            /*   tables, you get Attention and a disconnect (no error message). */
            /*   If you create the indexes here, it works. Go figure. */
            $sql = 'CREATE INDEX acid_ag_ag_id_idx ON acid_ag (ag_id)
                    CREATE INDEX acid_ag_alert_aid_idx ON acid_ag_alert (ag_id)
-                   CREATE INDEX acid_ag_alert_id_idx ON acid_ag_alert (ag_sid, ag_cid)        
+                   CREATE INDEX acid_ag_alert_id_idx ON acid_ag_alert (ag_sid, ag_cid)
                    CREATE INDEX acid_event_sig_class_id ON acid_event (sig_class_id)
                    CREATE INDEX acid_event_sig_priority ON acid_event (sig_priority)
                    CREATE INDEX acid_event_timestamp ON acid_event (timestamp)
@@ -316,27 +321,27 @@ function CreateBASEAG($db) {
            else
               ErrorMessage("Successfully created MSSQL BASE table indexes");
      }
-      
+
      /* Added for base_roles and base_users -- Kevin */
      if ( !$tblBaseRoles_present ) {
-           if ( $db->DB_type == "mysql" ) {
+           if ( $db->DB_type == DatabaseTypes::MYSQL ) {
               $sql = 'CREATE TABLE base_roles ( role_id           int(11)         NOT NULL,
                                                 role_name         varchar(20)     NOT NULL,
                                                 role_desc         varchar(75)     NOT NULL,
                                                 PRIMARY KEY         (role_id));';
-           } else if ($db->DB_type == "postgres") {
+           } else if ($db->DB_type == DatabaseTypes::POSTGRES) {
               $sql = 'CREATE TABLE base_roles ( role_id             INT8 NOT NULL,
                                                 role_name           TEXT,
                                                 role_desc           TEXT,
                                                 PRIMARY KEY         (role_id) );';
-           } else if ($db->DB_type == "mssql") {
+           } else if ($db->DB_type == DatabaseTypes::MSSQL) {
            /* Microsoft recommends specifying NULL if NULL is permitted */
            /* Otherwise it will unpredictably change the nullability. */
               $sql = 'CREATE TABLE base_roles ( role_id   NUMERIC(10,0) NOT NULL,
                                                 role_name  VARCHAR(20) NULL,
                                                 role_desc  VARCHAR(75) NULL,
                                                 PRIMARY KEY     (role_id) );';
-           } else if ($db->DB_type == "oci8") {
+           } else if ($db->DB_type == DatabaseTypes::ORACLE) {
               $sql = 'CREATE TABLE base_roles ( role_id           int          NOT NULL,
                                                 role_name         varchar2(20) NOT NULL,
                                                 role_desc         varchar2(75) NOT NULL,
@@ -348,7 +353,7 @@ function CreateBASEAG($db) {
               ErrorMessage("Unable to CREATE table 'base_roles': ".$db->baseErrorMessage());
            else
               ErrorMessage("Successfully created 'base_roles'");
-         
+
 	   /* INSERT into base_roles - PostgreSQL cannot do multiple row */
            // Administrator
            $sql = "INSERT INTO base_roles (role_id, role_name, role_desc) VALUES (1, 'Admin', 'Administrator');";
@@ -385,7 +390,7 @@ function CreateBASEAG($db) {
      }
 
      if ( !$tblBaseUsers_present ) {
-           if ( $db->DB_type == "mysql" ) {
+           if ( $db->DB_type == DatabaseTypes::MYSQL ) {
               $sql = 'CREATE TABLE base_users ( usr_id            int(11)          NOT NULL,
                                                 usr_login         varchar(25)      NOT NULL,
                                                 usr_pwd           varchar(32)      NOT NULL,
@@ -394,7 +399,7 @@ function CreateBASEAG($db) {
                                                 usr_enabled       int(11)          NOT NULL,
                                                 PRIMARY KEY         (usr_id),
                                                 INDEX               (usr_login));';
-           } else if ($db->DB_type == "postgres") {
+           } else if ($db->DB_type == DatabaseTypes::POSTGRES) {
               $sql = 'CREATE TABLE base_users ( usr_id            INT8         NOT NULL,
                                                 usr_login         TEXT         NOT NULL,
                                                 usr_pwd           TEXT         NOT NULL,
@@ -403,7 +408,7 @@ function CreateBASEAG($db) {
                                                 usr_enabled       INT8         NOT NULL,
                                                 PRIMARY KEY       (usr_id));
                                                 CREATE INDEX base_users_usr_login ON base_users (usr_login);';
-           } else if ($db->DB_type == "mssql") {
+           } else if ($db->DB_type == DatabaseTypes::MSSQL) {
               // I did not create the usr_login index yet -- Kevin
               $sql = 'CREATE TABLE base_users ( usr_id NUMERIC(10,0) NOT NULL,
                                                 usr_login         VARCHAR(25)     NOT NULL,
@@ -412,7 +417,7 @@ function CreateBASEAG($db) {
                                                 role_id           NUMERIC(10,0)   NOT NULL,
                                                 usr_enabled       NUMERIC(10,0)   NOT NULL,
                                                 PRIMARY KEY       (usr_id));';
-           } else if ($db->DB_type == "oci8") {
+           } else if ($db->DB_type == DatabaseTypes::ORACLE) {
               $sql = 'CREATE TABLE base_users ( usr_id            int             NOT NULL,
                                                 usr_login         varchar2(25)    NOT NULL,
                                                 usr_pwd           varchar2(32)    NOT NULL,
@@ -430,7 +435,7 @@ function CreateBASEAG($db) {
            $tblBaseUsers_present = $db->baseTableExists("base_users");
      }
 
-     if ( $tblBaseAG_present && $tblBaseAGAlert_present && $tblBaseIPCache_present 
+     if ( $tblBaseAG_present && $tblBaseAGAlert_present && $tblBaseIPCache_present
           && $tblBaseEvent_present && $tblBaseRoles_present && $tblBaseUsers_present )
         return 1;
      else

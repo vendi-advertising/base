@@ -2,6 +2,7 @@
 
 use Webmozart\PathUtil\Path;
 use Vendi\Shared\utils as vendi_utils;
+use Vendi\BASE\DatabaseTypes;
 
 require_once dirname(__DIR__) . '/includes/vendi_boot.php';
 
@@ -115,10 +116,10 @@ if (vendi_utils::is_post())
 <center><table width="50%" border=1 class ="query">
 <tr><td colspan=2 align="center" class="setupTitle">Step 2 of 5</td><tr>
 <tr><td class="setupKey" width="50%">Pick a Database type:</td><td class="setupValue"><select name="dbtype">
-<option value="mysqli" <?php if (vendi_utils::get_session_value('dbtype') == 'mysqli') echo "selected";?>>MySQL
-<option value="postgres" <?php if (vendi_utils::get_session_value('dbtype') == 'postgres') echo "selected";?>>PostgreSQL
-<option value="mssql" <?php if (vendi_utils::get_session_value('dbtype') == 'mssql') echo "selected";?>>Microsoft SQL Server
-<option value="oci8" <?php if (vendi_utils::get_session_value('dbtype') == 'oci8') echo "selected";?>>Oracle
+<option value="<?php echo DatabaseTypes::MYSQL; ?>" <?php if (vendi_utils::get_session_value('dbtype') == DatabaseTypes::MYSQL) echo "selected";?>>MySQL
+<option value="<?php echo DatabaseTypes::POSTGRES; ?>" <?php if (vendi_utils::get_session_value('dbtype') == DatabaseTypes::POSTGRES) echo "selected";?>>PostgreSQL
+<option value="<?php echo DatabaseTypes::MSSQL; ?>" <?php if (vendi_utils::get_session_value('dbtype') == DatabaseTypes::MSSQL) echo "selected";?>>Microsoft SQL Server
+<option value="<?php echo DatabaseTypes::ORACLE; ?>" <?php if (vendi_utils::get_session_value('dbtype') == DatabaseTypes::ORACLE) echo "selected";?>>Oracle
 </select>[<a href="../help/base_setup_help.php#dbtype" onClick="javascript:window.open('../help/base_setup_help.php#dbtype','helpscreen','width=300,height=300'); return false;">?</a>]</td</tr>
 <tr><td colspan=2 align="center">&nbsp;</td></tr>
 <tr><td class="setupKey">Database Name:</td><td class="setupValue"><input type="text" name="dbname" value="<?php echo vendi_utils::get_session_value('dbname');?>"></td></tr>

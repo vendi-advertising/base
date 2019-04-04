@@ -2,6 +2,8 @@
 
 namespace Vendi\BASE;
 
+use Vendi\BASE\DatabaseTypes;
+
 class baseCon {
 
     var $DB;
@@ -86,8 +88,8 @@ class baseCon {
 
      /* Set the database schema version number */
      $sql = "SELECT vseq FROM schema";
-     if ($this->DB_type == "mysql") $sql = "SELECT vseq FROM `schema`";
-     if ($this->DB_type == "mssql") $sql = "SELECT vseq FROM [schema]";
+     if ($this->DB_type == DatabaseTypes::MYSQL) $sql = "SELECT vseq FROM `schema`";
+     if ($this->DB_type == DatabaseTypes::MSSQL) $sql = "SELECT vseq FROM [schema]";
 
      $result = $this->DB->Execute($sql);
      if ( $this->baseErrorMessage() != "" )
@@ -148,8 +150,8 @@ class baseCon {
 
      /* Set the database schema version number */
      $sql = "SELECT vseq FROM schema";
-     if ($this->DB_type == "mssql") $sql = "SELECT vseq FROM [schema]";
-     if ($this->DB_type == "mysql") $sql = "SELECT vseq FROM `schema`";
+     if ($this->DB_type == DatabaseTypes::MSSQL) $sql = "SELECT vseq FROM [schema]";
+     if ($this->DB_type == DatabaseTypes::MYSQL) $sql = "SELECT vseq FROM `schema`";
 
      $result = $this->DB->Execute($sql);
      if ( $this->baseErrorMessage() != "" )
@@ -185,12 +187,12 @@ class baseCon {
      GLOBAL $debug_mode, $sql_trace_mode;
 
      /* ** Begin DB specific SQL fix-up ** */
-     if ($this->DB_type == "mssql")
+     if ($this->DB_type == DatabaseTypes::MSSQL)
      {
         $sql = eregi_replace("''", "NULL", $sql);
      }
 
-     if ($this->DB_type == "oci8")
+     if ($this->DB_type == DatabaseTypes::ORACLE)
      {
        if (!strpos($sql, 'TRIGGER'))
        {
@@ -209,19 +211,18 @@ class baseCon {
         $rs = new baseRS($this->DB->Execute($sql), $this->DB_type);
      else
      {
-        if ( ($this->DB_type == "mysql") || ($this->DB_type == "mysqlt") ||
-             ($this->DB_type == "maxsql") )
+        if ( $this->DB_type == DatabaseTypes::MYSQL)
         {
            $rs =  new baseRS($this->DB->Execute($sql." LIMIT ".$start_row.", ".$num_rows),
                              $this->DB_type);
            $limit_str = " LIMIT ".$start_row.", ".$num_rows;
         }
-        else if ( $this->DB_type == "oci8" ) {
+        else if ( $this->DB_type == DatabaseTypes::ORACLE ) {
            $rs =  new baseRS($this->DB->Execute($sql),
                              $this->DB_type);
            $limit_str = " LIMIT ".$start_row.", ".$num_rows;
 	}
-        else if ( $this->DB_type == "postgres" )
+        else if ( $this->DB_type == DatabaseTypes::POSTGRES )
         {
            $rs = new baseRS($this->DB->Execute($sql." LIMIT ".$num_rows." OFFSET ".$start_row),
                              $this->DB_type);
@@ -266,7 +267,7 @@ class baseCon {
      GLOBAL $debug_mode;
 
      if ( $this->DB->ErrorMsg() &&
-          ($this->DB_type != 'mssql' || (!strstr($this->DB->ErrorMsg(), 'Changed database context to') &&
+          ($this->DB_type != DatabaseTypes::MSSQL || (!strstr($this->DB->ErrorMsg(), 'Changed database context to') &&
                                          !strstr($this->DB->ErrorMsg(), 'Changed language setting to'))))
         return '</TABLE></TABLE></TABLE>'.
                '<FONT COLOR="#FF0000"><B>'._ERRSQLDB.'</B>'.($this->DB->ErrorMsg()).'</FONT>'.
@@ -275,7 +276,7 @@ class baseCon {
 
   function baseTableExists($table)
   {
-     if ($this->DB_type == "oci8") $table=strtoupper($table);
+     if ($this->DB_type == DatabaseTypes::ORACLE) $table=strtoupper($table);
 
      if ( in_array($table, $this->DB->MetaTables()) )
         return 1;
@@ -299,10 +300,9 @@ class baseCon {
    * the current point, so it can't be here and needs to be in the actual script after calling this function
    *  -- srh (02/01/2001)
    */
-     if ( ($this->DB_type == "mysql") || ($this->DB_type == "mysqlt") ||
-          ($this->DB_type == "maxsql") || ($this->DB_type == "mssql"))
+     if ( ($this->DB_type == DatabaseTypes::MYSQL) || ($this->DB_type == DatabaseTypes::MSSQL))
         return $this->DB->Insert_ID();
-     else if ($this->DB_type == "postgres" ||($this->DB_type == "oci8"))
+     else if ($this->DB_type == DatabaseTypes::POSTGRES ||($this->DB_type == DatabaseTypes::ORACLE))
         return -1;
   }
 
@@ -314,83 +314,81 @@ class baseCon {
 
   function baseSQL_YEAR($func_param, $op, $timestamp)
   {
-     if ( ($this->DB_type == "mysql") || ($this->DB_type == "mysqlt") ||
-          ($this->DB_type == "maxsql") || ($this->DB_type == "mssql") )
+     if ( ($this->DB_type == DatabaseTypes::MYSQL) || ($this->DB_type == DatabaseTypes::MSSQL) )
         return " YEAR($func_param) $op $timestamp ";
-     else if( $this->DB_type == "oci8" )
+     else if( $this->DB_type == DatabaseTypes::ORACLE )
         return " to_number( to_char( $func_param, 'RRRR' ) ) $op $timestamp ";
-     else if ( $this->DB_type == "postgres" )
+     else if ( $this->DB_type == DatabaseTypes::POSTGRES )
         return " DATE_PART('year', $func_param) $op $timestamp ";
   }
 
   function baseSQL_MONTH($func_param, $op, $timestamp)
   {
-     if ( ($this->DB_type == "mysql") || ($this->DB_type == "mysqlt") ||
-          ($this->DB_type == "maxsql") || ($this->DB_type == "mssql") )
+     if ( ($this->DB_type == DatabaseTypes::MYSQL) || ($this->DB_type == DatabaseTypes::MSSQL) )
         return " MONTH($func_param) $op $timestamp ";
-     else if( $this->DB_type == "oci8" )
+     else if( $this->DB_type == DatabaseTypes::ORACLE )
         return " to_number( to_char( $func_param, 'MM' ) ) $op $timestamp ";
-     else if ( $this->DB_type == "postgres" )
+     else if ( $this->DB_type == DatabaseTypes::POSTGRES )
         return " DATE_PART('month', $func_param) $op $timestamp ";
   }
 
   function baseSQL_DAY($func_param, $op, $timestamp)
   {
-     if ( ($this->DB_type == "mysql") || ($this->DB_type == "mysqlt") || ($this->DB_type == "maxsql") )
+     if ( ($this->DB_type == DatabaseTypes::MYSQL) )
         return " DAYOFMONTH($func_param) $op $timestamp ";
-     else if($this->DB_type == "oci8")
+     else if($this->DB_type == DatabaseTypes::ORACLE)
         return " to_number( to_char( $func_param, 'DD' ) ) $op $timestamp ";
-     else if ( $this->DB_type == "postgres" )
+     else if ( $this->DB_type == DatabaseTypes::POSTGRES )
         return " DATE_PART('day', $func_param) $op $timestamp ";
-     else if ( $this->DB_type == "mssql" )
+     else if ( $this->DB_type == DatabaseTypes::MSSQL )
         return " DAY($func_param) $op $timestamp ";
   }
 
   function baseSQL_HOUR($func_param, $op, $timestamp)
   {
-     if ( ($this->DB_type == "mysql") || ($this->DB_type == "mysqlt") || ($this->DB_type == "maxsql") )
+     if ( ($this->DB_type == DatabaseTypes::MYSQL) )
         return " HOUR($func_param) $op $timestamp ";
-     else if($this->DB_type == "oci8")
+     else if($this->DB_type == DatabaseTypes::ORACLE)
         return " to_number( to_char( $func_param, 'HH' ) ) $op $timestamp ";
-     else if ( $this->DB_type == "postgres" )
+     else if ( $this->DB_type == DatabaseTypes::POSTGRES )
         return " DATE_PART('hour', $func_param) $op $timestamp ";
-     else if ( $this->DB_type == "mssql" )
+     else if ( $this->DB_type == DatabaseTypes::MSSQL )
         return " DATEPART(hh, $func_param) $op $timestamp ";
   }
 
   function baseSQL_MINUTE($func_param, $op, $timestamp)
   {
-     if ( ($this->DB_type == "mysql") || ($this->DB_type == "mysqlt") || ($this->DB_type == "maxsql") )
+     if ( ($this->DB_type == DatabaseTypes::MYSQL) )
         return " MINUTE($func_param) $op $timestamp ";
-     else if($this->DB_type == "oci8")
+     else if($this->DB_type == DatabaseTypes::ORACLE)
         return " to_number( to_char( $func_param, 'MI' ) ) $op $timestamp ";
-     else if ( $this->DB_type == "postgres" )
+     else if ( $this->DB_type == DatabaseTypes::POSTGRES )
         return " DATE_PART('minute', $func_param) $op $timestamp ";
-     else if ( $this->DB_type == "mssql" )
+     else if ( $this->DB_type == DatabaseTypes::MSSQL )
         return " DATEPART(mi, $func_param) $op $timestamp ";
   }
 
   function baseSQL_SECOND($func_param, $op, $timestamp)
   {
-     if ( ($this->DB_type == "mysql") || ($this->DB_type == "mysqlt") || ($this->DB_type == "maxsql") )
+     if ( ($this->DB_type == DatabaseTypes::MYSQL) )
         return " SECOND($func_param) $op $timestamp ";
-     else if($this->DB_type == "oci8")
+     else if($this->DB_type == DatabaseTypes::ORACLE)
         return " to_number( to_char( $func_param, 'SS' ) ) $op $timestamp ";
-     else if ( $this->DB_type == "postgres" )
+     else if ( $this->DB_type == DatabaseTypes::POSTGRES )
         return " DATE_PART('second', $func_param) $op $timestamp ";
-     else if ( $this->DB_type == "mssql" )
+     else if ( $this->DB_type == DatabaseTypes::MSSQL )
         return " DATEPART(ss, $func_param) $op $timestamp ";
   }
 
   function baseSQL_UNIXTIME($func_param, $op, $timestamp)
   {
-     if ( ($this->DB_type == "mysql") || ($this->DB_type == "mysqlt") || ($this->DB_type == "maxsql") )
+     if ( ($this->DB_type == DatabaseTypes::MYSQL) )
      {
         return " UNIX_TIMESTAMP($func_param) $op $timestamp ";
      }
-     else if($this->DB_type == "oci8")
+     else if($this->DB_type == DatabaseTypes::ORACLE)
         return " to_number( $func_param ) $op $timestamp ";
-     else if ( $this->DB_type == "postgres" )
+     else if ( $this->DB_type == DatabaseTypes::POSTGRES )
      {
         if ( ($op == "") && ($timestamp == "") )
            /* Catches the case where I want to get the UNIXTIME of a constant
@@ -401,7 +399,7 @@ class baseCon {
         else
            return " DATE_PART('epoch', $func_param::timestamp) $op $timestamp ";
      }
-     else if ($this->DB_type == "mssql")
+     else if ($this->DB_type == DatabaseTypes::MSSQL)
      {
            return " DATEDIFF(ss, '1970-1-1 00:00:00', $func_param) $op $timestamp ";
      }
@@ -410,11 +408,11 @@ class baseCon {
 
   function baseSQL_TIMESEC($func_param, $op, $timestamp)
   {
-     if ( ($this->DB_type == "mysql") || ($this->DB_type == "mysqlt") || ($this->DB_type == "maxsql") )
+     if ( ($this->DB_type == DatabaseTypes::MYSQL))
         return " TIME_TO_SEC($func_param) $op $timestamp ";
-     else if($this->DB_type == "oci8")
+     else if($this->DB_type == DatabaseTypes::ORACLE)
         return " to_number( $func_param ) $op $timestamp ";
-     else if ( $this->DB_type == "postgres" )
+     else if ( $this->DB_type == DatabaseTypes::POSTGRES )
      {
 
         if ( ($op == "") && ($timestamp == "") )
@@ -422,7 +420,7 @@ class baseCon {
         else
            return " DATE_PART('second', DATE_PART('day', $func_param) ) $op $timestamp ";
      }
-     else if ( $this->DB_type == "mssql" )
+     else if ( $this->DB_type == DatabaseTypes::MSSQL )
      {
         if ( ($op == "") && ($timestamp == "") )
            return " DATEPART(ss, DATEPART(dd, $func_parm) ";
@@ -441,7 +439,7 @@ class baseCon {
   function getSafeSQLString($str)
   {
    $t = str_replace("\\", "\\\\", $str);
-   if ($this->DB_type != "mssql" && $this->DB_type != "oci8" )
+   if ($this->DB_type != DatabaseTypes::MSSQL && $this->DB_type != DatabaseTypes::ORACLE )
      $t = str_replace("'", "\'", $t);
    else
      $t = str_replace("'", "''", $t);

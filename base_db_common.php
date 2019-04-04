@@ -1,4 +1,9 @@
 <?php
+
+use Vendi\BASE\DatabaseTypes;
+
+require_once __DIR__ . '/includes/vendi_boot.php';
+
 /*******************************************************************************
 ** Basic Analysis and Security Engine (BASE)
 ** Copyright (C) 2004 BASE Project Team
@@ -49,12 +54,12 @@ function verify_db($db, $alert_dbname, $alert_host)
                        "base_roles");
 
   for ( $i = 0; $i < count($base_table); $i++)
-  { 
+  {
      if ( !$db->baseTableExists($base_table[$i]) )
-       return $msg.'.  <P>'._ERRDBSTRUCT1.' 
+       return $msg.'.  <P>'._ERRDBSTRUCT1.'
               (table: '.$base_table[$i].')'._ERRDBSTRUCT2;
   }
-  
+
   return "";
 }
 
@@ -66,12 +71,12 @@ function verify_php_build($DBtype)
   $version = explode(".", $current_php_version);
 
   /* account for x.x.xXX subversions possibly having text like 4.0.4pl1 */
-  if ( is_numeric(substr($version[2], 1, 1)) ) 
+  if ( is_numeric(substr($version[2], 1, 1)) )
      $version[2] = substr($version[2], 0, 2);
   else
      $version[2] = substr($version[2], 0, 1);
 
-  /* only version PHP 4.0.4+ or 4.1+.* are valid */ 
+  /* only version PHP 4.0.4+ or 4.1+.* are valid */
   if ( !( ($version[0] >= 4) && ( ( ($version[1] == 0) && ($version[2] >= 4) ) ||
           ($version[1] > 0) || ($version[0] > 4) ) ) )
   {
@@ -80,28 +85,28 @@ function verify_php_build($DBtype)
             " "._ERRPHPERROR2."</FONT>";
   }
 
-  if ( ($DBtype == "mysql") || ($DBtype == "mysqlt") )
+  if ( ($DBtype == DatabaseTypes::MYSQL) )
   {
-     if ( !(function_exists("mysql_connect")) )
+     if ( !(function_exists("mysqli_connect")) )
      {
         return "<FONT COLOR=\"#FF0000\">"._ERRPHPERROR."</FONT>: "._ERRPHPMYSQLSUP;
      }
   }
-  else if ( $DBtype == "postgres" )
+  else if ( $DBtype == DatabaseTypes::POSTGRES )
   {
      if ( !(function_exists("pg_connect")) )
      {
         return "<FONT COLOR=\"#FF0000\">"._ERRPHPERROR."</FONT>: "._ERRPHPPOSTGRESSUP;
      }
   }
-  else if ( $DBtype == "mssql" )
+  else if ( $DBtype == DatabaseTypes::MSSQL )
   {
       if ( !(function_exists("mssql_connect")) )
        {
             return "<FONT COLOR=\"#FF0000\">"._ERRPHPERROR."</FONT>: "._ERRPHPMSSQLSUP;
        }
   }
-  else if ( $DBtype == "oci8" )
+  else if ( $DBtype == DatabaseTypes::ORACLE )
   {
       if ( !(function_exists("ocilogon")) )
        {
@@ -120,7 +125,7 @@ function EventsByAddr($db, $i, $ip)
 
    $result = $db->baseExecute("SELECT signature FROM acid_event (ip_src='$ip32') OR (ip_dst='$ip32')");
 
-   while ( $myrow = $result->baseFetchRow() ) 
+   while ( $myrow = $result->baseFetchRow() )
       $sig[] = $myrow[0];
 
    $result->baseFreeRows();
@@ -174,11 +179,11 @@ function UniqueEventTotalsByAddr($db, $ip, $current_event)
 {
    $ip32 = baseIP2long($ip);
    $result = $db->baseExecute("SELECT count(signature) FROM acid_event WHERE ".
-                  "( (ip_src='$ip32' OR ip_dst='$ip32') AND signature='$current_event')"); 
+                  "( (ip_src='$ip32' OR ip_dst='$ip32') AND signature='$current_event')");
 
    $myrow = $result->baseFetchRow();
    $tmp = $myrow[0];
-   
+
    $result->baseFreeRows();
    return $tmp;
 }

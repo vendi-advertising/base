@@ -1,4 +1,9 @@
 <?php
+
+use Vendi\BASE\DatabaseTypes;
+
+require_once __DIR__ . '/includes/vendi_boot.php';
+
 /*******************************************************************************
 ** Basic Analysis and Security Engine (BASE)
 ** Copyright (C) 2004 BASE Project Team
@@ -32,7 +37,7 @@ function GetAGIDbyName($ag_name, $db)
   else
   {
         $myrow = $result->baseFetchRow();
-        $ag_id = $myrow[0]; 
+        $ag_id = $myrow[0];
         $result->baseFreeRows();
   }
 
@@ -102,7 +107,7 @@ function CreateAG($db, $ag_name, $ag_desc)
    {
       $tmp_sql = "SELECT ag_id FROM acid_ag WHERE ag_name='".$ag_name."' AND ".
                  "ag_desc='".$ag_desc."'";
-      if ($db->DB_type == "mssql")
+      if ($db->DB_type == DatabaseTypes::MSSQL)
          $tmp_sql = "SELECT ag_id FROM acid_ag WHERE ag_name='".$ag_name."' AND ".
                     "ag_desc LIKE '".MssqlKludgeValue($ag_desc)."'";
       $tmp_result = $db->baseExecute($tmp_sql);

@@ -1,4 +1,9 @@
 <?php
+
+use Vendi\BASE\DatabaseTypes;
+
+require_once dirname(__DIR__) . '/includes/vendi_boot.php';
+
 /*******************************************************************************
 ** Basic Analysis and Security Engine (BASE)
 ** Copyright (C) 2004 BASE Project Team
@@ -10,7 +15,7 @@
 **                Sean Muller <samwise_diver@users.sourceforge.net>
 ** Built upon work by Roman Danyliw <rdd@cert.org>, <roman@danyliw.com>
 **
-** Purpose: IP DNS, whois, event cache library   
+** Purpose: IP DNS, whois, event cache library
 ********************************************************************************
 ** Authors:
 ********************************************************************************
@@ -38,7 +43,7 @@ function UpdateDNSCache($db)
 
   while ( ($row = $ip_result->baseFetchRow()) != "")
   {
-     if ( $debug_mode > 0 )  
+     if ( $debug_mode > 0 )
         echo $row[0]." - ".baseLong2IP($row[0])."<BR>";
      baseGetHostByAddr(baseLong2IP($row[0]), $db, $dns_cache_lifetime);
      ++$cnt;
@@ -50,8 +55,8 @@ function UpdateDNSCache($db)
                                 "WHERE ipc_fqdn IS NULL");
   while ( ($row = $ip_result->baseFetchRow()) != "")
   {
-     if ( $debug_mode > 0 )  
-        echo $row[0]." - ".baseLong2IP($row[0])."<BR>";  
+     if ( $debug_mode > 0 )
+        echo $row[0]." - ".baseLong2IP($row[0])."<BR>";
      baseGetHostByAddr(baseLong2IP($row[0]), $db, $dns_cache_lifetime);
      ++$cnt;
   }
@@ -84,7 +89,7 @@ function UpdateWhoisCache($db)
 
   while ( ($row = $ip_result->baseFetchRow()) != "")
   {
-     if ( $debug_mode > 0 )  echo $row[0]." - ".baseLong2IP($row[0])."<BR>";  
+     if ( $debug_mode > 0 )  echo $row[0]." - ".baseLong2IP($row[0])."<BR>";
      baseGetWhois(baseLong2IP($row[0]), $db, $whois_cache_lifetime);
      ++$cnt;
   }
@@ -160,7 +165,7 @@ function CacheAlert($sid, $cid, $db)
               $sig_priority = $row[2];
            }
            $result->baseFreeRows();
-        } 
+        }
      }
   }
   else
@@ -191,11 +196,11 @@ function CacheAlert($sid, $cid, $db)
       $sql.= "$ip_proto, $layer4_sport, $layer4_dport)";
   }
 
-  $db->baseExecute($sql); 
+  $db->baseExecute($sql);
 
   if ( $db->baseErrorMessage() != "" )
      return 0;
-  else 
+  else
      return 1;
 }
 
@@ -213,16 +218,16 @@ function CacheSensor($sid, $cid, $db)
   $schema_specific[1] = "";
   $schema_specific[2] = "";
 
-  if ( $db->baseGetDBversion() >= 100 ) 
+  if ( $db->baseGetDBversion() >= 100 )
   {
-     $schema_specific[1] = ", sig_name"; 
+     $schema_specific[1] = ", sig_name";
      $schema_specific[2] = " INNER JOIN signature ON (signature = signature.sig_id) ";
   }
 
   if ( $db->baseGetDBversion() >= 103 )
   {
      $schema_specific[0] = $schema_specific[0].", sig_priority, sig_class_id ";
-     $schema_specific[1] = $schema_specific[1].", sig_priority, sig_class_id "; 
+     $schema_specific[1] = $schema_specific[1].", sig_priority, sig_class_id ";
      $schema_specific[2] = $schema_specific[2]."";
   }
 
@@ -235,27 +240,27 @@ function CacheSensor($sid, $cid, $db)
   # The original "(sig_name LIKE '(spp_%')" is too limited. Cf.
   # /usr/local/src/snort-2.8.3.1_unpatched/etc/gen-msg.map
   # /usr/local/src/snort-2.8.3.1_unpatched/src/generators.h
-  # Currently I have included all the names that I have found in 
+  # Currently I have included all the names that I have found in
   # these files.
   # Note: Do always add '%' in LIKE-statements. Otherwise the entries
   #       won't match.
   if ( $db->baseGetDBversion() >= 100 ) {
-    $schema_specific[3] = " ( " . 
-                          "(sig_name LIKE '(spp_%') OR " . 
-                          "(sig_name LIKE '(spo_%') OR " . 
+    $schema_specific[3] = " ( " .
+                          "(sig_name LIKE '(spp_%') OR " .
+                          "(sig_name LIKE '(spo_%') OR " .
                           "(sig_name LIKE '(snort_decoder)%') OR " .
-                          "(sig_name LIKE '(http_decode)%') OR " . 
-                          "(sig_name LIKE '(http_inspect)%') OR " . 
-                          "(sig_name LIKE '(portscan)%') OR " . 
-                          "(sig_name LIKE '(flow-portscan)%') OR " . 
-                          "(sig_name LIKE '(frag3)%') OR " . 
+                          "(sig_name LIKE '(http_decode)%') OR " .
+                          "(sig_name LIKE '(http_inspect)%') OR " .
+                          "(sig_name LIKE '(portscan)%') OR " .
+                          "(sig_name LIKE '(flow-portscan)%') OR " .
+                          "(sig_name LIKE '(frag3)%') OR " .
                           "(sig_name LIKE '(smtp)%') OR " .
-                          "(sig_name LIKE '(ftp_pp)%') OR " . 
+                          "(sig_name LIKE '(ftp_pp)%') OR " .
                           "(sig_name LIKE '(telnet_pp)%') OR " .
                           "(sig_name LIKE '(ssh)%') OR " .
-                          "(sig_name LIKE '(stream5)%') OR " . 
+                          "(sig_name LIKE '(stream5)%') OR " .
                           "(sig_name LIKE '(dcerpc)%') OR " .
-                          "(sig_name LIKE '(dns)%') OR " . 
+                          "(sig_name LIKE '(dns)%') OR " .
                           "(sig_name LIKE '(ppm)%') " .
                           " ) ";
   }
@@ -263,9 +268,9 @@ function CacheSensor($sid, $cid, $db)
     $schema_specific[3] = " (signature LIKE '(spp_%') ";
   }
 
-  
+
   /* TCP events */
-  if( $db->DB_type == 'oci8' ) {
+  if( $db->DB_type == DatabaseTypes::ORACLE ) {
   $update_sql[0] =
     "INSERT INTO acid_event (sid,cid,signature,timestamp,
                              ip_src,ip_dst,ip_proto,
@@ -277,8 +282,8 @@ function CacheSensor($sid, $cid, $db)
             tcp_sport as layer4_sport, tcp_dport as layer4_dport".
             $schema_specific[1]."
     FROM event a
-    ".$schema_specific[2]." 
-    INNER JOIN iphdr b ON (a.sid=b.sid AND a.cid=b.cid) 
+    ".$schema_specific[2]."
+    INNER JOIN iphdr b ON (a.sid=b.sid AND a.cid=b.cid)
     LEFT JOIN tcphdr c ON (a.sid=c.sid AND a.cid=c.cid)
     WHERE (a.sid = $sid AND a.cid > $cid) AND ip_proto = 6
     AND ( NOT ".$schema_specific[3].")";
@@ -290,21 +295,21 @@ function CacheSensor($sid, $cid, $db)
                              layer4_sport,layer4_dport,
                              sig_name".
                              $schema_specific[0].")
-     SELECT event.sid as sid, event.cid as cid, signature, timestamp, 
+     SELECT event.sid as sid, event.cid as cid, signature, timestamp,
             ip_src, ip_dst, ip_proto,
             tcp_sport as layer4_sport, tcp_dport as layer4_dport".
             $schema_specific[1]."
     FROM event
-    ".$schema_specific[2]." 
-    INNER JOIN iphdr ON (event.sid=iphdr.sid AND event.cid=iphdr.cid) 
+    ".$schema_specific[2]."
+    INNER JOIN iphdr ON (event.sid=iphdr.sid AND event.cid=iphdr.cid)
     LEFT JOIN tcphdr ON (event.sid=tcphdr.sid AND event.cid=tcphdr.cid)
     WHERE (event.sid = $sid AND event.cid > $cid) AND ip_proto = 6
     AND ( NOT ".$schema_specific[3].")";
   }
 
   /* UDP events */
-  if( $db->DB_type == 'oci8' ) {
-  $update_sql[1] = 
+  if( $db->DB_type == DatabaseTypes::ORACLE ) {
+  $update_sql[1] =
     "INSERT INTO acid_event (sid,cid,signature,timestamp,
                              ip_src,ip_dst,ip_proto,
                              layer4_sport,layer4_dport,
@@ -322,7 +327,7 @@ function CacheSensor($sid, $cid, $db)
      AND ( NOT ".$schema_specific[3].")";
   }
   else {
-  $update_sql[1] = 
+  $update_sql[1] =
     "INSERT INTO acid_event (sid,cid,signature,timestamp,
                              ip_src,ip_dst,ip_proto,
                              layer4_sport,layer4_dport,
@@ -341,8 +346,8 @@ function CacheSensor($sid, $cid, $db)
   }
 
   /* ICMP events */
-  if( $db->DB_type == 'oci8' ) {
-    $update_sql[2] = 
+  if( $db->DB_type == DatabaseTypes::ORACLE ) {
+    $update_sql[2] =
      "INSERT INTO acid_event (sid,cid,signature,timestamp,
                               ip_src,ip_dst,ip_proto,
                               sig_name".
@@ -357,9 +362,9 @@ function CacheSensor($sid, $cid, $db)
       WHERE (a.sid = $sid AND a.cid > $cid) and ip_proto = 1
       AND ( NOT ".$schema_specific[3].")";
   }
-  else 
+  else
   {
-    $update_sql[2] = 
+    $update_sql[2] =
      "INSERT INTO acid_event (sid,cid,signature,timestamp,
                               ip_src,ip_dst,ip_proto,
                               sig_name".
@@ -377,8 +382,8 @@ function CacheSensor($sid, $cid, $db)
 
   /* IP based protocols that are neither ICMP nor TCP nor UDP nor
      preprocessor generated */
-  if( $db->DB_type == 'oci8' ) {
-    $update_sql[3] = 
+  if( $db->DB_type == DatabaseTypes::ORACLE ) {
+    $update_sql[3] =
      "INSERT INTO acid_event (sid,cid,signature,timestamp,
                               ip_src,ip_dst,ip_proto,
                               sig_name".
@@ -393,9 +398,9 @@ function CacheSensor($sid, $cid, $db)
             " ( NOT ".$schema_specific[3].") AND
             (a.sid = $sid AND a.cid > $cid)";
   }
-  else 
+  else
   {
-    $update_sql[3] = 
+    $update_sql[3] =
      "INSERT INTO acid_event (sid,cid,signature,timestamp,
                               ip_src,ip_dst,ip_proto,
                               sig_name".
@@ -414,8 +419,8 @@ function CacheSensor($sid, $cid, $db)
 
 
   /* Event only -- pre-processor alerts */
-  if( $db->DB_type == 'oci8' ) {
-     $update_sql[4] = 
+  if( $db->DB_type == DatabaseTypes::ORACLE ) {
+     $update_sql[4] =
        "INSERT INTO acid_event (sid,cid,signature,timestamp,
                                 ip_src,ip_dst,ip_proto,
                                 sig_name".
@@ -426,12 +431,12 @@ function CacheSensor($sid, $cid, $db)
         FROM event a
         ".$schema_specific[2]."
         LEFT JOIN iphdr b ON (a.sid=b.sid AND a.cid=b.cid)
-        WHERE ".$schema_specific[3]." AND 
+        WHERE ".$schema_specific[3]." AND
         (a.sid = $sid AND a.cid > $cid)";
   }
-  else 
+  else
   {
-    $update_sql[4] = 
+    $update_sql[4] =
        "INSERT INTO acid_event (sid,cid,signature,timestamp,
                                 ip_src,ip_dst,ip_proto,
                                 sig_name".
@@ -442,29 +447,29 @@ function CacheSensor($sid, $cid, $db)
         FROM event
         ".$schema_specific[2]."
         LEFT JOIN iphdr ON (event.sid=iphdr.sid AND event.cid=iphdr.cid)
-        WHERE ".$schema_specific[3]." AND 
+        WHERE ".$schema_specific[3]." AND
         (event.sid = $sid AND event.cid > $cid)";
   }
 
 
   // Some checks for unexpected errors
   $update_cnt = count($update_sql);
-  if (!isset($update_cnt)) 
+  if (!isset($update_cnt))
   {
     $mystr = '<BR>' . __FILE__ . ':' . __LINE__ . ": WARNING: \$update_cnt has not been set. sid = $sid, cid = $cid<BR>";
-    echo $mystr; 
+    echo $mystr;
   }
-  else if ((integer)$update_cnt == 0) 
+  else if ((integer)$update_cnt == 0)
   {
     $mystr = '<BR>' . __FILE__ . ':' . __LINE__ . ": WARNING: \$update_cnt = 0 with sid = $sid, cid = $cid<BR>";
-    echo $mystr; 
+    echo $mystr;
   }
-  else if (!isset($update_sql[0]) && !isset($update_sql[1]) && !isset($update_sql[2]) && !isset($update_sql[3])) 
+  else if (!isset($update_sql[0]) && !isset($update_sql[1]) && !isset($update_sql[2]) && !isset($update_sql[3]))
   {
     $mystr = '<BR>' . __FILE__ . ':' . __LINE__ . ": WARNING: \$update_sql[] has only empty elements with sid = $sid, cid = $cid<BR>";
     echo $mystr;
-  } 
-  else if ($update_sql[0] == "" && $update_sql[1] == "" && $update_sql[2] == "" && $update_sql[3] == "") 
+  }
+  else if ($update_sql[0] == "" && $update_sql[1] == "" && $update_sql[2] == "" && $update_sql[3] == "")
   {
     $mystr = '<BR>' . __FILE__ . ':' . __LINE__ . ": WARNING: \$update_sql[] has only empty elements with sid = $sid, cid = $cid<BR>";
     echo $mystr;
@@ -482,7 +487,7 @@ function CacheSensor($sid, $cid, $db)
     }
 
 
-    $db->baseExecute($update_sql[$i]); 
+    $db->baseExecute($update_sql[$i]);
 
     if ( $db->baseErrorMessage() != "" )
        ErrorMessage(_ERRCACHEERROR." ["._SENSOR." #$sid]["._EVENTTYPE." $i]".
@@ -497,7 +502,7 @@ function dump_missing_events($db, $sid, $start_cid, $end_cid)
 {
   GLOBAL $debug_mode;
   GLOBAL $archive_exists;
-  GLOBAL $DBlib_path, $DBtype, 
+  GLOBAL $DBlib_path, $DBtype,
          $archive_dbname, $archive_host, $archive_port,
          $archive_user, $archive_password;
 
@@ -516,7 +521,7 @@ function dump_missing_events($db, $sid, $start_cid, $end_cid)
       $acid_event_row = $acid_event_list->baseFetchRow();
       $acid_event_element = $acid_event_row[0];
       $acid_event_list->baseFreeRows();
-      if ((integer)$acid_event_element == 0) 
+      if ((integer)$acid_event_element == 0)
       {
         echo '<BR>' . __FILE__ . ':' . __LINE__ . ": ERROR: Alert \"$sid - $n\" could NOT be found in acid_event.<BR>";
       }
@@ -530,7 +535,7 @@ function UpdateAlertCache($db)
 {
   GLOBAL $debug_mode;
   GLOBAL $archive_exists;
-  GLOBAL $DBlib_path, $DBtype, 
+  GLOBAL $DBlib_path, $DBtype,
          $archive_dbname, $archive_host, $archive_port,
          $archive_user, $archive_password;
 
@@ -555,7 +560,7 @@ function UpdateAlertCache($db)
   {
     $mystr = '<BR>' . __FILE__ . ':' . __LINE__ . ": ERROR: \$number_sensors_array is NOT an array!<BR>";
     ErrorMessage($mystr);
-    
+
     $number_sensors = 0;
   }
 
@@ -565,7 +570,7 @@ function UpdateAlertCache($db)
     ErrorMessage($mystr);
 
     $number_sensors = 0;
-  } 
+  }
   else
   {
     $number_sensors = $number_sensors_array[0];
@@ -576,7 +581,7 @@ function UpdateAlertCache($db)
     echo '$number_sensors = ' . $number_sensors . '<BR><BR>';
   }
 
-  
+
   if (($debug_mode > 0) && ($number_sensors < 1))
   {
     ErrorMessage("WARNING: Number of sensors = " . $number_sensors);
@@ -585,10 +590,10 @@ function UpdateAlertCache($db)
     echo '<PRE>';
     var_dump($number_sensors_array);
     echo '</PRE>';
-    echo '<HR>';    
+    echo '<HR>';
   }
-  
-  
+
+
   /* Iterate through all sensors in the SENSOR table */
   $sensor_lst = $db->baseExecute("SELECT sid FROM sensor");
   if (($debug_mode > 0) && ($number_sensors < 1))
@@ -629,7 +634,7 @@ function UpdateAlertCache($db)
       /* NULL is in conflict with snort-2.8.0.1/schemas/create_mysql:
        * CREATE TABLE event  ( sid         INT      UNSIGNED NOT NULL,
                                cid         INT      UNSIGNED NOT NULL,
-                               signature   INT      UNSIGNED NOT NULL, 
+                               signature   INT      UNSIGNED NOT NULL,
                                timestamp            DATETIME NOT NULL,
                                PRIMARY KEY (sid,cid),
                                INDEX       sig (signature),
@@ -654,7 +659,7 @@ function UpdateAlertCache($db)
     {
       /* NULL is in conflict with base-php4/sql/create_base_tbls_mysql.sql:
          CREATE TABLE acid_event   ( sid                 INT UNSIGNED NOT NULL,
-                                      cid                 INT UNSIGNED NOT NULL,     
+                                      cid                 INT UNSIGNED NOT NULL,
          (...)
        */
       $ccid = 0;
@@ -668,14 +673,14 @@ function UpdateAlertCache($db)
     if ( $debug_mode > 0 )
       echo "sensor #$sid: event.cid = $cid, acid_event.cid = $ccid";
 
-    /* if the CID in the cache < the CID in the event table 
-     *  then there are events which have NOT been added to the cache 
+    /* if the CID in the cache < the CID in the event table
+     *  then there are events which have NOT been added to the cache
      */
     if ( $cid > $ccid )
     {
       $expected_addition = (integer)($cid - $ccid);
 
-      $before_cnt = EventCntBySensor($sid, $db);        
+      $before_cnt = EventCntBySensor($sid, $db);
       CacheSensor($sid, $ccid, $db);
       $updated_cache_cnt += EventCntBySensor($sid, $db) - $before_cnt;
     }
@@ -692,32 +697,32 @@ function UpdateAlertCache($db)
     {
       $ccid_lst->baseFreeRows();
     }
- 
+
     /* BEGIN LOCAL FIX */
- 
+
     /* If there's an archive database, and this isn't it, get the MAX(cid) from there */
-    if ( ($archive_exists == 1) && (@$_COOKIE['archive'] != 1) ) { 
+    if ( ($archive_exists == 1) && (@$_COOKIE['archive'] != 1) ) {
       $db2 = NewBASEDBConnection($DBlib_path, $DBtype);
       $db2->baseConnect($archive_dbname, $archive_host, $archive_port,
                         $archive_user, $archive_password);
-      $archive_ccid_lst = $db2->baseExecute("SELECT MAX(cid) FROM acid_event WHERE sid='".$sid."'"); 
+      $archive_ccid_lst = $db2->baseExecute("SELECT MAX(cid) FROM acid_event WHERE sid='".$sid."'");
       $archive_ccid_row = $archive_ccid_lst->baseFetchRow();
       $archive_ccid = $archive_ccid_row[0];
       $archive_ccid_lst->baseFreeRows();
       $db2->baseClose();
       if ( $archive_ccid == NULL ) $archive_ccid = 0;
     } else {
-      $archive_ccid = 0; 
+      $archive_ccid = 0;
     }
- 
+
     if ( $archive_ccid > $ccid ) {
       $max_ccid = $archive_ccid;
     } else {
       $max_ccid = $ccid;
     }
- 
+
     /* Fix the last_cid value for the sensor */
-    $db->baseExecute("UPDATE sensor SET last_cid=$max_ccid WHERE sid=$sid"); 
+    $db->baseExecute("UPDATE sensor SET last_cid=$max_ccid WHERE sid=$sid");
 
     /* END LOCAL FIX */
 
@@ -729,13 +734,13 @@ function UpdateAlertCache($db)
       if ($debug_mode > 1)
       {
         echo '<BR><BR>' . __FILE__ . ':' . __LINE__ . ": <BR>\nSensor no. $sid:<BR>\n<PRE>\n";
-        echo "Old max cid in acid_event: $ccid<BR>";    
+        echo "Old max cid in acid_event: $ccid<BR>";
       }
 
       $debug_new_ccid_lst = $db->baseExecute("SELECT MAX(cid) FROM acid_event WHERE sid='".$sid."'");
       $debug_new_ccid_row = $debug_new_ccid_lst->baseFetchRow();
       $debug_new_ccid_lst->baseFreeRows();
-      if (isset($debug_new_ccid_row[0])) 
+      if (isset($debug_new_ccid_row[0]))
       {
         $new_ccid = (integer) $debug_new_ccid_row[0];
       }
@@ -744,22 +749,22 @@ function UpdateAlertCache($db)
         $new_ccid = 0;
       }
 
-      
+
       $real_addition = (integer)($new_ccid - (integer)$ccid);
 
       if ($debug_mode > 1)
       {
         echo "New max cid in acid_event: $new_ccid<BR>";
         echo "This many events HAVE been added to acid_event: $real_addition<BR><BR>";
-    
+
         echo "Max cid in event: $cid<BR>";
       }
 
-      if ($real_addition >= 0) 
+      if ($real_addition >= 0)
       {
 
 
-        if (!isset($expected_addition)) 
+        if (!isset($expected_addition))
         {
           $expected_addition = 0;
         }
@@ -769,9 +774,9 @@ function UpdateAlertCache($db)
           echo "This many events SHOULD have been added to acid_event: $expected_addition<BR>";
         }
 
-        if ($real_addition > 0 && $expected_addition > 0) 
+        if ($real_addition > 0 && $expected_addition > 0)
         {
-          if ($expected_addition - $real_addition > 0) 
+          if ($expected_addition - $real_addition > 0)
           {
             $mystr = '<BR>' . __FILE__ . ':' . __LINE__ . ": ERROR: <BR>" . (integer)((integer)$expected_addition - (integer)$real_addition) . " alerts have NOT found their way into acid_event with sid = $sid<BR>";
             errorMessage($mystr);
@@ -789,13 +794,13 @@ function UpdateAlertCache($db)
         }
       }
 
-      if ($debug_mode > 1) 
+      if ($debug_mode > 1)
       {
         echo "\n---------------<BR><PRE>\n";
       }
     }
   } // for ($n = 0; $n < $number_sensors; $n++)
-  
+
   $sensor_lst->baseFreeRows();
 
 

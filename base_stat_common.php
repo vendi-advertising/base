@@ -1,4 +1,10 @@
 <?php
+
+use Vendi\BASE\DatabaseTypes;
+use Vendi\BASE\Criteria\CriteriaState;
+
+require_once __DIR__ . '/includes/vendi_boot.php';
+
 /*******************************************************************************
 ** Basic Analysis and Security Engine (BASE)
 ** Copyright (C) 2004 BASE Project Team
@@ -312,7 +318,7 @@ function UniqueLinkCnt($db, $join = "", $where = "")
    if (!stristr($where, "WHERE") && $where != "")
 	$where = " WHERE $where ";
 
-   if ( $db->DB_type == "mysql" )
+   if ( $db->DB_type == DatabaseTypes::MYSQL )
    {
      if ( $join == "" && $where == "")
        $result = $db->baseExecute("SELECT COUNT(DISTINCT acid_event.ip_src, acid_event.ip_dst, acid_event.ip_proto) FROM acid_event");

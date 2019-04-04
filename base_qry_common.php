@@ -1,8 +1,9 @@
 <?php
 
-require_once __DIR__ . '/includes/vendi_boot.php';
-
+use Vendi\BASE\DatabaseTypes;
 use Vendi\BASE\Criteria\CriteriaState;
+
+require_once __DIR__ . '/includes/vendi_boot.php';
 
 /*******************************************************************************
 ** Basic Analysis and Security Engine (BASE)
@@ -129,9 +130,9 @@ function DateTimeRows2sql($field, $cnt, &$s_sql)
   GLOBAL $db;
   $tmp2 = "";
   $allempty = FALSE;
-  $time_field = array("mysql"    => ":",
-                      "mssql"    => ":",
-                      "postgres" => ":"
+  $time_field = array(DatabaseTypes::MYSQL    => ":",
+                      DatabaseTypes::MSSQL    => ":",
+                      DatabaseTypes::POSTGRES => ":"
                 );
   $minsec = array( ">=" => "00", "<=" => "59");
 
@@ -198,7 +199,7 @@ function DateTimeRows2sql($field, $cnt, &$s_sql)
 
             /* date or date/time */
              else if ( ($field[$i][4] != " " && $field[$i][5] != "") || $field[$i][4] != " ") {
-               if( $db->DB_type == "oci8" ) {
+               if( $db->DB_type == DatabaseTypes::ORACLE ) {
                  $tmp = $field[$i][0]." timestamp ".$op."to_date( '$t', 'YYYY-MM-DD HH24MISS' )".$field[$i][8].' '.$field[$i][9];
                } else {
 			if (count($field) > 1) {
@@ -665,7 +666,7 @@ function ProcessCriteria()
 
            if ( $sig[0] == "=" )
            {
-              if ($db->DB_type != "mssql")
+              if ($db->DB_type != DatabaseTypes::MSSQL)
               {
                 $tmp_meta = $tmp_meta." AND ".$sig_neg." (sig_name='". $sig_name . "') ";
               }

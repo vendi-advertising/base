@@ -1,33 +1,24 @@
 <?php
+
+use Vendi\BASE\DatabaseTypes;
+
+require_once dirname(__DIR__) . '/includes/vendi_boot.php';
+
 /*******************************************************************************
-** Basic Analysis and Security Engine (BASE)
-** Copyright (C) 2004 BASE Project Team
-** Copyright (C) 2000 Carnegie Mellon University
-**
-** (see the file 'base_main.php' for license details)
-**
-** Project Lead: Kevin Johnson <kjohnson@secureideas.net>
-**                Sean Muller <samwise_diver@users.sourceforge.net>
-** Built upon work by Roman Danyliw <rdd@cert.org>, <roman@danyliw.com>
-**
 ** Purpose: Alert action (e.g. add to AG, delete, email,
-**          archive) operations   
-********************************************************************************
-** Authors:
-********************************************************************************
-** Kevin Johnson <kjohnson@secureideas.net
-**
+**          archive) operations
 ********************************************************************************
 */
-/** The below check is to make sure that the conf file has been loaded before this one....
- **  This should prevent someone from accessing the page directly. -- Kevin
- **/
+
 defined( '_BASE_INC' ) or die( 'Accessing this file directly is not allowed.' );
 
 include_once("$BASE_path/base_ag_common.php");
 include_once("$BASE_path/includes/base_constants.inc.php");
-include_once("Mail.php"); // r.rioux added for PEAR::Mail
-include_once("Mail/mime.php"); //r.rioux added for PEAR::Mail attachments
+
+//These two have been commented out for now until a suitable replacement can be
+//found. cjh - 2019-04-04
+//include_once("Mail.php"); // r.rioux added for PEAR::Mail
+//include_once("Mail/mime.php"); //r.rioux added for PEAR::Mail attachments
 
 function IsValidAction($action, $valid_actions)
 {
@@ -47,7 +38,7 @@ function IsValidActionOp($action_op, $valid_action_op)
                changed in order for alerts to be re-displayed after the operation.
   = valid_action_op: array of valid action operations ($action_op must be in $valid_action_op)
   = $action_arg: argument for the action
-  = $context: what page is the $action being performed in? 
+  = $context: what page is the $action being performed in?
        - 1: from query results page
        - 2: from signature/alert page
        - 3: from sensor page
@@ -57,18 +48,18 @@ function IsValidActionOp($action_op, $valid_action_op)
        - 7: base_stat_class.php	PAGE_STAT_CLASS
        - 8: base_stat_uaddr.php	PAGE_STAT_UADDR
        - 9: base_stat_ports.php	PAGE_STAT_PORTS
- 
+
   = $action_chk_lst: (used only when _SELECTED is the $action_op)
-                    a sparse array where each element contains a key to alerts which should be acted 
+                    a sparse array where each element contains a key to alerts which should be acted
                     on.  Some elements will be blank based on the checkbox state.
                     Depending on the setting of $context, these keys may be either
                     sid/cid pairs ($context=1), signature IDs ($context=2), or sensor IDs ($context=3)
 
   = $action_lst: (used only when _ALLONSCREEN is the $action_op)
-                 an array denoting all elements on the screen, where each element contains a key to 
-                 alerts which should be acted on. Depending on the setting of $context, these keys 
-                 may be either sid/cid pairs ($context=1), signature IDs ($context=2), or sensor 
-                 IDs ($context=3) 
+                 an array denoting all elements on the screen, where each element contains a key to
+                 alerts which should be acted on. Depending on the setting of $context, these keys
+                 may be either sid/cid pairs ($context=1), signature IDs ($context=2), or sensor
+                 IDs ($context=3)
   = $num_alert_on_screen: count of alerts on screen (used to parse through $alert_chk_lst for
                           _SELECTED and _ALLONSCREEN $action_op).
   = $num_alert_in_query: count of alerts in entire query. Passed by reference since delete operations
@@ -76,7 +67,7 @@ function IsValidActionOp($action_op, $valid_action_op)
   = $action_sql: (used only when _ENTIREQUERY is the $action_op)
                  SQL used to extract all the alerts to operate on
   = $page_caller: $caller variable from page
-  = $db: handle to the database 
+  = $db: handle to the database
   = $action_param: extra data passed about an alert in addition to what is
                    entered by users in $action_arg
  */
@@ -87,8 +78,8 @@ function ActOnSelectedAlerts($action, $valid_action, &$action_op, $valid_action_
                              $num_alert_on_screen, &$num_alert_in_query,
                              $action_sql, $page_caller,
                              $db, $action_param = "" )
-{ 
-  GLOBAL $current_view, $last_num_alerts, $freq_num_alerts, $caller, 
+{
+  GLOBAL $current_view, $last_num_alerts, $freq_num_alerts, $caller,
          $ag_action, $debug_mode, $max_script_runtime;
 
   /* Verify that an action was actually selected */
@@ -104,8 +95,8 @@ function ActOnSelectedAlerts($action, $valid_action, &$action_op, $valid_action_
   }
 
   /* Verify that validity of action   */
-  if ( !(IsValidAction($action, $valid_action) && 
-         IsValidActionOp($action_op, $valid_action_op)) ) 
+  if ( !(IsValidAction($action, $valid_action) &&
+         IsValidActionOp($action_op, $valid_action_op)) )
   {
      ErrorMessage("'".$action."'". _INVALIDACT);
      return;
@@ -113,7 +104,7 @@ function ActOnSelectedAlerts($action, $valid_action, &$action_op, $valid_action_
 
   /* Verify that those actions that need an argument have it
    *
-   * Verify #1: Adding to an AG needs an argument 
+   * Verify #1: Adding to an AG needs an argument
    */
   if ( ($action_arg == "") && ( ($action == "ag_by_id") || ($action == "ag_by_name") ) )
   {
@@ -138,7 +129,7 @@ function ActOnSelectedAlerts($action, $valid_action, &$action_op, $valid_action_
   if ($action_op == _SELECTED)
   {
      /* on packet lookup, only examine the first packet */
-     if ( $context == PAGE_ALERT_DISPLAY ) 
+     if ( $context == PAGE_ALERT_DISPLAY )
      {
         $tmp = 1;
         ProcessSelectedAlerts($action, $action_op, $action_arg, $action_param,
@@ -168,15 +159,15 @@ function ActOnSelectedAlerts($action, $valid_action, &$action_op, $valid_action_
                             $action_sql,
                             $db);
    }
-   else if ($action_op == _ENTIREQUERY)      
+   else if ($action_op == _ENTIREQUERY)
    {
       if ( ($context == PAGE_QRY_ALERTS) )  /* on alert listing page */
       {
-         if ( $page_caller == "last_tcp"  || $page_caller == "last_udp" || 
+         if ( $page_caller == "last_tcp"  || $page_caller == "last_udp" ||
               $page_caller == "last_icmp" || $page_caller == "last_any" )
          {
            $limit_start = 0;
-           $limit_offset = $last_num_alerts; 
+           $limit_offset = $last_num_alerts;
            $tmp_num = $last_num_alerts;
          }
          else
@@ -214,7 +205,7 @@ function ActOnSelectedAlerts($action, $valid_action, &$action_op, $valid_action_
          $tmp_num = $num_alert_in_query;
          $limit_start = $limit_offset = -1;
       }
-    
+
       ProcessSelectedAlerts($action, $action_op, $action_arg, $action_param,
                             $context,
                             $action_lst,
@@ -229,12 +220,12 @@ function ActOnSelectedAlerts($action, $valid_action, &$action_op, $valid_action_
     * so the alerts are re-displayed after the operation completes
     */
    if ( $context == PAGE_STAT_ALERTS || $context == PAGE_STAT_SENSOR )
-      $action_op = $current_view;   
+      $action_op = $current_view;
 
    /* In Query results, alert lookup, or AG maintenance:
     * Reset the "$submit" to be a view # to mimic a browsing operation
     * However if in alert lookup, set "$submit" to be the $caller (i.e. sid, cid)
-    */ 
+    */
    if ( ($context == PAGE_QRY_ALERTS) || ($context == PAGE_QRY_AG) )
    {
      /* Reset $submit to a browsing view # */
@@ -243,7 +234,7 @@ function ActOnSelectedAlerts($action, $valid_action, &$action_op, $valid_action_
         $action_op = $current_view;
      }
      /* but if in Alert Lookup, set $submit to (sid,cid) */
-     
+
      else
      {
         $action_op = $page_caller;
@@ -256,7 +247,7 @@ function ActOnSelectedAlerts($action, $valid_action, &$action_op, $valid_action_
    if ( $context == PAGE_QRY_AG )
    {
      $ag_action = "view";
-   } 
+   }
 }
 
 function GetActionDesc($action_name)
@@ -300,9 +291,9 @@ function ProcessSelectedAlerts($action, &$action_op, $action_arg, $action_param,
   else if ($action == "archive_alert")  $action_desc = _ARCHIVEALERTSCOPY;
   else if ($action == "archive_alert2") $action_desc = _ARCHIVEALERTSMOVE;
   else if ($action == "add_new_ag")     $action_desc = _ADDAG;
-  
 
-  if ( $action == "" )  
+
+  if ( $action == "" )
     return;
 
   if ( $debug_mode > 0 )
@@ -321,24 +312,24 @@ function ProcessSelectedAlerts($action, &$action_op, $action_arg, $action_param,
   /* Depending from which page/listing the action was spawned,
    * the entities selected may not necessarily be specific
    * alerts.  For example, sensors or alert names may be
-   * selected.  Thus, each one of these entities referred to as 
+   * selected.  Thus, each one of these entities referred to as
    * alert_blobs, the specific alerts associated with them must
    * be explicitly extracted.  This blob structures SQL must be
    * used to extract the list, where the passed selected keyed
    * will be the criteria in this SQL.
    *
    * Note: When acting on any page where _ENTIREQUERY is
-   * selected this is also a blob. 
-   */ 
+   * selected this is also a blob.
+   */
 
-  /* if only manipulating specific alerts -- 
+  /* if only manipulating specific alerts --
    * (in the Query results or AG contents list)
    */
   if ( ($context == PAGE_QRY_ALERTS) || ($context == PAGE_QRY_AG) ||
        ($context == PAGE_ALERT_DISPLAY) )
-  {  
+  {
      $num_alert_blobs = 1;
-     if ( $action_op == _ENTIREQUERY ) 
+     if ( $action_op == _ENTIREQUERY )
         $using_blobs = true;
      else
         $using_blobs = false;
@@ -357,16 +348,16 @@ function ProcessSelectedAlerts($action, &$action_op, $action_arg, $action_param,
   /* ******* SOME PRE ACTION ********* */
   $function_pre = "Action_".$action."_Pre";
   $action_ctx = $function_pre($action_arg, $action_param, $db);
- 
-  if ( $debug_mode > 0 ) 
+
+  if ( $debug_mode > 0 )
      echo "<BR>Gathering elements from ".sizeof($action_lst)." alert blobs<BR>";
 
   /* Loop through all the alert blobs */
   for ( $j = 0; $j < $num_alert_blobs; $j++ )
   {
-      /* If acting on a blob construct, or on the_ENTIREQUERY 
+      /* If acting on a blob construct, or on the_ENTIREQUERY
        * of a non-blob structure (which is equivalent to 1-blob)
-       * run a query to get the results.  
+       * run a query to get the results.
        *
        * For each unique blob construct two SQL statement are
        * generated: one to retrieve the alerts ($sql), and another
@@ -379,27 +370,27 @@ function ProcessSelectedAlerts($action, &$action_op, $action_arg, $action_param,
          /* Unique Signature listing */
          if ( $context == PAGE_STAT_ALERTS )
          {
-            if ( !isset($action_lst[$j]) ) $tmp = -1;  else $tmp = $action_lst[$j];            
+            if ( !isset($action_lst[$j]) ) $tmp = -1;  else $tmp = $action_lst[$j];
             $sql = "SELECT acid_event.sid, acid_event.cid ".$action_sql." AND signature='".
-                     $tmp."'"; 
+                     $tmp."'";
             $sql2 = "SELECT count(acid_event.sid) ".$action_sql." AND signature='".
-                     $tmp."'"; 
+                     $tmp."'";
          }
          /* Unique Sensor listing */
          else if ( $context == PAGE_STAT_SENSOR )
          {
             if ( !isset($action_lst[$j]) ) $tmp = -1;  else $tmp = $action_lst[$j];
-            $sql = "SELECT sid, cid FROM acid_event WHERE sid='".$tmp."'";  
-            $sql2 = "SELECT count(sid) FROM acid_event WHERE sid='".$tmp."'"; 
+            $sql = "SELECT sid, cid FROM acid_event WHERE sid='".$tmp."'";
+            $sql2 = "SELECT count(sid) FROM acid_event WHERE sid='".$tmp."'";
          }
          /* Unique Classification listing */
          else if ( $context == PAGE_STAT_CLASS )
          {
             if ( !isset($action_lst[$j]) ) $tmp = -1;  else $tmp = $action_lst[$j];
             $sql = "SELECT acid_event.sid, acid_event.cid  ".$action_sql." AND sig_class_id='".
-                     $tmp."'";  
+                     $tmp."'";
             $sql2 = "SELECT count(acid_event.sid) ".$action_sql." AND sig_class_id='".
-                     $tmp."'"; 
+                     $tmp."'";
          }
          /* Unique IP links listing */
          else if ( $context == PAGE_STAT_IPLINK )
@@ -414,7 +405,7 @@ function ProcessSelectedAlerts($action, &$action_op, $action_arg, $action_param,
 		     $tmp = $tmp_sip . "' AND ip_dst='" . $tmp_dip . "' AND ip_proto='" . $tmp_proto;
             }
             $sql = "SELECT acid_event.sid, acid_event.cid  ".$action_sql." AND ip_src='". $tmp."'";
-            $sql2 = "SELECT count(acid_event.sid) ".$action_sql." AND ip_src='". $tmp."'"; 
+            $sql2 = "SELECT count(acid_event.sid) ".$action_sql." AND ip_src='". $tmp."'";
          }
          /* Unique IP addrs listing */
          else if ( $context == PAGE_STAT_UADDR )
@@ -430,7 +421,7 @@ function ProcessSelectedAlerts($action, &$action_op, $action_arg, $action_param,
 		     ($tmp_sip != "") ? ($tmp = "ip_src='".$tmp_sip."'") : ($tmp = "ip_dst='".$tmp_dip."'");
             }
             $sql = "SELECT acid_event.sid, acid_event.cid  ".$action_sql." AND ". $tmp;
-            $sql2 = "SELECT count(acid_event.sid) ".$action_sql." AND ". $tmp; 
+            $sql2 = "SELECT count(acid_event.sid) ".$action_sql." AND ". $tmp;
          }
          /* Ports listing */
          else if ( $context == PAGE_STAT_PORTS )
@@ -452,10 +443,10 @@ function ProcessSelectedAlerts($action, &$action_op, $action_arg, $action_param,
                            ($tmp.=" AND layer4_sport='".$tmp_ip."'") : ($tmp.=" AND layer4_dport='".$tmp_ip."'");
             }
             $sql = "SELECT acid_event.sid, acid_event.cid FROM acid_event WHERE ". $tmp;
-            $sql2 = "SELECT count(acid_event.sid) FROM acid_event WHERE ". $tmp; 
+            $sql2 = "SELECT count(acid_event.sid) FROM acid_event WHERE ". $tmp;
          }
-         /* if acting on alerts by signature or sensor, count the 
-          * the number of alerts 
+         /* if acting on alerts by signature or sensor, count the
+          * the number of alerts
           */
          if ( ($context == PAGE_STAT_ALERTS) || ($context == PAGE_STAT_SENSOR)
             || ($context == PAGE_STAT_CLASS) || ($context == PAGE_STAT_IPLINK)
@@ -482,7 +473,7 @@ function ProcessSelectedAlerts($action, &$action_op, $action_arg, $action_param,
               ErrorMessage("Error retrieving alert list to $action_desc");
               if ( $debug_mode > 0 )  ErrorMessage($db->baseErrorMessage());
               return -1;
-         }           
+         }
      }
 
      /* Limit the number of alerts acted on if in "top x alerts" */
@@ -496,12 +487,12 @@ function ProcessSelectedAlerts($action, &$action_op, $action_arg, $action_param,
         {
            /* If acting on a blob */
            if ( $using_blobs )
-           { 
+           {
               $myrow = $result->baseFetchRow();
               $sid = $myrow[0];
-              $cid = $myrow[1];  
+              $cid = $myrow[1];
            }
-           else 
+           else
               GetQueryResultID($action_lst[$i], $seq, $sid, $cid);
 
            if ( $sid != "" )
@@ -517,13 +508,13 @@ function ProcessSelectedAlerts($action, &$action_op, $action_arg, $action_param,
               /* xxx jl: then there was an error.  And this does not necessarily
                  refer to a duplicate */
               {
-                ++$dup_cnt; 
+                ++$dup_cnt;
               }
               else if ( $tmp == 1 )
               {
-                ++$action_cnt; 
+                ++$action_cnt;
               }
-           } 
+           }
         }
      }
 
@@ -543,10 +534,10 @@ function ProcessSelectedAlerts($action, &$action_op, $action_arg, $action_param,
 
   if ( $action_cnt > 0 )
   {
-    /* 
+    /*
      *  Print different message if alert action units (e.g. sensor
      *  or signature) are not individual alerts
-     */ 
+     */
     if ( ($context == PAGE_STAT_ALERTS) || ($context == PAGE_STAT_SENSOR)
        || ($context == PAGE_STAT_CLASS) || ($context == PAGE_STAT_IPLINK)
        || ($context == PAGE_STAT_UADDR) || ($context == PAGE_STAT_PORTS) )
@@ -555,19 +546,19 @@ function ProcessSelectedAlerts($action, &$action_op, $action_arg, $action_param,
         ErrorMessage(_SUCCESS ." $action_desc - ".$action_cnt._ALERTSPARA);
   }
   else if ( $action_cnt == 0 )
-     ErrorMessage(_NOALERTSSELECT." $action_desc "._NOTSUCCESSFUL); 
+     ErrorMessage(_NOALERTSSELECT." $action_desc "._NOTSUCCESSFUL);
 
   if ( $debug_mode > 0 )
   {
      echo "-------------------------------------<BR>
           action_cnt = $action_cnt<BR>
           dup_cnt = $dup_cnt<BR>
-          num_alert = $num_alert<BR> 
+          num_alert = $num_alert<BR>
           ==== $action_desc Alerts END ========<BR>";
   }
 }
 
-/* 
+/*
  *
  *  function Action_*_Pre($action, $action_arg)
  *
@@ -605,7 +596,7 @@ function Action_ag_by_id_Op($sid, $cid, $db, $action_arg, &$ctx)
    $db->baseExecute($sql2, -1, -1, false);
 
    if ( $db->baseErrorMessage() != "" )
-      return 0; 
+      return 0;
    else
       return 1;
 }
@@ -631,7 +622,7 @@ function Action_ag_by_name_Op($sid, $cid, $db, $action_arg, &$ctx)
    $db->baseExecute($sql2, -1, -1, false);
 
    if ( $db->baseErrorMessage() != "" )
-      return 0; 
+      return 0;
    else
       return 1;
 }
@@ -647,7 +638,7 @@ function Action_add_new_ag_pre($action_arg, $action_param, $db)
  *  $action_arg:  New AG name
  */
 {
-   if($action_arg == "") 
+   if($action_arg == "")
      $ag_name = "AG_".date("Y-m-d_H:i:s", time());
    else
      $ag_name = $action_arg;
@@ -666,7 +657,7 @@ function Action_add_new_ag_Op($sid, $cid, $db, $action_arg, &$ctx)
    /* Check the return code, if an error occurs we need to remove
     * the AG created in the Pre-action section.  Rollback would be
     * a better option, but for now we'll just delete.
-    */ 
+    */
    if($retval == 0)
    {
       $sql = "DELETE FROM acid_ag WHERE ag_id='".$ag_id."'";
@@ -682,7 +673,7 @@ function Action_add_new_ag_Op($sid, $cid, $db, $action_arg, &$ctx)
 function Action_add_new_ag_Post($action_arg, &$action_ctx, $db, &$num_alert, $action_cnt)
 {
    $sql = "SELECT COUNT(ag_id) FROM acid_ag_alert WHERE ag_id='".$action_ctx."'";
-  
+
    $result = $db->baseExecute($sql, -1, -1, false);
 
    if($db->baseErrorMessage() != "")
@@ -732,8 +723,8 @@ function Action_del_alert_post($action_arg, &$action_ctx, $db, &$num_alert, $act
   $action_chk_lst = ImportHTTPVar("action_chk_lst");
 
   /* count the number of check boxes selected  */
-  for ( $i = 0; $i < $action_lst_cnt ; $i++)  
-  { 
+  for ( $i = 0; $i < $action_lst_cnt ; $i++)
+  {
      if (isset($action_chk_lst[$i]))
        $sel_cnt++;
   }
@@ -741,9 +732,9 @@ function Action_del_alert_post($action_arg, &$action_ctx, $db, &$num_alert, $act
       $num_alert -= $sel_cnt;
  /* No, must have been a Delete ALL on Screen or Delete Entire Query  */
   elseif  ($context == 1)     /* detail alert list ? */
-      $num_alert -= $action_cnt; 
-  else  
-      $num_alert -= count(ImportHTTPVar("action_chk_lst"));  
+      $num_alert -= $action_cnt;
+  else
+      $num_alert -= count(ImportHTTPVar("action_chk_lst"));
 
 }
 
@@ -766,7 +757,7 @@ function Action_email_alert_op($sid, $cid, $db, $action_arg, &$ctx)
 
 function Action_email_alert_post($action_arg, &$action_ctx, $db, &$num_alert, &$action_cnt)
 {
-  GLOBAL $BASE_VERSION, 
+  GLOBAL $BASE_VERSION,
          $action_email_from, $action_email_mode, $action_email_subject, $action_email_msg,
          $action_email_smtp_host, $action_email_smtp_auth, $action_email_smtp_user, $action_email_smtp_pw,
          $action_email_smtp_localhost;
@@ -774,7 +765,7 @@ function Action_email_alert_post($action_arg, &$action_ctx, $db, &$num_alert, &$
   /* Return if there is no alerts */
   if ( $action_ctx == "" )
         return;
-        
+
   $smtp_host = $action_email_smtp_host;
   $smtp_auth = $action_email_smtp_auth;
   $smtp_user = $action_email_smtp_user;
@@ -787,32 +778,32 @@ function Action_email_alert_post($action_arg, &$action_ctx, $db, &$num_alert, &$
                 'Subject' => $action_email_subject
                );
   $mail_content = $action_email_msg . _GENBASE . " v$BASE_VERSION on ".date("r",time())."\n";
-  
+
 
   /* alerts inline */
   if ( $action_email_mode == 0 )
   {
-    $body = $mail_content."\n".$action_ctx . "\n"; 
+    $body = $mail_content."\n".$action_ctx . "\n";
   }
   /* alerts as attachment */
   else
   {
-  	
-    $boundary = strtoupper(md5(uniqid(time())));  
+
+    $boundary = strtoupper(md5(uniqid(time())));
     $file_name = "base_report_".date("Ymd",time()).".log";
 	$crlf = "\n";
-    
+
     $mime = new Mail_Mime($crlf);
-    
+
     $mime->addAttachment($action_ctx, 'text/csv', $file_name, 0, 'quoted-printable');
-    
+
     $body = $mime->get();
     $hdrs = $mime->headers($hdrs);
   }
 
   if ( !send_email($smtp_host, $smtp_auth, $smtp_user, $smtp_pw, $mail_recip, $hdrs, $body, $smtp_localhost) )
   {
-    ErrorMessage(_ERRNOEMAILEXP." '".$mail_recip."'.  "._ERRNOEMAILPHP); 
+    ErrorMessage(_ERRNOEMAILEXP." '".$mail_recip."'.  "._ERRNOEMAILPHP);
     $action_cnt = 0;
     return 0;
   }
@@ -890,11 +881,11 @@ function Action_clear_alert_op($sid, $cid, $db, $action_arg, &$ctx)
 
      if ( $db->baseErrorMessage() != "" )
         ErrorMessage(_ERRDELALERT." ".$del_table_list[$j]);
-     else 
-        ++$cnt; 
+     else
+        ++$cnt;
   }
 
-  return $cnt; 
+  return $cnt;
 }
 
 function Action_clear_alert_post($action_arg, &$action_ctx, $db, &$num_alert, $action_cnt)
@@ -906,11 +897,11 @@ function Action_clear_alert_post($action_arg, &$action_ctx, $db, &$num_alert, $a
 function Action_archive_alert_pre($action_arg, $action_param, $db)
 {
   GLOBAL $DBlib_path, $DBtype,
-         $archive_dbname, $archive_host, $archive_port, 
+         $archive_dbname, $archive_host, $archive_port,
          $archive_user, $archive_password;
 
   $db2 = NewBASEDBConnection($DBlib_path, $DBtype);
-  $db2->baseConnect($archive_dbname, $archive_host, $archive_port, 
+  $db2->baseConnect($archive_dbname, $archive_host, $archive_port,
                     $archive_user, $archive_password);
 
   return $db2;
@@ -921,9 +912,9 @@ function Action_archive_alert_pre($action_arg, $action_param, $db)
 function Action_archive_alert_op($sid, $cid, &$db, $action_arg, &$ctx)
 {
   GLOBAL $DBlib_path, $DBtype, $db_connect_method,
-         $alert_dbname, $alert_host, $alert_port, 
+         $alert_dbname, $alert_host, $alert_port,
          $alert_user, $alert_password,
-         $archive_dbname, $archive_host, $archive_port, 
+         $archive_dbname, $archive_host, $archive_port,
          $archive_user, $archive_password,
          $debug_mode;
 
@@ -954,12 +945,12 @@ function Action_archive_alert_op($sid, $cid, &$db, $action_arg, &$ctx)
               "VALUES ($sid,'".$tmp_row[0]."','".$tmp_row[1]."','".$tmp_row[2]."','".
               $tmp_row[3]."','".$tmp_row[4]."','0')";
 
-       if ($db->DB_type == "mssql")
+       if ($db->DB_type == DatabaseTypes::MSSQL)
        {
          $insert_sql[$sql_cnt++] = "SET IDENTITY_INSERT sensor ON";
        }
        $insert_sql[$sql_cnt++] = $sql;
-       if ($db->DB_type == "mssql")
+       if ($db->DB_type == DatabaseTypes::MSSQL)
        {
           $insert_sql[$sql_cnt++] = "SET IDENTITY_INSERT sensor OFF";
        }
@@ -974,9 +965,9 @@ function Action_archive_alert_op($sid, $cid, &$db, $action_arg, &$ctx)
       $sql = "SELECT signature, timestamp FROM event WHERE sid=$sid AND cid=$cid";
    }
 
-   $tmp_result = $db->baseExecute($sql);   
+   $tmp_result = $db->baseExecute($sql);
    $tmp_row = $tmp_result->baseFetchRow();
-   
+
    /* baseFetchRow() may return an empty string rather than as array */
    if (isset($tmp_row) && !empty($tmp_row) && $tmp_row != NULL)
    {
@@ -999,9 +990,9 @@ function Action_archive_alert_op($sid, $cid, &$db, $action_arg, &$ctx)
      $sig = "";
      $timestamp = "";
    }
-  
+
    $tmp_result->baseFreeRows();
-  
+
 
    /* Run the same query on archive db, to check if event data already in */
    $tmp_result_db2 = $db2->baseExecute($sql);
@@ -1012,16 +1003,16 @@ function Action_archive_alert_op($sid, $cid, &$db, $action_arg, &$ctx)
 
    /* Insert event data only if we got it from alerts db and it's not already in archive db */
 
-   /* xxx jl: */ 
+   /* xxx jl: */
    if ( $db->baseGetDBversion() < 100 && !$tmp_row_event_db2)
    {
       /* If we have FLoP's event `reference` column - archive it too. */
       if ($reference != "") {
          $sql = "INSERT INTO event (sid,cid,signature,timestamp,reference) VALUES ";
-         $sql.= "($sid, $cid, '".$sig."', '".$timestamp."', '".$reference."')"; 
+         $sql.= "($sid, $cid, '".$sig."', '".$timestamp."', '".$reference."')";
       } else {
          $sql = "INSERT INTO event (sid,cid,signature,timestamp) VALUES ";
-         $sql.= "($sid, $cid, '".$sig."', '".$timestamp."')"; 
+         $sql.= "($sid, $cid, '".$sig."', '".$timestamp."')";
       }
 
       $insert_sql[$sql_cnt++] = $sql;
@@ -1032,7 +1023,7 @@ function Action_archive_alert_op($sid, $cid, &$db, $action_arg, &$ctx)
       $sig_name = GetSignatureName($sig, $db);
 
       if ( $db->baseGetDBversion() >= 103 )
-      {  
+      {
          if ( $db->baseGetDBversion() >= 107 )
             $sql = "SELECT sig_class_id, sig_priority, sig_rev, sig_sid, sig_gid ";
          else
@@ -1042,7 +1033,7 @@ function Action_archive_alert_op($sid, $cid, &$db, $action_arg, &$ctx)
          $result = $db->baseExecute($sql);
          $row = $result->baseFetchRow();
 
-         if (isset($row) && !empty($row)) 
+         if (isset($row) && !empty($row))
          {
            $sig_class_id = $row[0];
            $sig_class_name = GetSigClassName($sig_class_id, $db);
@@ -1059,8 +1050,8 @@ function Action_archive_alert_op($sid, $cid, &$db, $action_arg, &$ctx)
       $sig_reference = array($MAX_REF_CNT);
       $sig_reference_cnt = 0;
       $sql = "SELECT ref_id FROM sig_reference WHERE sig_id='".$sig."'";
-      $tmp_result = $db->baseExecute($sql);   
- 
+      $tmp_result = $db->baseExecute($sql);
+
       while ( (($tmp_row = $tmp_result->baseFetchRow()) != "") &&
               ($sig_reference_cnt < $MAX_REF_CNT) )
       {
@@ -1071,7 +1062,7 @@ function Action_archive_alert_op($sid, $cid, &$db, $action_arg, &$ctx)
            $sql = "SELECT ref_system_id, ref_tag FROM reference ".
                   "WHERE ref_id='".$ref_id."'";
            $tmp_result2 = $db->baseExecute($sql);
-           $tmp_row2 = $tmp_result2->baseFetchRow();   
+           $tmp_row2 = $tmp_result2->baseFetchRow();
            $tmp_result2->baseFreeRows();
 
            $sig_reference[$sig_reference_cnt++] = array ($tmp_row2[0],
@@ -1097,7 +1088,7 @@ function Action_archive_alert_op($sid, $cid, &$db, $action_arg, &$ctx)
 
   $archive_cnt = 0;
 
-  /* If signatures are normalized (schema v100+), then it is 
+  /* If signatures are normalized (schema v100+), then it is
    * impossible to merely copy the event table completely.  Rather
    * the signatures must be written to the archive DB, and their
    * new ID must be written into the archived event table
@@ -1114,7 +1105,7 @@ function Action_archive_alert_op($sid, $cid, &$db, $action_arg, &$ctx)
      {
         if ( $db->baseGetDBversion() >= 103 )
         {
-           if ( $sig_class_id == "" )  
+           if ( $sig_class_id == "" )
            {
               $sig_class_id = 'NULL';
            }
@@ -1136,21 +1127,21 @@ function Action_archive_alert_op($sid, $cid, &$db, $action_arg, &$ctx)
                   $sig_class_id = $db2->baseInsertID();
 
 		              /* Kludge query. Getting insert ID fails on postgres. */
-                  if ($db->DB_type == "postgres")
+                  if ($db->DB_type == DatabaseTypes::POSTGRES)
                   {
                     $sql = "SELECT last_value FROM sig_class_sig_class_id_seq";
                     $tmp_result = $db2->baseExecute($sql);
                     $tmp_row = $tmp_result->baseFetchRow();
                     $tmp_result->baseFreeRows();
-                    if (isset($tmp_row) && !empty($tmp_row)) 
+                    if (isset($tmp_row) && !empty($tmp_row))
                     {
                       $sig_class_id = $tmp_row[0];
-                    } 
-                    else 
+                    }
+                    else
                     {
                       $sig_class_id = -1; // There's "NOT NULL" in the mysql schema
                     }
-                  }                
+                  }
               }
               else
               {
@@ -1164,18 +1155,18 @@ function Action_archive_alert_op($sid, $cid, &$db, $action_arg, &$ctx)
               /********** xxx jl: </sig_class> *************/
            }
 
-           
+
 
            /*************** xxx jl: <signature> ************/
-           if ( !isset($sig_priority) || $sig_priority == "" )  
+           if ( !isset($sig_priority) || $sig_priority == "" )
              $sig_priority = 'NULL';
 
-           if ( !isset($sig_rev) || $sig_rev == "" )  
+           if ( !isset($sig_rev) || $sig_rev == "" )
              $sig_rev = 'NULL';
 
-           if ( !isset($sig_gid) || $sig_gid == "" )  
+           if ( !isset($sig_gid) || $sig_gid == "" )
              $sig_gid = 'NULL';
-           
+
            if ( $db->baseGetDBversion() >= 107 ) {
                 $sql = "INSERT INTO signature (sig_name, sig_class_id, sig_priority, sig_rev, sig_sid, sig_gid) ".
                        "VALUES ('" . addslashes($sig_name) . "',".$sig_class_id.", ".$sig_priority.", ".$sig_rev.", ".$sig_sid.", ".$sig_gid.")";
@@ -1185,7 +1176,7 @@ function Action_archive_alert_op($sid, $cid, &$db, $action_arg, &$ctx)
            }
 
         }
-        else 
+        else
         {
            $sql = "INSERT INTO signature (sig_name) VALUES ('".$sig_name."')";
         }
@@ -1194,12 +1185,12 @@ function Action_archive_alert_op($sid, $cid, &$db, $action_arg, &$ctx)
 
 
         $db2->baseExecute($sql);
-        $sig_id = $db2->baseInsertID();     
-        
+        $sig_id = $db2->baseInsertID();
+
         /* Kludge query. Getting insert ID fails on postgres. */
-        if ($db->DB_type == "postgres")
+        if ($db->DB_type == DatabaseTypes::POSTGRES)
         {
-          $sql = "SELECT last_value FROM signature_sig_id_seq";     
+          $sql = "SELECT last_value FROM signature_sig_id_seq";
           $tmp_result = $db2->baseExecute($sql);
           $tmp_row = $tmp_result->baseFetchRow();
           $tmp_result->baseFreeRows();
@@ -1214,7 +1205,7 @@ function Action_archive_alert_op($sid, $cid, &$db, $action_arg, &$ctx)
 
      /************* xxx jl: <reference> **************/
      /* add reference information */
-     if (!isset($sig_reference_cnt) || empty($sig_reference_cnt)) 
+     if (!isset($sig_reference_cnt) || empty($sig_reference_cnt))
      {
        $sig_reference_cnt = 0;
      }
@@ -1233,17 +1224,17 @@ function Action_archive_alert_op($sid, $cid, &$db, $action_arg, &$ctx)
            $sql = "INSERT INTO reference_system (ref_system_name) ".
                   " VALUES ('".$sig_reference[$j][2]."')";
            $db2->baseExecute($sql);
-           $ref_system_id = $db2->baseInsertID();          
+           $ref_system_id = $db2->baseInsertID();
 
            /* Kludge query. Getting insert ID fails on postgres. */
-           if ($db->DB_type == "postgres")
+           if ($db->DB_type == DatabaseTypes::POSTGRES)
            {
              $sql = "SELECT last_value FROM reference_system_ref_system_id_seq";
              $tmp_result = $db2->baseExecute($sql);
              $tmp_row = $tmp_result->baseFetchRow();
              $tmp_result->baseFreeRows();
              $ref_system_id = $tmp_row[0];
-           }          
+           }
         }
         else
         {
@@ -1254,7 +1245,7 @@ function Action_archive_alert_op($sid, $cid, &$db, $action_arg, &$ctx)
                "ref_system_id='".$ref_system_id."' AND ".
                "ref_tag='".$sig_reference[$j][1]."'";
 
-        if ($db->DB_type == "mssql")
+        if ($db->DB_type == DatabaseTypes::MSSQL)
         {
            /* MSSQL doesn't allow "=" with TEXT data types, but it does
             * allow LIKE. By escaping all the characters in the search
@@ -1280,18 +1271,18 @@ function Action_archive_alert_op($sid, $cid, &$db, $action_arg, &$ctx)
                   " VALUES (".$sig_reference[$j][0].",'".
                               $sig_reference[$j][1]."')";
            $db2->baseExecute($sql);
-           $ref_id = $db2->baseInsertID(); 
+           $ref_id = $db2->baseInsertID();
 
            /* Kludge query. Getting insert ID fails on postgres. */
-           if ($db->DB_type == "postgres")
+           if ($db->DB_type == DatabaseTypes::POSTGRES)
            {
              $sql = "SELECT last_value FROM reference_ref_id_seq";
              $tmp_result = $db2->baseExecute($sql);
              $tmp_row = $tmp_result->baseFetchRow();
              $tmp_result->baseFreeRows();
              $ref_id = $tmp_row[0];
-           } 
-        }        
+           }
+        }
 
         if (!isset($ref_id))
         {
@@ -1308,7 +1299,7 @@ function Action_archive_alert_op($sid, $cid, &$db, $action_arg, &$ctx)
            /* Run the select query on archive db, to check if data already in */
            $tmp_result_db2 = $db2->baseExecute($select_sql);
            $tmp_row_db2 = $tmp_result_db2->baseFetchRow();
-           $tmp_result_db2->baseFreeRows(); 
+           $tmp_result_db2->baseFreeRows();
 
            /* Insert data only if it's not already in archive db */
            if (!$tmp_row_db2 )
@@ -1321,7 +1312,7 @@ function Action_archive_alert_op($sid, $cid, &$db, $action_arg, &$ctx)
 
 
      /* xxx jl */
-     /* If almost everything in 
+     /* If almost everything in
         /var/www/html/base-php4/sql/create_base_tbls_pgsql_extra.sql
         references event (sid, cid), then the following should come
         BEFORE anything else
@@ -1358,7 +1349,7 @@ function Action_archive_alert_op($sid, $cid, &$db, $action_arg, &$ctx)
                   ip_ver, ip_hlen, ip_tos, ip_len, ip_id, ip_flags,
                   ip_off, ip_ttl, ip_proto, ip_csum ".
           "FROM iphdr WHERE sid='$sid' AND cid='$cid'";
-   $tmp_result = $db->baseExecute($sql);   
+   $tmp_result = $db->baseExecute($sql);
    $tmp_row = $tmp_result->baseFetchRow();
    $tmp_result->baseFreeRows();
 
@@ -1374,14 +1365,14 @@ function Action_archive_alert_op($sid, $cid, &$db, $action_arg, &$ctx)
 
       /* Insert iphdr data only if it's not already in archive db */
 
-      /* xxx jl: 
+      /* xxx jl:
          /usr/local/src/snort-2.8.1_unpatched/schemas/create_postgresql
          /var/www/html/base-php4/sql/create_base_tbls_pgsql.sql
          /var/www/html/base-php4/sql/create_base_tbls_pgsql_extra.sql
       */
 
       if (!$tmp_row_db2) {
-         $sql = "INSERT INTO iphdr (sid,cid, 
+         $sql = "INSERT INTO iphdr (sid,cid,
                                  ip_src,
                                  ip_dst,
                                  ip_ver,ip_hlen,ip_tos,ip_len,ip_id,ip_flags,
@@ -1407,7 +1398,7 @@ function Action_archive_alert_op($sid, $cid, &$db, $action_arg, &$ctx)
       $sql = "SELECT tcp_sport, tcp_dport, tcp_seq, tcp_ack, tcp_off,
                   tcp_res, tcp_flags, tcp_win, tcp_csum, tcp_urp ".
              "FROM tcphdr WHERE sid='$sid' AND cid='$cid'";
-      $tmp_result = $db->baseExecute($sql);   
+      $tmp_result = $db->baseExecute($sql);
       $tmp_row = $tmp_result->baseFetchRow();
       $tmp_result->baseFreeRows();
 
@@ -1415,7 +1406,7 @@ function Action_archive_alert_op($sid, $cid, &$db, $action_arg, &$ctx)
       $tmp_result_db2 = $db2->baseExecute($sql);
       $tmp_row_db2 = $tmp_result_db2->baseFetchRow();
       $tmp_result_db2->baseFreeRows();
-       
+
       /* Insert tcphdr data only if we got it from alerts db and it's not already in archive db */
       if (isset($tmp_row) && !empty($tmp_row) && !$tmp_row_db2 ) {
           $sql = "INSERT INTO tcphdr (sid,cid,
@@ -1432,7 +1423,7 @@ function Action_archive_alert_op($sid, $cid, &$db, $action_arg, &$ctx)
    {
       $sql = "SELECT udp_sport, udp_dport, udp_len, udp_csum ".
              "FROM udphdr WHERE sid='$sid' AND cid='$cid'";
-      $tmp_result = $db->baseExecute($sql);   
+      $tmp_result = $db->baseExecute($sql);
       $tmp_row = $tmp_result->baseFetchRow();
       $tmp_result->baseFreeRows();
 
@@ -1440,7 +1431,7 @@ function Action_archive_alert_op($sid, $cid, &$db, $action_arg, &$ctx)
       $tmp_result_db2 = $db2->baseExecute($sql);
       $tmp_row_db2 = $tmp_result_db2->baseFetchRow();
       $tmp_result_db2->baseFreeRows();
-          
+
       /* Insert udphdr data only if we got it from alerts db and it's not already in archive db */
       if (isset($tmp_row) && !empty($tmp_row) && !$tmp_row_db2 ) {
          $sql = "INSERT INTO udphdr (sid,cid, udp_sport, udp_dport, ".
@@ -1454,7 +1445,7 @@ function Action_archive_alert_op($sid, $cid, &$db, $action_arg, &$ctx)
    {
       $sql = "SELECT icmp_type, icmp_code, icmp_csum, icmp_id, icmp_seq ".
              "FROM icmphdr WHERE sid='$sid' AND cid='$cid'";
-      $tmp_result = $db->baseExecute($sql);   
+      $tmp_result = $db->baseExecute($sql);
       $tmp_row = $tmp_result->baseFetchRow();
       $tmp_result->baseFreeRows();
 
@@ -1462,7 +1453,7 @@ function Action_archive_alert_op($sid, $cid, &$db, $action_arg, &$ctx)
       $tmp_result_db2 = $db2->baseExecute($sql);
       $tmp_row_db2 = $tmp_result_db2->baseFetchRow();
       $tmp_result_db2->baseFreeRows();
-      
+
       /* Insert icmphdr data only if we got it from alerts db and it's not already in archive db */
       if (isset($tmp_row) && !empty($tmp_row) && !$tmp_row_db2 ) {
          $sql = "INSERT INTO icmphdr (sid,cid,icmp_type,icmp_code,".
@@ -1481,10 +1472,10 @@ function Action_archive_alert_op($sid, $cid, &$db, $action_arg, &$ctx)
    if ( in_array("pcap_header", $db->DB->MetaColumnNames('data')) &&
         in_array("data_header", $db->DB->MetaColumnNames('data'))) {
       $sql = "SELECT data_payload, pcap_header, data_header FROM data WHERE sid='$sid' AND cid='$cid'";
-      $tmp_result = $db->baseExecute($sql);   
+      $tmp_result = $db->baseExecute($sql);
       $tmp_row = $tmp_result->baseFetchRow();
       $tmp_result->baseFreeRows();
-      if (isset($tmp_row) && !empty($tmp_row)) 
+      if (isset($tmp_row) && !empty($tmp_row))
       {
         $pcap_header = $tmp_row[1];
         $data_header = $tmp_row[2];
@@ -1494,9 +1485,9 @@ function Action_archive_alert_op($sid, $cid, &$db, $action_arg, &$ctx)
         $pcap_header = "";
         $data_header = "";
       }
-   } else { 
+   } else {
       $sql = "SELECT data_payload FROM data WHERE sid='$sid' AND cid='$cid'";
-      $tmp_result = $db->baseExecute($sql);   
+      $tmp_result = $db->baseExecute($sql);
       $tmp_row = $tmp_result->baseFetchRow();
       $tmp_result->baseFreeRows();
    }
@@ -1505,7 +1496,7 @@ function Action_archive_alert_op($sid, $cid, &$db, $action_arg, &$ctx)
    /* Run the same query on archive db, to check if data already in */
    $tmp_result_db2 = $db2->baseExecute($sql);
    $tmp_row_db2 = $tmp_result_db2->baseFetchRow();
-   $tmp_result_db2->baseFreeRows(); 
+   $tmp_result_db2->baseFreeRows();
 
    /* Insert data only if we got it from alerts db and it's not already in archive db */
    if (isset($tmp_row) && !empty($tmp_row) && !$tmp_row_db2 )
@@ -1533,7 +1524,7 @@ function Action_archive_alert_op($sid, $cid, &$db, $action_arg, &$ctx)
           "FROM opt WHERE sid='$sid' AND cid='$cid'";
    $tmp_result = $db->baseExecute($sql);
    $tmp_num_opt = $tmp_result->baseRecordCount();
-   
+
    if (!isset($tmp_num_opt))
    {
      $tmp_num_opt = 0;
@@ -1571,7 +1562,7 @@ function Action_archive_alert_op($sid, $cid, &$db, $action_arg, &$ctx)
       /* Run the select query on archive db, to check if data already in */
       $tmp_result_db2 = $db2->baseExecute($select_sql);
       $tmp_row_db2 = $tmp_result_db2->baseFetchRow();
-      $tmp_result_db2->baseFreeRows(); 
+      $tmp_result_db2->baseFreeRows();
 
       /* Insert data only if it's not already in archive db */
       if (!$tmp_row_db2 )
@@ -1591,7 +1582,7 @@ function Action_archive_alert_op($sid, $cid, &$db, $action_arg, &$ctx)
     print_r($insert_sql);
     echo "</PRE>";
   }
- 
+
   /* Write Alerts into archive database */
   for ( $j = 0; $j < count($insert_sql); $j++)
   {
@@ -1602,7 +1593,7 @@ function Action_archive_alert_op($sid, $cid, &$db, $action_arg, &$ctx)
      }
      else
      {
-        if ($db2->DB_type == "mssql")
+        if ($db2->DB_type == DatabaseTypes::MSSQL)
         {
           // MSSQL must be reset in this case, or else the same error message
           //  will be returned for all subsequent INSERTS, even though they
@@ -1617,7 +1608,7 @@ function Action_archive_alert_op($sid, $cid, &$db, $action_arg, &$ctx)
            ++$archive_cnt;
         }
         else
-        { 
+        {
           ErrorMessage(_ERRARCHIVE.$db2->baseErrorMessage()."<BR>".
                          $insert_sql[$j]);
 
@@ -1626,7 +1617,7 @@ function Action_archive_alert_op($sid, $cid, &$db, $action_arg, &$ctx)
           break;
         }
      }
-  } 
+  }
 
   /* Check if all or any data was written to archive database,
    * before purging the alert from the current database
@@ -1654,8 +1645,8 @@ function Action_archive_alert_op($sid, $cid, &$db, $action_arg, &$ctx)
 
      if ($sql_cnt > 0) {
        /*
-        * Update alert cache for archived alert right after we copy it to archive db. 
-        * This fixes issue when alert in archive db not cached if archived alert cid 
+        * Update alert cache for archived alert right after we copy it to archive db.
+        * This fixes issue when alert in archive db not cached if archived alert cid
         * is lesser than other alerts cid already cached in archive db.
         */
        CacheAlert($sid,$cid,$db2);
@@ -1669,14 +1660,14 @@ function Action_archive_alert_op($sid, $cid, &$db, $action_arg, &$ctx)
      $archive_cnt = 0;
   }
 
-  return $archive_cnt;  
+  return $archive_cnt;
 }
 
 
 function Action_archive_alert_post($action_arg, &$action_ctx, $db, &$num_alert, $action_cnt)
 {
    /* BEGIN LOCAL FIX */
-   /* Call UpdateAlertCache to properly set cid values and make sure caches are current */ 
+   /* Call UpdateAlertCache to properly set cid values and make sure caches are current */
    $archive_db=&$action_ctx;
    UpdateAlertCache($archive_db);
    UpdateAlertCache($db);
@@ -1698,7 +1689,7 @@ function Action_archive_alert2_op($sid, $cid, &$db, $action_arg, &$ctx)
      $cnt2 = PurgeAlert($sid, $cid, $db);
 
   /* Note: the inconsistent state possible if alerts are copied to
-   * the archive DB, but not deleted 
+   * the archive DB, but not deleted
    */
 
   if ( ($cnt == 1) && ($cnt2 == 1) )
@@ -1709,10 +1700,10 @@ function Action_archive_alert2_op($sid, $cid, &$db, $action_arg, &$ctx)
 
 function Action_archive_alert2_post($action_arg, &$action_ctx, $db, &$num_alert, $action_cnt)
 {
-  /* BEGIN LOCAL FIX */ 
+  /* BEGIN LOCAL FIX */
   /* Call UpdateAlertCache to properly set cid values and make sure caches are current */
   $archive_db=&$action_ctx;
-  UpdateAlertCache($archive_db); 
+  UpdateAlertCache($archive_db);
   UpdateAlertCache($db);
   /* END LOCAL FIX */
   /* Reset the alert count that the query is re-executed to reflect the deletion */
@@ -1721,7 +1712,7 @@ function Action_archive_alert2_post($action_arg, &$action_ctx, $db, &$num_alert,
 
 
 /* This function accepts a (sid,cid) and purges it
- * from the database 
+ * from the database
  *
  * - (sid,cid) : sensor, event id pair to delete
  * - db        : database handle
@@ -1743,7 +1734,7 @@ function PurgeAlert($sid, $cid, $db)
   $del_cnt = 0;
 
   if ( ($GLOBALS['use_referential_integrity'] == 1) &&
-       ($GLOBALS['DBtype'] != "mysql") )
+       ($GLOBALS['DBtype'] != DatabaseTypes::MYSQL) )
      $del_table_list = array ("event");
 
   for ( $k = 0; $k < count($del_table_list); $k++ )
@@ -1753,19 +1744,19 @@ function PurgeAlert($sid, $cid, $db)
         $sql2 = "DELETE FROM ".$del_table_list[$k]." WHERE sid='".$sid."' AND cid='".$cid."'";
      else
         $sql2 = "DELETE FROM ".$del_table_list[$k]." WHERE ag_sid='".$sid."' AND ag_cid='".$cid."'";
-     
+
      $db->baseExecute($sql2);
 
      if ( $db->baseErrorMessage() != "" )
         ErrorMessage(_ERRDELALERT." ".$del_table_list[$k]);
-     else if ( $k == 0 ) 
-        $del_cnt = 1; 
+     else if ( $k == 0 )
+        $del_cnt = 1;
   }
 
-  return $del_cnt;  
+  return $del_cnt;
 }
 
-/* RETURNS: boolean on success of sending message 
+/* RETURNS: boolean on success of sending message
  *
  */
 
@@ -1773,10 +1764,10 @@ function send_email($smtp_host, $smtp_auth, $smtp_user, $smtp_pw, $to, $hdrs, $b
 {
   if ($to != "")
   {
-	$smtp =& Mail::factory('smtp', 
-				array ('host'     => $smtp_host, 
-				       'auth'     => $smtp_auth, 
-				       'username' => $smtp_user, 
+	$smtp =& Mail::factory('smtp',
+				array ('host'     => $smtp_host,
+				       'auth'     => $smtp_auth,
+				       'username' => $smtp_user,
 				       'password' => $smtp_pw,
                                        'localhost' => $smtp_localhost
 				)
@@ -1797,6 +1788,6 @@ function send_email($smtp_host, $smtp_auth, $smtp_user, $smtp_pw, $to, $hdrs, $b
      ErrorMessage(_ERRMAILNORECP);
      return false;
   }
-} 
+}
 
 ?>

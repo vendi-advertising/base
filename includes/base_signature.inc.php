@@ -1,4 +1,9 @@
 <?php
+
+use Vendi\BASE\DatabaseTypes;
+
+require_once dirname(__DIR__) . '/includes/vendi_boot.php';
+
 /*******************************************************************************
 ** Basic Analysis and Security Engine (BASE)
 ** Copyright (C) 2004 BASE Project Team
@@ -10,7 +15,7 @@
 **                Sean Muller <samwise_diver@users.sourceforge.net>
 ** Built upon work by Roman Danyliw <rdd@cert.org>, <roman@danyliw.com>
 **
-** Purpose: Handles signatures and references in the 
+** Purpose: Handles signatures and references in the
 **          Snort signature language
 ********************************************************************************
 ** Authors:
@@ -64,12 +69,12 @@ function GetSignaturePriority($sig_id, $db)
 function GetSignatureID($sig_id, $db)
 {
    $id = "";
-  
+
    if ( $sig_id == "" )
       return $id;
 
    $temp_sql = "SELECT sig_id FROM signature WHERE sig_name='". addslashes($sig_id) . "'";
-   if ($db->DB_type == "mssql")
+   if ($db->DB_type == DatabaseTypes::MSSQL)
      $temp_sql = "SELECT sig_id FROM signature WHERE sig_name LIKE '".MssqlKludgeValue($sig_id)."' ";
 
    $tmp_result = $db->baseExecute($temp_sql);
@@ -117,13 +122,13 @@ function GetSingleSignatureReference($ref_system, $ref_tag, $style)
         $to_look_for = $ref_tag;
 
 				if (file_exists($dir))
-				{       	
+				{
         	if ($style == 1)
         	{
           	$result = "<FONT SIZE = -1>[" .
-                "<A HREF = \"$BASE_urlpath/base_local_rules.php?sid=" . $to_look_for . 
-                        "\" TARGET = \"_ACID_ALERT_DESC\">" . 
-                "rule" . 
+                "<A HREF = \"$BASE_urlpath/base_local_rules.php?sid=" . $to_look_for .
+                        "\" TARGET = \"_ACID_ALERT_DESC\">" .
+                "rule" .
                 "</A>]</FONT> ";
 
 
@@ -131,7 +136,7 @@ function GetSingleSignatureReference($ref_system, $ref_tag, $style)
         	}
         	else
         	{
-          	return "[local rules dir: sid:" . $ref_tag . ";]"; 
+          	return "[local rules dir: sid:" . $ref_tag . ";]";
         	}
 				}
       }
@@ -149,7 +154,7 @@ function GetSingleSignatureReference($ref_system, $ref_tag, $style)
              else
              {
                $ref_tag_number = 0;
-             }             
+             }
            }
            /* The following pattern tries to catch those bogus
               ref_tags, as can appear, when barnyard does not
@@ -204,7 +209,7 @@ function GetSingleSignatureReference($ref_system, $ref_tag, $style)
       {
          return "[".$ref_system."/$ref_tag] ";
       }
-   }            
+   }
    else
    {
       return $ref_system;
@@ -218,62 +223,62 @@ function GetSignatureReference($sig_id, $db, $style)
 {
    $ref = "";
    GLOBAL $BASE_display_sig_links, $debug_mode;
-   
+
    if ( $BASE_display_sig_links == 1)
    {
       $temp_sql = "SELECT ref_seq, ref_id FROM sig_reference WHERE sig_id='". addslashes($sig_id) ."'";
       $tmp_sig_ref = $db->baseExecute($temp_sql);
-   
+
       if ( $tmp_sig_ref )
       {
          $num_references = $tmp_sig_ref->baseRecordCount();
          for ( $i = 0; $i < $num_references; $i++)
          {
             $mysig_ref = $tmp_sig_ref->baseFetchRow();
-   
+
             $temp_sql = "SELECT ref_system_id, ref_tag FROM reference WHERE ref_id='".$mysig_ref[1]."'";
             $tmp_ref_tag = $db->baseExecute($temp_sql);
-   
+
             if ( $tmp_ref_tag )
             {
                $myrow = $tmp_ref_tag->baseFetchRow();
                $ref_tag = $myrow[1];
                $ref_system = GetRefSystemName($myrow[0], $db);
             }
-   
+
             $ref = $ref.GetSingleSignatureReference($ref_system, $ref_tag, $style);
-   
+
             /* Automatically add an ICAT reference if a CVE reference exists */
             if ( $ref_system == "cve" )
                 $ref = $ref.GetSingleSignatureReference("icat", $ref_tag, $style);
-          
+
             $tmp_ref_tag->baseFreeRows();
          }
          $tmp_sig_ref->baseFreeRows();
       }
-   
+
       if ( $db->baseGetDBversion() >= 103 )
       {
          if ( $db->baseGetDBversion() >= 107 )
             $tmp_sql = "SELECT sig_sid, sig_gid FROM signature WHERE sig_id='". addslashes($sig_id) ."'";
          else
             $tmp_sql = "SELECT sig_sid FROM signature WHERE sig_id='". addslashes($sig_id) ."'";
-   
+
          $tmp_sig_sid = $db->baseExecute($tmp_sql);
-   
+
          if ( $tmp_sig_sid )
          {
             $myrow = $tmp_sig_sid->baseFetchRow();
             $sig_sid = $myrow[0];
             if ( $db->baseGetDBversion() >= 107 )
                $sig_gid = $myrow[1];
-   
+
          }
       }
       else
          $sig_sid = "";
-   
-   
+
+
 			if (is_numeric($sig_id) && (is_numeric($sig_sid )))
 			{
 				// 0 - 1,999,999: http://www.snort.org/
@@ -284,27 +289,27 @@ function GetSignatureReference($sig_id, $db, $style)
 				{
 					$bp = dirname(__FILE__);
 
-      		if ($sig_sid >= 103) 
+      		if ($sig_sid >= 103)
 					// then we assume it is a rule based alert:
-					{						
-						$docu_file = "$bp/../signatures/$sig_sid.txt"; 
-            if ($debug_mode > 0) 
+					{
+						$docu_file = "$bp/../signatures/$sig_sid.txt";
+            if ($debug_mode > 0)
             {
 						  error_log("sig_sid = $sig_sid; docu_file = $docu_file");
             }
 
-						if (file_exists($docu_file)) 
+						if (file_exists($docu_file))
 						{
         	 		$ref = $ref.GetSingleSignatureReference("local", $sig_sid, $style);
 						}
-      		} 
-					else 
+      		}
+					else
         	// then we assume it is a preprocessor alert:
 					{
 						$docu_file = "$bp/../signatures/$sig_gid" . '-' . "$sig_sid.txt";
 						if (file_exists($docu_file))
 						{
-							$ref = $ref.GetSingleSignatureReference("local", $sig_gid . '-' . $sig_sid, $style); 
+							$ref = $ref.GetSingleSignatureReference("local", $sig_gid . '-' . $sig_sid, $style);
 						}
    				}
       	} // if ($sig_sid < 2000000 || $sig_sid >= 100000000)
@@ -328,16 +333,16 @@ function GetSignatureReference($sig_id, $db, $style)
       /* snort.org should be documenting all official signatures,
        * so automatically add a link
        */
-      if ( $sig_sid != "") 
+      if ( $sig_sid != "")
       {
          if ( $db->baseGetDBversion() >= 107 )
          {
 	          /* Hack to fix blank gid from barnyard -- Kevin Johnson */
-	          if ( $sig_gid != "") 
+	          if ( $sig_gid != "")
             {
             	$ref = $ref.GetSingleSignatureReference("snort", $sig_gid .'-'. $sig_sid, $style);
-	          } 
-            else 
+	          }
+            else
             {
 		          $ref = $ref.GetSingleSignatureReference("snort", $sig_sid, $style);
 	          }
@@ -507,7 +512,7 @@ function BuildSigByID($sig_id, $db, $style = 1)
   if ( $db->baseGetDBversion() >= 100 )
   {
      /* Catch the odd circumstance where $sig_id is still an alert text string
-      * despite using normalized signature as of DB version 100. 
+      * despite using normalized signature as of DB version 100.
       */
      if ( !is_numeric($sig_id) )
        return $sig_id;
@@ -610,7 +615,7 @@ function GetSigClassID($sig_id, $db)
   $result = $db->baseExecute($sql);
   $row = $result->baseFetchRow();
 
-  return $row[0]; 
+  return $row[0];
 }
 
 function GetSigClassName ($class_id, $db)
@@ -624,7 +629,7 @@ function GetSigClassName ($class_id, $db)
 		return "<I>"._UNCLASS."</I>";
 	}
 
-  $sql = "SELECT sig_class_name FROM sig_class ". 
+  $sql = "SELECT sig_class_name FROM sig_class ".
          "WHERE sig_class_id = '$class_id'";
 
 	if ($debug_mode > 0)
@@ -634,18 +639,18 @@ function GetSigClassName ($class_id, $db)
   $result = $db->baseExecute($sql);
 
   $row = $result->baseFetchRow();
-  if ( $row == "" ) 
+  if ( $row == "" )
 	{
 		if ($debug_mode > 0)
 		{
-			error_log(__FILE__ . ":" . __LINE__ . ": WARNING: Database query result is empty for \$class_id = \"$class_id\". Returning \"unclassified\""); 
+			error_log(__FILE__ . ":" . __LINE__ . ": WARNING: Database query result is empty for \$class_id = \"$class_id\". Returning \"unclassified\"");
 		}
 
     return "<I>"._UNCLASS."</I>";
 	}
   else
 	{
-    return $row[0]; 
+    return $row[0];
 	}
 }
 
@@ -689,7 +694,7 @@ function GetTagTriger($current_sig, $db, $sid, $cid)
                    $result2 = $db->baseExecute($sql2);
                    $row2 = $result2->baseFetchRow();
                    $result2->baseFreeRows();
-                   $triger_sig_name = $row2[0];  
+                   $triger_sig_name = $row2[0];
 
                    if ( $triger_sig_name != "" ) {
                       /* return added tagged alert sig_name to signature name */

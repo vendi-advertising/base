@@ -1,4 +1,9 @@
 <?php
+
+use Vendi\BASE\DatabaseTypes;
+
+require_once dirname(__DIR__) . '/includes/vendi_boot.php';
+
 /*******************************************************************************
 ** Basic Analysis and Security Engine (BASE)
 ** Copyright (C) 2004 BASE Project Team
@@ -27,13 +32,13 @@ defined( '_BASE_INC' ) or die( 'Accessing this file directly is not allowed.' );
  *
  * Function: baseIP2long()
  *
- * Purpose: convert a text string IPv4 address into its 32-bit numeric 
+ * Purpose: convert a text string IPv4 address into its 32-bit numeric
  *          equivalent
  *
  :* Arguments: $IP_str => dotted IPv4 address string (e.g. 1.2.3.4)
  *
  * Returns: 32-bit integer equivalent of the dotted address
- *          (e.g. 255.255.255.255 => 4294967295 ) 
+ *          (e.g. 255.255.255.255 => 4294967295 )
  *
  ***************************************************************************/
 function baseIP2long($IP_str)
@@ -75,21 +80,21 @@ function baseIP2long($IP_str)
  *
  * Function: baseLong2IP()
  *
- * Purpose: convert a 32-bit integer into the corresponding IPv4 address 
+ * Purpose: convert a 32-bit integer into the corresponding IPv4 address
  *          in dotted notation
  *
  * Arguments: $long_IP => 32-bit integer representation of IPv4 address
  *
  * Returns: IPv4 dotted address string (e.g. 4294967295 => 255.255.255.255)
  *
- ***************************************************************************/ 
+ ***************************************************************************/
 function baseLong2IP($long_IP)
 {
    $tmp_IP = $long_IP;
    if ( $long_IP > 2147483647 )
    {
       $tmp_IP = 4294967296 -  $tmp_IP;
-      $tmp_IP = $tmp_IP * (-1); 
+      $tmp_IP = $tmp_IP * (-1);
    }
 
    $tmp_IP = long2ip($tmp_IP);
@@ -128,7 +133,7 @@ function getIPMask($ipaddr, $mask)
    $mask_top = (integer) $mask_bottom | (integer) $mask_low;
 
    $ip_top = $ip_bottom = $ip_octets;
- 
+
    $ip_bottom[$octet_id] = $mask_bottom;
    $ip_top[$octet_id] = $mask_top;
 
@@ -137,7 +142,7 @@ function getIPMask($ipaddr, $mask)
       $ip_top[$i] = 255;
       $ip_bottom[$i] = 0;
    }
-  
+
    $ip_top_str = implode(".", $ip_top);
    $ip_bottom_str = implode(".", $ip_bottom);
 
@@ -162,7 +167,7 @@ function baseGetHostByAddr($ipaddr, $db, $cache_lifetime)
 {
   if (empty($ipaddr) || ($ipaddr == ""))
   {
-    error_log("WARNING: baseGetHostByAddr() has been provided with an empty string as \$ipaddr.  Returning with error."); 
+    error_log("WARNING: baseGetHostByAddr() has been provided with an empty string as \$ipaddr.  Returning with error.");
     return "&nbsp;<I>"._ERRRESOLVEADDRESS."</I>&nbsp;";
   }
 
@@ -188,12 +193,12 @@ function baseGetHostByAddr($ipaddr, $db, $cache_lifetime)
   $ip_cache = $result->baseFetchRow();
 
   /* cache miss */
-  if ( $ip_cache == "" ) 
+  if ( $ip_cache == "" )
   {
      $tmp = gethostbyaddr($ipaddr);
 
      /* add to cache regardless of whether can resolve */
-     if( $db->DB_type == "oci8" )
+     if( $db->DB_type == DatabaseTypes::ORACLE )
        $sql= "INSERT INTO acid_ip_cache (ipc_ip, ipc_fqdn, ipc_dns_timestamp) ".
              "VALUES ($ip32, '$tmp', to_date( '$current_time', 'YYYY-MM-DD HH24:MI:SS' ) )";
      else
@@ -203,7 +208,7 @@ function baseGetHostByAddr($ipaddr, $db, $cache_lifetime)
   }
   else     /* cache hit */
   {
-     if ($ip_cache[2] != "" && 
+     if ($ip_cache[2] != "" &&
          ( ( (strtotime($ip_cache[2]) / 60) + $cache_lifetime ) >= ($current_unixtime / 60) ) )
      {
         /* valid entry */
@@ -220,7 +225,7 @@ function baseGetHostByAddr($ipaddr, $db, $cache_lifetime)
 
         /* Update entry in cache regardless of whether can resolve */
         $sql = "UPDATE acid_ip_cache SET ipc_fqdn='$tmp', ".
-               " ipc_dns_timestamp='$current_time' WHERE ipc_ip='$ip32'"; 
+               " ipc_dns_timestamp='$current_time' WHERE ipc_ip='$ip32'";
         $db->baseExecute($sql);
      }
   }
@@ -235,7 +240,7 @@ function baseGetHostByAddr($ipaddr, $db, $cache_lifetime)
  *
  * Function: baseGetWhois()
  *
- * Purpose: Queries the proper whois server to determine info about 
+ * Purpose: Queries the proper whois server to determine info about
  *          the given IP address
  *
  * Arguments: $ipaddr         => IPv4 address in dotted notation
@@ -267,20 +272,20 @@ function baseGetWhois($ipaddr, $db, $cache_lifetime)
      /* xxx jl: Why? Hmmm, no. Not, if tmp is empty. */
      if (!empty($tmp))
      {
-       if ( $db->DB_type == "oci8" )
+       if ( $db->DB_type == DatabaseTypes::ORACLE )
          $sql = "INSERT INTO acid_ip_cache (ipc_ip, ipc_whois, ipc_whois_timestamp) ".
                 "VALUES ($ip32, '".$db->getSafeSQLString($tmp)."', to_date( '$current_time','YYYY-MM-DD HH24:MI:SS' ) )";
        else
          $sql = "INSERT INTO acid_ip_cache (ipc_ip, ipc_whois, ipc_whois_timestamp) ".
                 "VALUES ($ip32, '".$db->getSafeSQLString($tmp)."', '$current_time')";
-     
+
        $db->baseExecute($sql);
      }
   }
   else     /* cache hit */
   {
      /* cache valid */
-     if ( ($whois_cache[2] != "") && 
+     if ( ($whois_cache[2] != "") &&
          ( ( (strtotime($whois_cache[2]) / 60) + $cache_lifetime ) >= ($current_unixtime / 60) ) )
      {
         $tmp = $whois_cache[1];
@@ -290,14 +295,14 @@ function baseGetWhois($ipaddr, $db, $cache_lifetime)
         else $whois_server = "ARIN";
      }
      else  /* cache expired */
-     { 
+     {
         $tmp = CallWhoisServer($ipaddr, $whois_server);
 
         /* Update entry in cache regardless of whether can resolve */
         // xxx jl: Well, no. Not, if tmp is empty.
-        if (!empty($tmp)) 
+        if (!empty($tmp))
         {
-          if ( $db->DB_type == "oci8" )
+          if ( $db->DB_type == DatabaseTypes::ORACLE )
             $sql = "UPDATE acid_ip_cache SET ipc_whois='".$db->getSafeSQLString($tmp)."', ".
                    " ipc_whois_timestamp=to_date( '$current_time','YYYY-MM-DD HH24:MI:SS' ) WHERE ipc_ip='$ip32'";
           else
@@ -372,7 +377,7 @@ function CallWhoisServer($ipaddr, &$whois_server)
   }
 
   return $response;
-} 
+}
 
 function baseProcessWhoisRaw($response, &$org, &$email, $server)
 {
@@ -426,7 +431,7 @@ function baseProcessWhoisRaw($response, &$org, &$email, $server)
         }
      }
 
-  }  
+  }
   else if ( $server == "AP" )
   {
   }

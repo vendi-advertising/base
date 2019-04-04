@@ -49,26 +49,26 @@ if (file_exists('../base_conf.php'))
   $submit = ImportHTTPVar("submit", VAR_ALPHA | VAR_SPACE);
 
   // Grab the variables that have been put into Session
-  $alert_dbname = $_SESSION['dbname'];
-  $alert_host =  $_SESSION['dbhost'];
-  $alert_port =  $_SESSION['dbport'];
-  $alert_user = $_SESSION['dbusername'];
-  $alert_password = $_SESSION['dbpasswd'];
-  $DBlib_path = $_SESSION['adodbpath'];
-  $DBtype = $_SESSION['dbtype'];
+  $alert_dbname = vendi_utils::get_session_value('dbname');
+  $alert_host =  vendi_utils::get_session_value('dbhost');
+  $alert_port =  vendi_utils::get_session_value('dbport');
+  $alert_user = vendi_utils::get_session_value('dbusername');
+  $alert_password = vendi_utils::get_session_value('dbpasswd');
+  $DBlib_path = vendi_utils::get_session_value('adodbpath');
+  $DBtype = vendi_utils::get_session_value('dbtype');
 
   /* Archive database */
   if ( $submit == "Create BASE AG" )
   {
-    if ($_SESSION['usearchive'] == 1)
+    if (vendi_utils::get_session_value('usearchive') == 1)
     {
-      if ($_SESSION['arcdbexists'])
+      if (vendi_utils::get_session_value('arcdbexists'))
       {
-        $archive_dbname = $_SESSION['arcdbname'];
-        $archive_host =  $_SESSION['arcdbhost'];
-        $archive_port =  $_SESSION['arcdbport'];
-        $archive_user = $_SESSION['arcdbusername'];
-        $archive_password = $_SESSION['arcdbpasswd'];
+        $archive_dbname = vendi_utils::get_session_value('arcdbname');
+        $archive_host =  vendi_utils::get_session_value('arcdbhost');
+        $archive_port =  vendi_utils::get_session_value('arcdbport');
+        $archive_user = vendi_utils::get_session_value('arcdbusername');
+        $archive_password = vendi_utils::get_session_value('arcdbpasswd');
         $archive = NewBASEDBConnection($DBlib_path, $DBtype);
         $archive->baseDBConnect(1, $archive_dbname, $archive_host, $archive_port, $archive_user, $archive_password, 1);
         $archive_result = CreateBASEAG($archive);
@@ -122,11 +122,11 @@ if (file_exists('../base_conf.php'))
     echo '<LI>' . $alert_dbname . '<BR>';
   }
 
-  if ($_SESSION['usearchive'] == 1)
+  if (vendi_utils::get_session_value('usearchive') == 1)
   {
-    if ($_SESSION['arcdbname'] != "")
+    if (vendi_utils::get_session_value('arcdbname') != "")
     {
-      echo '<LI>' . $_SESSION['arcdbname'] . '<BR>';
+      echo '<LI>' . vendi_utils::get_session_value('arcdbname') . '<BR>';
     }
   }
 
@@ -138,10 +138,10 @@ if (file_exists('../base_conf.php'))
   if ($result == 1) {
 
      ErrorMessage("&nbsp;DONE&nbsp;");
-     if ($_SESSION['useuserauth'] == 1) {
-            $user = filterSql($_SESSION['usrlogin'], 1);
-            $pwd = md5($_SESSION['usrpasswd']);
-            $name = filterSql($_SESSION['usrname'], 1);
+     if (vendi_utils::get_session_value('useuserauth') == 1) {
+            $user = filterSql(vendi_utils::get_session_value('usrlogin'), 1);
+            $pwd = md5(vendi_utils::get_session_value('usrpasswd'));
+            $name = filterSql(vendi_utils::get_session_value('usrname'), 1);
             $sql = "SELECT COUNT(*) FROM base_users WHERE usr_login = '".$user."'";
             $rs_del_cnt = $db->baseExecute($sql);
             $userdelcnt = $rs_del_cnt->baseFetchRow();

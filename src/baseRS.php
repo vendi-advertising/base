@@ -2,6 +2,8 @@
 
 namespace Vendi\BASE;
 
+use Vendi\BASE\DatabaseTypes;
+
 class baseRS {
 
   var $row;
@@ -53,47 +55,41 @@ class baseRS {
      return $this->row->FieldCount();
   }
 
-  function baseRecordCount()
-  {
-    GLOBAL $debug_mode;
-
-    if (!is_object($this->row))
+    function baseRecordCount()
     {
-      if ($debug_mode > 1)
-      {
-        echo '<BR><BR>';
-        echo __FILE__ . ':' . __LINE__ . ': ERROR: $this->row is not an object (2).';
-        echo '<BR><PRE>';
-        debug_print_backtrace();
-        echo '<BR><BR>var_dump($this):<BR>';
-        var_dump($this);
-        echo '<BR><BR>var_dump($this->row):<BR>';
-        var_dump($this->row);
-        echo '</PRE><BR><BR>';
+        GLOBAL $debug_mode;
+
+        if (!is_object($this->row)) {
+            if ($debug_mode > 1) {
+              echo '<BR><BR>';
+              echo __FILE__ . ':' . __LINE__ . ': ERROR: $this->row is not an object (2).';
+              echo '<BR><PRE>';
+              debug_print_backtrace();
+              echo '<BR><BR>var_dump($this):<BR>';
+              var_dump($this);
+              echo '<BR><BR>var_dump($this->row):<BR>';
+              var_dump($this->row);
+              echo '</PRE><BR><BR>';
+            }
+            return 0;
+        }
+
+        // Is This if statement necessary?  -- Kevin
+        /* MS SQL Server 7, MySQL, Sybase, and Postgres natively support this function */
+        if(in_array($this->DB_type, DatabaseTypes::get_support_database_types)){
+            return $this->row->RecordCount();
+        }
+
+
+        /* Otherwise we need to emulate this functionality */
+        $i = 0;
+        while ( !$this->row->EOF ) {
+            ++$i;
+            $this->row->MoveNext();
+        }
+
+        return $i;
       }
-
-      return 0;
-    }
-
-     // Is This if statement necessary?  -- Kevin
-     /* MS SQL Server 7, MySQL, Sybase, and Postgres natively support this function */
-     if ( ($this->DB_type == "mysql") || ($this->DB_type == "mysqlt") || ($this->DB_type == "maxsql") ||
-          ($this->DB_type == "mssql") || ($this->DB_type == "sybase") || ($this->DB_type == "postgres") || ($this->DB_type == "oci8"))
-        return $this->row->RecordCount();
-
-     /* Otherwise we need to emulate this functionality */
-     else
-     {
-          $i = 0;
-          while ( !$this->row->EOF )
-          {
-             ++$i;
-             $this->row->MoveNext();
-          }
-
-          return $i;
-     }
-  }
 
   function baseFreeRows()
   {
