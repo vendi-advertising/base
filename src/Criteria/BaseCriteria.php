@@ -2,7 +2,7 @@
 
 namespace Vendi\BASE\Criteria;
 
-class BaseCriteria
+abstract class BaseCriteria
 {
    var $criteria;
    var $export_name;
@@ -19,72 +19,41 @@ class BaseCriteria
      $this->criteria = NULL;
    }
 
-   function Init()
-   {
-   }
+      abstract function Init();
 
-   function Import()
-   {
-     /* imports criteria from POST, GET, or the session */
-   }
+      /* imports criteria from POST, GET, or the session */
+      abstract function Import();
 
-   function Clear()
-   {
-     /* clears the criteria */
-   }
+      /* clears the criteria */
+      abstract function Clear();
 
-   function Sanitize()
-   {
-     /* clean/validate the criteria */
-   }
+      /* clean/validate the criteria */
+      abstract function Sanitize();
 
-   function SanitizeElement()
-   {
-     /* clean/validate the criteria */
-   }
+      /* clean/validate the criteria */
+      abstract function SanitizeElement($i = null);
 
-   function PrintForm()
-   {
-     /* prints the HTML form to input the criteria */
-   }
+      /* prints the HTML form to input the criteria */
+      abstract function PrintForm($field_list, $blank_field_string, $add_button_string);
 
-   function AddFormItem()
-   {
-     /* adding another item to the HTML form  */
-   }
+      /* returns the number of items in this form element  */
+      abstract function GetFormItemCnt();
 
-   function GetFormItemCnt()
-   {
-     /* returns the number of items in this form element  */
-   }
+      /* sets the number of items in this form element */
+      abstract function SetFormItemCnt($value);
 
-   function SetFormItemCnt()
-   {
-     /* sets the number of items in this form element */
-   }
+      /* set the value of this criteria */
+      abstract function Set($value);
 
-   function Set($value)
-   {
-     /* set the value of this criteria */
-   }
+      /* returns the value of this criteria */
+      abstract function Get();
 
-   function Get()
-   {
-     /* returns the value of this criteria */
-   }
+      /* convert this criteria to SQL */
+      abstract function ToSQL();
 
-   function ToSQL()
-   {
-     /* convert this criteria to SQL */
-   }
+      /* generate human-readable description of this criteria */
+      abstract function Description($human_fields);
 
-   function Description()
-   {
-     /* generate human-readable description of this criteria */
-   }
-
-   function isEmpty()
-   {
-     /* returns if the criteria is empty */
-   }
+      /* returns if the criteria is empty */
+      abstract function isEmpty();
 }

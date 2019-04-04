@@ -19,12 +19,12 @@ class DataCriteria extends MultipleElementCriteria
 
    var $data_encode;
 
-   function DataCriteria(&$db, &$cs, $export_name, $element_cnt)
+   function __construct(&$db, &$cs, $export_name, $element_cnt)
    {
 	$tdb =& $db;
 	$cs =& $cs;
 
-      parent::MultipleElementCriteria($tdb, $cs, $export_name, $element_cnt,
+      parent::__construct($tdb, $cs, $export_name, $element_cnt,
                                       array ("LIKE" => _HAS,
                                              "NOT LIKE" => _HASNOT ));
       $this->data_encode = array();
@@ -50,7 +50,7 @@ class DataCriteria extends MultipleElementCriteria
      /* clears the criteria */
    }
 
-   function SanitizeElement($i)
+   function SanitizeElement($i = null)
    {
       $this->data_encode[0] = CleanVariable($this->data_encode[0], "", array("hex", "ascii"));
       $this->data_encode[1] = CleanVariable($this->data_encode[1], "", array("hex", "ascii"));
@@ -66,7 +66,7 @@ class DataCriteria extends MultipleElementCriteria
       unset($curArr);
    }
 
-   function PrintForm()
+   function PrintForm($field_list, $blank_field_string, $add_button_string)
    {
 	            if (!is_array(@$this->criteria[0]))
 			$this->criteria = array();
@@ -109,7 +109,7 @@ class DataCriteria extends MultipleElementCriteria
      /* convert this criteria to SQL */
    }
 
-   function Description()
+   function Description($human_fields)
    {
       $human_fields["LIKE"] = _CONTAINS;
       $human_fields["NOT LIKE"] = _DOESNTCONTAIN;

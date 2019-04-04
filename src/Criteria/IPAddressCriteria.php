@@ -15,12 +15,12 @@ class IPAddressCriteria extends MultipleElementCriteria
  * $ip_addr_cnt: number of rows in the $ip_addr[][] structure
  */
 
-   function IPAddressCriteria(&$db, &$cs, $export_name, $element_cnt)
+   function __construct(&$db, &$cs, $export_name, $element_cnt)
    {
 	$tdb =& $db;
 	$cs =& $cs;
 
-      parent::MultipleElementCriteria($tdb, $cs, $export_name, $element_cnt,
+      parent::__construct($tdb, $cs, $export_name, $element_cnt,
                                       array ("ip_src" => _SOURCE,
                                              "ip_dst" => _DEST,
                                              "ip_both" => _SORD));
@@ -54,7 +54,7 @@ class IPAddressCriteria extends MultipleElementCriteria
      /* clears the criteria */
    }
 
-   function SanitizeElement()
+   function SanitizeElement($i = null)
    {
 	$i = 0;
       // Make copy of old element array
@@ -74,7 +74,7 @@ class IPAddressCriteria extends MultipleElementCriteria
       unset($curArr);
    }
 
-   function PrintForm()
+   function PrintForm($field_list, $blank_field_string, $add_button_string)
    {
       for ( $i = 0; $i < $this->criteria_cnt; $i++ )
       {
@@ -121,7 +121,7 @@ class IPAddressCriteria extends MultipleElementCriteria
      /* convert this criteria to SQL */
    }
 
-   function Description()
+   function Description($human_fields)
    {
       $human_fields["ip_src"] = _SOURCE;
       $human_fields["ip_dst"] = _DEST;

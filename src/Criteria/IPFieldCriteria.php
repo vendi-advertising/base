@@ -13,12 +13,12 @@ class IPFieldCriteria extends ProtocolFieldCriteria
  * $ip_field_cnt: number of rows in the $ip_field[][] structure
  */
 
-   function IPFieldCriteria(&$db, &$cs, $export_name, $element_cnt)
+   function __construct(&$db, &$cs, $export_name, $element_cnt)
    {
 	$tdb =& $db;
 	$cs =& $cs;
 
-      parent::ProtocolFieldCriteria($tdb, $cs, $export_name, $element_cnt,
+      parent::__construct($tdb, $cs, $export_name, $element_cnt,
                                     array("ip_tos"  => "TOS",
                                           "ip_ttl"  => "TTL",
                                           "ip_id"   => "ID",
@@ -27,7 +27,7 @@ class IPFieldCriteria extends ProtocolFieldCriteria
                                           "ip_len"  => "length"));
    }
 
-   function PrintForm()
+   function PrintForm($field_list, $blank_field_string, $add_button_string)
    {
       parent::PrintForm($this->valid_field_list, _DISPFIELD, _ADDIPFIELD);
    }
@@ -37,7 +37,7 @@ class IPFieldCriteria extends ProtocolFieldCriteria
      /* convert this criteria to SQL */
    }
 
-   function Description()
+   function Description($human_fields)
    {
       return parent::Description( array_merge( array ( "" => "",
                                                        "LIKE" => _CONTAINS,

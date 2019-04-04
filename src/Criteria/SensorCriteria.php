@@ -14,12 +14,12 @@ class SensorCriteria extends SingleElementCriteria
      /* clears the criteria */
    }
 
-   function SanitizeElement()
+   function SanitizeElement($i = null)
    {
       $this->criteria = CleanVariable($this->criteria, VAR_DIGIT);
    }
 
-   function PrintForm()
+   function PrintForm($field_list, $blank_field_string, $add_button_string)
    {
 			GLOBAL $debug_mode;
 
@@ -89,7 +89,7 @@ class SensorCriteria extends SingleElementCriteria
      /* convert this criteria to SQL */
    }
 
-   function Description()
+   function Description($human_fields)
    {
      $tmp = "";
 

@@ -15,7 +15,7 @@ class SignaturePriorityCriteria extends SingleElementCriteria
     /* clears the criteria */
    }
 
-   function SanitizeElement()
+   function SanitizeElement($i = null)
    {
      if (!isset($this->criteria[0]) || !isset($this->criteria[1])) {
          $this->criteria = array(0 => '', 1 => '');
@@ -25,7 +25,7 @@ class SignaturePriorityCriteria extends SingleElementCriteria
       $this->criteria[1] = CleanVariable(@$this->criteria[1], VAR_DIGIT);
    }
 
-   function PrintForm()
+   function PrintForm($field_list, $blank_field_string, $add_button_string)
    {
      if ( $this->db->baseGetDBversion() >= 103 )
      {
@@ -63,7 +63,7 @@ class SignaturePriorityCriteria extends SingleElementCriteria
     /* convert this criteria to SQL */
     }
 
-    function Description()
+    function Description($human_fields)
     {
        $tmp = "";
        if (!isset($this->criteria[1])) {

@@ -4,18 +4,18 @@ namespace Vendi\BASE\Criteria;
 
 class ProtocolFieldCriteria extends MultipleElementCriteria
 {
-	function ProtocolFieldCriteria(&$db, &$cs, $export_name, $element_cnt, $field_list = Array() )
+	function __construct(&$db, &$cs, $export_name, $element_cnt, $field_list = Array() )
 	{
 		$tdb =& $db;
 		$cs =& $cs;
 
-		$this->MultipleElementCriteria($tdb, $cs, $export_name, $element_cnt, $field_list);
+		parent::__construct($tdb, $cs, $export_name, $element_cnt, $field_list);
 
 	}
 
 
 
-   function SanitizeElement($i)
+   function SanitizeElement($i = null)
    {
       // Make a copy of the element array
       $curArr = $this->criteria[$i];
@@ -44,5 +44,15 @@ class ProtocolFieldCriteria extends MultipleElementCriteria
          $tmp = $tmp.$this->cs->GetClearCriteriaString($this->export_name);
 
       return $tmp;
+   }
+
+   function ToSQL()
+   {
+      //NOOP
+   }
+
+   function Clear()
+   {
+      //NOOP
    }
 }

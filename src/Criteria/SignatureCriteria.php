@@ -15,12 +15,12 @@ class SignatureCriteria extends SingleElementCriteria
    var $sig_type;
    var $criteria = array(0 => '', 1 => '');
 
-   function SignatureCriteria(&$db, &$cs, $export_name)
+   function __construct(&$db, &$cs, $export_name)
    {
 	$tdb =& $db;
 	$cs =& $cs;
 
-      $this->BaseCriteria($tdb, $cs, $export_name);
+      parent::__construct($tdb, $cs, $export_name);
 
       $this->sig_type = "";
    }
@@ -44,7 +44,7 @@ class SignatureCriteria extends SingleElementCriteria
    {
    }
 
-   function SanitizeElement()
+   function SanitizeElement($i = null)
    {
       if (!isset($this->criteria[0]) || !isset($this->criteria[1])) {
           $this->criteria = array(0 => '', 1 => '');
@@ -56,7 +56,7 @@ class SignatureCriteria extends SingleElementCriteria
       $this->criteria[3] = filterSql(@$this->criteria[3]); /* signature name from the signature list */
    }
 
-   function PrintForm()
+   function PrintForm($field_list, $blank_field_string, $add_button_string)
    {
       if (!@is_array($this->criteria))
         $this->criteria = array();
@@ -101,7 +101,7 @@ class SignatureCriteria extends SingleElementCriteria
    {
    }
 
-   function Description()
+   function Description($human_fields)
    {
       $tmp = $tmp_human = "";
 

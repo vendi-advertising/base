@@ -20,7 +20,7 @@ class TimeCriteria extends MultipleElementCriteria
      /* clears the criteria */
    }
 
-   function SanitizeElement($i)
+   function SanitizeElement($i = null)
    {
       // Make copy of element array.
       $curArr = $this->criteria[$i];
@@ -39,7 +39,7 @@ class TimeCriteria extends MultipleElementCriteria
       unset($curArr);
    }
 
-   function PrintForm()
+   function PrintForm($field_list, $blank_field_string, $add_button_string)
    {
       for ( $i = 0; $i < $this->criteria_cnt; $i++ )
       {
@@ -94,7 +94,7 @@ class TimeCriteria extends MultipleElementCriteria
      /* convert this criteria to SQL */
    }
 
-   function Description()
+   function Description($human_fields)
    {
      $tmp = "";
      for ($i = 0; $i < $this->criteria_cnt; $i++)

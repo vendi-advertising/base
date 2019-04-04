@@ -2,18 +2,18 @@
 
 namespace Vendi\BASE\Criteria;
 
-class MultipleElementCriteria extends BaseCriteria
+abstract class MultipleElementCriteria extends BaseCriteria
 {
    var $element_cnt;
    var $criteria_cnt;
    var $valid_field_list = Array();
 
-   function MultipleElementCriteria(&$db, &$cs, $export_name, $element_cnt, $field_list = Array() )
+   function __construct(&$db, &$cs, $export_name, $element_cnt, $field_list = Array() )
    {
 	$tdb =& $db;
 	$cs =& $cs;
 
-      $this->BaseCriteria($tdb, $cs, $export_name);
+      parent::__construct($tdb, $cs, $export_name);
 
       $this->element_cnt = $element_cnt;
       $this->criteria_cnt = 0;
@@ -49,7 +49,7 @@ class MultipleElementCriteria extends BaseCriteria
       }
    }
 
-   function SanitizeElement($i)
+   function SanitizeElement($i = null)
    {
    }
 
@@ -65,7 +65,7 @@ class MultipleElementCriteria extends BaseCriteria
 
    function AddFormItem(&$submit, $submit_value)
    {
-	$this->criteria_cnt =& $this->criteria_cnt;
+	   $this->criteria_cnt =& $this->criteria_cnt;
       AddCriteriaFormRow($submit, $submit_value, $this->criteria_cnt, $this->criteria, $this->element_cnt);
    }
 

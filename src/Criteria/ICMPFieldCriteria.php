@@ -13,12 +13,12 @@ class ICMPFieldCriteria extends ProtocolFieldCriteria
  * $icmp_field_cnt: number of rows in the $icmp_field[][] structure
  */
 
-   function ICMPFieldCriteria(&$db, &$cs, $export_name, $element_cnt)
+   function __construct(&$db, &$cs, $export_name, $element_cnt)
    {
 	$tdb =& $db;
 	$cs =& $cs;
 
-      parent::ProtocolFieldCriteria($tdb, $cs, $export_name, $element_cnt,
+      parent::__construct($tdb, $cs, $export_name, $element_cnt,
                                     array ("icmp_type" => "type",
                                            "icmp_code" => "code",
                                            "icmp_id"   => "id",
@@ -26,7 +26,7 @@ class ICMPFieldCriteria extends ProtocolFieldCriteria
                                            "icmp_csum" => "chksum"));
    }
 
-   function PrintForm()
+   function PrintForm($field_list, $blank_field_string, $add_button_string)
    {
       parent::PrintForm($this->valid_field_list, _DISPFIELD, _ADDICMPFIELD);
    }
@@ -36,7 +36,7 @@ class ICMPFieldCriteria extends ProtocolFieldCriteria
      /* convert this criteria to SQL */
    }
 
-   function Description()
+   function Description($human_fields)
    {
       return parent::Description(array_merge ( array("" => ""), $this->valid_field_list) );
    }

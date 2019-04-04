@@ -2,7 +2,7 @@
 
 namespace Vendi\BASE\Criteria;
 
-class SingleElementCriteria extends BaseCriteria
+abstract class SingleElementCriteria extends BaseCriteria
 {
    function Import()
    {
@@ -19,6 +19,11 @@ class SingleElementCriteria extends BaseCriteria
    function GetFormItemCnt()
    {
       return -1;
+   }
+
+   function SetFormItemCnt($value)
+   {
+      //NOOP
    }
 
    function Set($value)

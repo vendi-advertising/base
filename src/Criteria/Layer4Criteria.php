@@ -14,12 +14,12 @@ class Layer4Criteria extends SingleElementCriteria
      /* clears the criteria */
    }
 
-   function SanitizeElement()
+   function SanitizeElement($i = null)
    {
       $this->criteria = CleanVariable($this->criteria, "", array("UDP", "TCP", "ICMP", "RawIP"));
    }
 
-   function PrintForm()
+   function PrintForm($field_list, $blank_field_string, $add_button_string)
    {
       if ( $this->criteria != "" )
          echo '<INPUT TYPE="submit" NAME="submit" VALUE="'._NOLAYER4.'"> &nbsp';
@@ -47,7 +47,7 @@ class Layer4Criteria extends SingleElementCriteria
      /* convert this criteria to SQL */
    }
 
-   function Description()
+   function Description($human_fields)
    {
       if ( $this->criteria == "TCP" )
          return _QCTCPCRIT;

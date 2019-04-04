@@ -13,17 +13,17 @@ class UDPPortCriteria extends ProtocolFieldCriteria
  * $udp_port_cnt: number of rows in the $udp_port[][] structure
  */
 
-   function UDPPortCriteria(&$db, &$cs, $export_name, $element_cnt)
+   function __construct(&$db, &$cs, $export_name, $element_cnt)
    {
 	$tdb =& $db;
 	$cs =& $cs;
 
-      parent::ProtocolFieldCriteria($tdb, $cs, $export_name, $element_cnt,
+      parent::__construct($tdb, $cs, $export_name, $element_cnt,
                                     array ("layer4_sport" => _SOURCEPORT,
                                            "layer4_dport" => _DESTPORT));
    }
 
-   function PrintForm()
+   function PrintForm($field_list, $blank_field_string, $add_button_string)
    {
       parent::PrintForm($this->valid_field_list, _DISPPORT, _ADDUDPPORT);
    }
@@ -33,7 +33,7 @@ class UDPPortCriteria extends ProtocolFieldCriteria
      /* convert this criteria to SQL */
    }
 
-   function Description()
+   function Description($human_fields)
    {
       return parent::Description(array_merge( array("" => "",
                                                     "=" => "="), $this->valid_field_list) );

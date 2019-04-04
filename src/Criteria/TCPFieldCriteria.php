@@ -15,12 +15,12 @@ class TCPFieldCriteria extends ProtocolFieldCriteria
  * $tcp_field_cnt: number of rows in the $tcp_field[][] structure
  */
 
-   function TCPFieldCriteria(&$db, &$cs, $export_name, $element_cnt)
+   function __construct(&$db, &$cs, $export_name, $element_cnt)
    {
 	$tdb =& $db;
 	$cs =& $cs;
 
-      parent::ProtocolFieldCriteria($tdb, $cs, $export_name, $element_cnt,
+      parent::__construct($tdb, $cs, $export_name, $element_cnt,
                                     array ("tcp_win" => "window",
                                            "tcp_urp" => "urp",
                                            "tcp_seq" => "seq #",
@@ -30,7 +30,7 @@ class TCPFieldCriteria extends ProtocolFieldCriteria
                                            "tcp_csum" => "chksum"));
    }
 
-   function PrintForm()
+   function PrintForm($field_list, $blank_field_string, $add_button_string)
    {
       parent::PrintForm($this->valid_field_list, _DISPFIELD, _ADDTCPFIELD);
    }
@@ -40,7 +40,7 @@ class TCPFieldCriteria extends ProtocolFieldCriteria
      /* convert this criteria to SQL */
    }
 
-   function Description()
+   function Description($human_fields)
    {
       return parent::Description(array_merge ( array("" => ""), $this->valid_field_list) );
    }
