@@ -1,8 +1,9 @@
 <?php
 
-require_once __DIR__ . '/includes/vendi_boot.php';
-
+use Vendi\BASE\BaseUser;
 use Vendi\BASE\Criteria\CriteriaState;
+
+require_once __DIR__ . '/includes/vendi_boot.php';
 
 /*
  * $caller: an auxiliary variable used to determine the how the search parameters were entered (i.e.
