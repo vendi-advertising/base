@@ -1,18 +1,8 @@
 <?php
 
-require_once dirname(__DIR__) . '/includes/vendi_boot.php';
+namespace Vendi\BASE;
 
 /*******************************************************************************
-** Basic Analysis and Security Engine (BASE)
-** Copyright (C) 2004 BASE Project Team
-** Copyright (C) 2000 Carnegie Mellon University
-**
-** (see the file 'base_main.php' for license details)
-**
-** Project Lead: Kevin Johnson <kjohnson@secureideas.net>
-**                Sean Muller <samwise_diver@users.sourceforge.net>
-** Built upon work by Roman Danyliw <rdd@cert.org>, <roman@danyliw.com>
-**
 ** Purpose: manages the necessary state information for
 **          query results
 ********************************************************************************
@@ -22,16 +12,6 @@ require_once dirname(__DIR__) . '/includes/vendi_boot.php';
 **
 ********************************************************************************
 */
-/** The below check is to make sure that the conf file has been loaded before this one....
- **  This should prevent someone from accessing the page directly. -- Kevin
- **/
-defined( '_BASE_INC' ) or die( 'Accessing this file directly is not allowed.' );
-
-include_once("$BASE_path/base_common.php");
-include_once("$BASE_path/includes/base_db.inc.php");
-include_once("$BASE_path/includes/base_constants.inc.php");
-include_once("$BASE_path/includes/base_action.inc.php");
-// include_once("$BASE_path/includes/base_capabilities.php"); //Commented out by Kevin for testing
 
 class QueryState
 {

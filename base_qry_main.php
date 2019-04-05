@@ -1,6 +1,8 @@
 <?php
 
 use Vendi\BASE\BaseUser;
+use Vendi\BASE\EventTiming;
+use Vendi\BASE\QueryState;
 use Vendi\BASE\Criteria\CriteriaState;
 
 require_once __DIR__ . '/includes/vendi_boot.php';

@@ -1,4 +1,9 @@
 <?php
+
+use Vendi\BASE\QueryResultsOutput;
+
+require_once __DIR__ . '/includes/vendi_boot.php';
+
 /*******************************************************************************
 ** Basic Analysis and Security Engine (BASE)
 ** Copyright (C) 2004 BASE Project Team
@@ -21,7 +26,7 @@
 global $colored_alerts, $debug_mode;
   /* **************** Run the Query ************************************************** */
 
-  /* base_ag_main.php will include this file 
+  /* base_ag_main.php will include this file
    *  - imported variables: $sql, $cnt_sql
    */
 
@@ -45,22 +50,22 @@ global $colored_alerts, $debug_mode;
   /* Setup the Query Results Table */
   $qro = new QueryResultsOutput("$page".$qs->SaveStateGET().$tmp_page_get);
 
-  $qro->AddTitle(qroReturnSelectALLCheck());  
+  $qro->AddTitle(qroReturnSelectALLCheck());
   $qro->AddTitle("ID");
 
-  $qro->AddTitle(_SIGNATURE, 
+  $qro->AddTitle(_SIGNATURE,
                 "sig_a", " ", " ORDER BY sig_name ASC",
                 "sig_d", " ", " ORDER BY sig_name DESC");
   $qro->AddTitle(_TIMESTAMP,
                  "time_a", " ", " ORDER BY timestamp ASC ",
-                 "time_d", " ", " ORDER BY timestamp DESC "); 
-  $qro->AddTitle(_NBSOURCEADDR, 
+                 "time_d", " ", " ORDER BY timestamp DESC ");
+  $qro->AddTitle(_NBSOURCEADDR,
                  "sip_a", " ", " ORDER BY ip_src ASC",
                  "sip_d", " ", " ORDER BY ip_src DESC");
-  $qro->AddTitle(_NBDESTADDR, 
+  $qro->AddTitle(_NBDESTADDR,
                  "dip_a", " ", " ORDER BY ip_dst ASC",
                  "dip_d", " ", " ORDER BY ip_dst DESC");
-  $qro->AddTitle(_NBLAYER4, 
+  $qro->AddTitle(_NBLAYER4,
                  "proto_a", " ", " ORDER BY ip_proto ASC",
                  "proto_d", " ", " ORDER BY ip_proto DESC");
 
@@ -98,7 +103,7 @@ global $colored_alerts, $debug_mode;
      if ($sort_order == "time_d")
         { $sort_sql = " ORDER BY timestamp DESC"; }
      ExportHTTPVar("prev_sort_order", $sort_order);
-    
+
      $sql = $sql." ".$sort_sql;
   }
 
@@ -107,7 +112,7 @@ global $colored_alerts, $debug_mode;
      echo "<P>SUBMIT: $submit";
      echo "<P>sort_order: $sort_order";
      echo "<P>SQL (save_sql): $sql";
-     echo "<P>SQL (sort_sql): $sort_sql"; 
+     echo "<P>SQL (sort_sql): $sort_sql";
    }
 
   /* Run the Query again for the actual data (with the LIMIT) */
@@ -133,10 +138,10 @@ global $colored_alerts, $debug_mode;
 
      echo '</TD>
            <TD WIDTH="40%" VALIGN=TOP>';
-      
+
      PrintFramedBoxHeader(_QSCSUMM, "#669999", "#FFFFFF");
-     PrintGeneralStats($db, 1, $show_summary_stats, 
-                       "$join_sql ", "$where_sql $criteria_sql"); 
+     PrintGeneralStats($db, 1, $show_summary_stats,
+                       "$join_sql ", "$where_sql $criteria_sql");
      echo('<BR><LI><A HREF="base_stat_time.php">'._QSCTIMEPROF.'</A> '._QSCOFALERTS . "</LI>");
      PrintFramedBoxFooter();
 
@@ -146,10 +151,10 @@ global $colored_alerts, $debug_mode;
   }
 
     /* Clear the old checked positions */
-    for ( $i = 0; $i < $show_rows; $i++)  
-    { 
-        $action_lst[$i] = "";  
-        $action_chk_lst[$i] = ""; 
+    for ( $i = 0; $i < $show_rows; $i++)
+    {
+        $action_lst[$i] = "";
+        $action_chk_lst[$i] = "";
     }
 
   /* Print the current view number and # of rows */
@@ -162,7 +167,7 @@ global $colored_alerts, $debug_mode;
       $current_sip32 = $myrow[4];
       $current_sip = baseLong2IP($current_sip32);
       $current_dip32 = $myrow[5];
-      $current_dip = baseLong2IP($current_dip32); 
+      $current_dip = baseLong2IP($current_dip32);
       $current_proto = $myrow[6];
       if ($debug_mode > 1)
       {
@@ -189,7 +194,7 @@ global $colored_alerts, $debug_mode;
                           $current_sig = $current_sig . str_replace("Open Port", "", $myrow_payload);
                 }
                 /* fetch from payload portscan port range */
-                else if ( stristr($current_sig_txt, "(portscan) TCP Portscan") || 
+                else if ( stristr($current_sig_txt, "(portscan) TCP Portscan") ||
                           stristr($current_sig_txt, "(portscan) UDP Portscan")) {
                           $sql2 = "SELECT data_payload FROM data WHERE sid='".$myrow[0]."' AND cid='".$myrow[1]."'";
                           $result2 = $db->baseExecute($sql2);
@@ -229,11 +234,11 @@ global $colored_alerts, $debug_mode;
                           '&amp;time%5B0%5D%5B0%5D=+&amp;time%5B0%5D%5B1%5D=+'.
                           '&amp;submit='._QUERYDBP.'&amp;current_view=-1&amp;ip_addr_cnt=2';
 
-      /* TCP or UDP show the associated port # */ 
+      /* TCP or UDP show the associated port # */
       if ( ($current_proto == TCP) || ($current_proto == UDP) )
          $result4 = $db->baseExecute("SELECT layer4_sport, layer4_dport FROM acid_event ".
                                      "WHERE sid='".$myrow[0]."' AND cid='".$myrow[1]."'");
-      
+
       if ( ($current_proto == TCP) || ($current_proto == UDP) )
       {
          $myrow4 = $result4->baseFetchRow();
@@ -241,7 +246,7 @@ global $colored_alerts, $debug_mode;
          if ( $myrow4[0] != "" )  $current_sport = ":".$myrow4[0];
          if ( $myrow4[1] != "" )  $current_dport = ":".$myrow4[1];
       }
-      
+
       if ( $current_sip32 != "" )
       {
          qroPrintEntry('<A HREF="base_stat_ipaddr.php?ip='.$current_sip.'&amp;netmask=32">'.
@@ -257,7 +262,7 @@ global $colored_alerts, $debug_mode;
         if ( stristr($current_sig_txt, "portscan") )
         {
            $line = split (" ", $current_sig_txt);
-           foreach ($line as $ps_element) 
+           foreach ($line as $ps_element)
            {
              if ( ereg("[0-9]*\.[0-9]*\.[0-9]*\.[0-9]", $ps_element)  )
              {
@@ -276,7 +281,7 @@ global $colored_alerts, $debug_mode;
                        $current_dip.
                        '</A><FONT SIZE="-1">'.$current_dport.'</FONT>');
        else
-         qroPrintEntry('<A HREF="'.$BASE_urlpath.'/help/base_app_faq.php#1">'._UNKNOWN.'</A>');    
+         qroPrintEntry('<A HREF="'.$BASE_urlpath.'/help/base_app_faq.php#1">'._UNKNOWN.'</A>');
 
       qroPrintEntry('<FONT>'.IPProto2str($current_proto).'</FONT>');
 

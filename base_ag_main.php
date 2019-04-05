@@ -1,8 +1,10 @@
 <?php
 
 use Vendi\BASE\Criteria\CriteriaState;
+use Vendi\BASE\QueryState;
+use Vendi\BASE\EventTiming;
 
-require_once dirname(__DIR__) . '/includes/vendi_boot.php';
+require_once __DIR__ . '/includes/vendi_boot.php';
 
 /*******************************************************************************
 ** Basic Analysis and Security Engine (BASE)

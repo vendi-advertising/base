@@ -1,4 +1,9 @@
 <?php
+
+use Vendi\BASE\EventTiming;
+
+require_once __DIR__ . '/includes/vendi_boot.php';
+
 /*******************************************************************************
 ** Basic Analysis and Security Engine (BASE)
 ** Copyright (C) 2004 BASE Project Team
@@ -60,27 +65,27 @@
   if ($result == 1)
      ErrorMessage("&nbsp;DONE&nbsp;");
   else
-     echo '<INPUT TYPE="submit" NAME="submit" VALUE="Create BASE AG">'; 
+     echo '<INPUT TYPE="submit" NAME="submit" VALUE="Create BASE AG">';
 
   echo '
   </TABLE>';
-  
+
   if ($result == 1)
      echo '<P>
            The underlying Alert DB is configured for usage with BASE.
            <P>
            <B>Additional DB permissions</B><BR>
            In order to support Alert purging (the selective ability to permanently delete
-           alerts from the database) and DNS/whois lookup caching, 
+           alerts from the database) and DNS/whois lookup caching,
            the DB user "'.$alert_user.'" must have the DELETE and UPDATE privilege
-           on the database "'.$alert_dbname.'@'.$alert_host.'" 
+           on the database "'.$alert_dbname.'@'.$alert_host.'"
            <P>
-           Goto the <A HREF="base_main.php">Main page</A> to use the application.'; 
+           Goto the <A HREF="base_main.php">Main page</A> to use the application.';
 
   echo "\n</FORM>\n";
-  
+
   PrintBASESubFooter();
-  
+
    $et->PrintTiming();
   echo "</body>\r\n\</html>";
 ?>

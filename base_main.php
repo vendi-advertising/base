@@ -13,7 +13,6 @@ require_once __DIR__ . '/includes/vendi_boot.php';
    include_once("$BASE_path/includes/base_cache.inc.php");
    include_once("$BASE_path/includes/base_state_criteria.inc.php");
    include_once("$BASE_path/includes/base_log_error.inc.php");
-   include_once("$BASE_path/includes/base_log_timing.inc.php");
 
   RegisterGlobalState();
 

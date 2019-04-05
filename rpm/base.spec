@@ -1,7 +1,7 @@
-#       
+#
 #
 #       cd SPECS
-#       rpmdev-bumpspec -u "John Doe <John's@email.address.net>" -c "Fixed this and that" base.spec 
+#       rpmdev-bumpspec -u "John Doe <John's@email.address.net>" -c "Fixed this and that" base.spec
 #       rpmlint base.spec
 #       rpmbuild --quiet -ba base.spec
 #
@@ -20,11 +20,11 @@
 #       rpm --addsign base-cvs_20080621.src.rpm
 #       rpm --checksig base-cvs_20080621.src.rpm
 #       rpm -Uvh --test base-cvs_20080621.src.rpm
-# 
+#
 #
 # TODO:
-# - adodb as an rpm with a version requirement? 
-#   rpm -Uvh --test php-adodb-4.95-1.a.fc8.noarch.rpm 
+# - adodb as an rpm with a version requirement?
+#   rpm -Uvh --test php-adodb-4.95-1.a.fc8.noarch.rpm
 #   error: php-adodb-4.95-1.a.fc8.noarch.rpm: headerRead failed: hdr blob(26277): BAD, read returned 18062
 #   error: php-adodb-4.95-1.a.fc8.noarch.rpm cannot be installed
 #
@@ -46,45 +46,45 @@ Summary: BASE - Basic Analysis and Security Engine
 # Cf. /usr/share/doc/rpm-4.4.2.3/GROUPS
 Group: Applications/Internet
 # tag Vendor is forbidden with Fedora; cf. wiki: Packaging/Guidelines#tags
-Vendor: SecureIdeas 
+Vendor: SecureIdeas
 License: GPLv2
 URL: http://secureideas.sourceforge.net/
 Source0: %{name}-%{version}.tar.gz
 Patch0: base_maintenance.pl.patch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch: noarch
-# Explicit statements in "Requires:" are only necessary for version 
+# Explicit statements in "Requires:" are only necessary for version
 # requirements.  All of the other dependencies are done by rpm automatically.
-Requires: php >= 4.0.4,  php-pear >= 1.5.3, php-pear-Image-Color >= 1.0.2, php-pear-Image-Canvas >= 0.3.1 , php-pear-Image-Graph >= 0.7.2, php-pear-Numbers-Roman >= 1.0.2, php-pear-Mail, php-pear-Mail-Mime, httpd 
-Requires(post): policycoreutils 
+Requires: php >= 4.0.4,  php-pear >= 1.5.3, php-pear-Image-Color >= 1.0.2, php-pear-Image-Canvas >= 0.3.1 , php-pear-Image-Graph >= 0.7.2, php-pear-Numbers-Roman >= 1.0.2, php-pear-Mail, php-pear-Mail-Mime, httpd
+Requires(post): policycoreutils
 Requires(postun): policycoreutils
-# , php-gd, php-pear-Image-Graph-roman, php-pear-Numbers-Words, 
-# php-pear-Image-Graph-words, php-pear-Mail, php-pear-Auth-SASL, 
-# php-pear-Net-Socket, php-pear-Net-SMTP, php-pear-Mail-mimeDecode, 
+# , php-gd, php-pear-Image-Graph-roman, php-pear-Numbers-Words,
+# php-pear-Image-Graph-words, php-pear-Mail, php-pear-Auth-SASL,
+# php-pear-Net-Socket, php-pear-Net-SMTP, php-pear-Mail-mimeDecode,
 # php-pear-Mail-Mime
-#  However, omitting httpd is very much doubtful, as we provide 
+#  However, omitting httpd is very much doubtful, as we provide
 #  /etc/httpd/conf.d/base.conf
 # And the mail feature is no recognized by rpmbuild, either: It requires
 # php-pear-Mail and php-pear-Mail-Mime (plus dependencies)
 
 %description
-BASE is the Basic Analysis and Security Engine.  It is based on the code 
-from the Analysis Console for Intrusion Databases (ACID) project.  This 
-application provides a web front-end to query and analyze the alerts 
+BASE is the Basic Analysis and Security Engine.  It is based on the code
+from the Analysis Console for Intrusion Databases (ACID) project.  This
+application provides a web front-end to query and analyze the alerts
 coming from a SNORT IDS system.
 
-BASE is a web interface to perform analysis of intrusions that SNORT 
-has detected on your network.  It uses a user authentication and 
-role-based system, so that you as the security admin can decide 
-which and how much information each user can see.  It also has a 
-simple to use, web-based setup program for people who feel not 
+BASE is a web interface to perform analysis of intrusions that SNORT
+has detected on your network.  It uses a user authentication and
+role-based system, so that you as the security admin can decide
+which and how much information each user can see.  It also has a
+simple to use, web-based setup program for people who feel not
 comfortable with editing files directly.
 
-BASE is supported by a group of volunteers.  They are available to answer 
-any questions you may have or help you out in setting up your system. 
-They are also skilled in intrusion detection systems and make use of 
-that knowledge in the development of BASE. You can contact them 
-through the website http://secureideas.sourceforge.net/ or by 
+BASE is supported by a group of volunteers.  They are available to answer
+any questions you may have or help you out in setting up your system.
+They are also skilled in intrusion detection systems and make use of
+that knowledge in the development of BASE. You can contact them
+through the website http://secureideas.sourceforge.net/ or by
 emailing them at base@secureideas.net
 
 
@@ -97,7 +97,7 @@ License: GPLv2
 BuildArch: noarch
 %description contrib
 This perl module makes the handling of snort unified log files (version 1)
-easy.  It reads in snort unified log files and offers different output 
+easy.  It reads in snort unified log files and offers different output
 possibilities:
         - csv file
         - syslog
@@ -110,7 +110,7 @@ possibilities:
 %setup -q
 %define _worldmap_target_dir usr/share/pear/Image/Graph/Images/Maps
 # Why /usr/share/base-x.y.z rather than /var/www/html/base-x.y.z ?
-# Because of fedora packaging guidelines at: 
+# Because of fedora packaging guidelines at:
 # http://fedoraproject.org/wiki/Packaging/Guidelines
 # "Web Applications
 #
@@ -130,7 +130,7 @@ possibilities:
 %define _base_conf_header2 "<Directory \\"/%{_php_files_target_dir}\\">"
 
 
-%patch0 -p0 
+%patch0 -p0
 
 
 %build
@@ -228,12 +228,12 @@ if [ $1 -gt 0 ]; then
   %define SETSEBOOL `which setsebool`
   if test -n "%{SEMANAGE}" -a -x "%{SEMANAGE}"; then
     if test -n "%{RESTORECON}" -a -x "%{RESTORECON}"; then
-      %{SEMANAGE} fcontext --add -t httpd_user_content_t '/%{_php_files_target_dir}/.*' > /dev/null 2> /dev/null || %{SEMANAGE} fcontext --modify -t httpd_user_content_t '/%{_php_files_target_dir}/.*' > /dev/null 2> /dev/null || semanage fcontext --add -t httpd_sys_content_t '/%{_php_files_target_dir}' > /dev/null 2> /dev/null || : 
+      %{SEMANAGE} fcontext --add -t httpd_user_content_t '/%{_php_files_target_dir}/.*' > /dev/null 2> /dev/null || %{SEMANAGE} fcontext --modify -t httpd_user_content_t '/%{_php_files_target_dir}/.*' > /dev/null 2> /dev/null || semanage fcontext --add -t httpd_sys_content_t '/%{_php_files_target_dir}' > /dev/null 2> /dev/null || :
 
       # The top directory must be writable for base_conf.php.
-      %{SEMANAGE} fcontext --add -t httpd_user_content_rw_t '/%{_php_files_target_dir}' > /dev/null 2> /dev/null || %{SEMANAGE} fcontext --modify -t httpd_user_content_rw_t '/%{_php_files_target_dir}' > /dev/null 2>/dev/null > /dev/null 2> /dev/null || : 
+      %{SEMANAGE} fcontext --add -t httpd_user_content_rw_t '/%{_php_files_target_dir}' > /dev/null 2> /dev/null || %{SEMANAGE} fcontext --modify -t httpd_user_content_rw_t '/%{_php_files_target_dir}' > /dev/null 2>/dev/null > /dev/null 2> /dev/null || :
 
-      # Actually change the context 
+      # Actually change the context
       %{RESTORECON} -R '/%{_php_files_target_dir}' > /dev/null 2> /dev/null || :
       if test -n "%{SETSEBOOL}"; then
         %{SETSEBOOL} -P httpd_can_network_connect_db=1
@@ -293,11 +293,11 @@ fi
 ##### all the directories without CVS and SnortUnified #####
 # find /var/www/html/base-php4 -type d ! -iname "CVS" ! -iwholename "*SnortUnified*" | sed 's/^/%dir %attr(0755,apache,apache) /; s/\/var\/www\/html\/base-php4/\/%{_php_files_target_dir}/' | sort -d | uniq > /tmp/filelist
 # echo "\n" >> /tmp/filelist
-# 
-##### all the php files ##### 
+#
+##### all the php files #####
 # find /var/www/html/base-php4 -type f ! -iwholename "*CVS*" ! -iwholename "*/SnortUnified/*" ! -iwholename "*/docs/*" ! -iwholename "*/scripts/*" ! -iname "*.orig" ! -iname "*~" ! -iname "*.old" ! -iname "*.conf.php" | sed 's/^/%attr(0644,apache,apache) /; s/\/var\/www\/html\/base-php4/\/%{_php_files_target_dir}/' | sort -d >> /tmp/filelist
 # echo -e "\n\n" >> /tmp/filelist
-# 
+#
 ##### base_maintenance.pl (could be installed anywhere else - to any other
 ##### location than %{_php_files_target_dir} #####
 # find /var/www/html/base-php4/scripts/ ! -iwholename "*CVS*" ! -iname "*.orig" ! -iname "*~" ! -iname "*.old" |  sed 's/^/%attr(0755,apache,apache) /; s/\/var\/www\/html\/base-php4/\/%{_php_files_target_dir}/' | sort -d | uniq >> /tmp/filelist
@@ -317,7 +317,7 @@ fi
 #
 ##### base.conf for apache #####
 # echo "%config(noreplace) %attr(0644,root,root) /etc/httpd/conf.d/base.conf" >> tmp/filelist
-# 
+#
 ##########################################
 # Attention with the multibyte in docs/contrib/Snort, Apache, MYSQL, PHP, and BASE...:  This particular filename HAS TO be enclosed by quotation marks.
 # because of the multibyte inside.
@@ -390,7 +390,6 @@ fi
 %attr(0644,apache,apache) /%{_php_files_target_dir}/includes/base_action.inc.php
 %attr(0644,apache,apache) /%{_php_files_target_dir}/includes/base_auth.inc.php
 %attr(0644,apache,apache) /%{_php_files_target_dir}/includes/base_cache.inc.php
-%attr(0644,apache,apache) /%{_php_files_target_dir}/includes/base_capabilities.php
 %attr(0644,apache,apache) /%{_php_files_target_dir}/includes/base_constants.inc.php
 %attr(0644,apache,apache) /%{_php_files_target_dir}/includes/base_db.inc.php
 %attr(0644,apache,apache) /%{_php_files_target_dir}/includes/base_include.inc.php
@@ -547,8 +546,8 @@ Added base.spec, base_maintenance.pl.patch and README.rpm to CVS tree
 Snapshot from CVS version as of June, 16th, 2008
 
 * Wed Jun 11 2008 Juergen Leising <jleising@users.sourcefoge.net> - 1.4.0jl1-1
-- Completely rewritten version of base.spec for BASE-1.4.1 (lara).  
-  Partly based on a spec-file by Alejandro Flores <alejandro.flores@triforsec.com.br> 
+- Completely rewritten version of base.spec for BASE-1.4.1 (lara).
+  Partly based on a spec-file by Alejandro Flores <alejandro.flores@triforsec.com.br>
   for some versions of base-1.2.x.
 
 

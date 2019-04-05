@@ -1,5 +1,6 @@
 <?php
 
+use Vendi\BASE\QueryState;
 use Vendi\BASE\Criteria\AlertGroupCriteria;
 use Vendi\Shared\utils as vendi_utils;
 

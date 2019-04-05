@@ -1,15 +1,8 @@
-<?PHP
+<?php
+
+namespace Vendi\BASE;
+
 /*******************************************************************************
-** Basic Analysis and Security Engine (BASE)
-** Copyright (C) 2004 BASE Project Team
-** Copyright (C) 2000 Carnegie Mellon University
-**
-** (see the file 'base_main.php' for license details)
-**
-** Project Lead: Kevin Johnson <kjohnson@secureideas.net>
-**                Sean Muller <samwise_diver@users.sourceforge.net>
-** Built upon work by Roman Danyliw <rdd@cert.org>, <roman@danyliw.com>
-**
 ** Purpose: Capabilities registry to identify what functionality is available
 **          on the currently running PHP install. This will allow us to vary
 **          functionality on the fly.
@@ -92,4 +85,4 @@ class CapaRegistry
 
 }
 
-$CAPAREG = new CapaRegistry();
+//$CAPAREG = new CapaRegistry();

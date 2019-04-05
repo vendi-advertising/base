@@ -1,8 +1,9 @@
 <?php
 
-require_once dirname(__DIR__) . '/includes/vendi_boot.php';
-
 use Vendi\BASE\Criteria\CriteriaState;
+use Vendi\BASE\EventTiming;
+
+require_once dirname(__DIR__) . '/includes/vendi_boot.php';
 
   include("../base_conf.php");
   include("$BASE_path/includes/base_constants.inc.php");
