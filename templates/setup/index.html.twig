@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<table width="100%" border="0" cellspacing="0" cellpadding="5">
+    <tr>
+      <td class="mainheader">&nbsp;</td>
+      <td class="mainheadertitle">
+         Basic Analysis and Security Engine (BASE) Setup Program
+      </td>
+    </tr>
+</table>
+
+    {% if errorMsg is defined %}
+        <div class="errorMsg" align="center">
+            {{ errorMsg }}
+        </div>
+    {% endif %}
+
+    {{ body | raw }}
+{% endblock %}
