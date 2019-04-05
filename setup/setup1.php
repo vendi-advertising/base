@@ -9,7 +9,6 @@ require_once dirname(__DIR__) . '/includes/vendi_boot.php';
 session_start();
 
 define( "_BASE_INC", 1 );
-include("../includes/base_setup.inc.php");
 include("../includes/base_state_common.inc.php");
 
 if (file_exists('../base_conf.php')){

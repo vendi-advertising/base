@@ -20,6 +20,7 @@
 ********************************************************************************
 */
 
+//TODO: This class appears to be dead. cjh - 2019-04-05
 class BaseSetup
 {
    var $file;

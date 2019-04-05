@@ -21,8 +21,6 @@
 ********************************************************************************
 */
 
-include("../includes/base_setup.inc.php");
-
 session_start();
 unset( $_SESSION['language'] );
 unset( $_SESSION['adodbpath'] );
@@ -51,12 +49,12 @@ $writeColor = ($writeable == "Yes") ? "#336600" : "#FF0000";
   $version = explode(".", $current_php_version);
 
   /* account for x.x.xXX subversions possibly having text like 4.0.4pl1 */
-  if ( is_numeric(substr($version[2], 1, 1)) ) 
+  if ( is_numeric(substr($version[2], 1, 1)) )
      $version[2] = substr($version[2], 0, 2);
   else
      $version[2] = substr($version[2], 0, 1);
 
-  /* only version PHP 4.0.4+ or 4.1+.* are valid */ 
+  /* only version PHP 4.0.4+ or 4.1+.* are valid */
   if ( !( ($version[0] >= 4) && ( ( ($version[1] == 0) && ($version[2] >= 4) ) ||
           ($version[1] > 0) || ($version[0] > 4) ) ) )
   {
@@ -124,13 +122,13 @@ If any of the options below are red, there will be a description of what you nee
         echo("<br><font color=\"red\"><b>Your PHP Logging Level is too high to handle the running of BASE!");
         echo("<br>Please set the 'error_reporting' variable to at least 'E_ALL & ~E_NOTICE' in your php.ini!</b></font>");
     }
-    
+
     if ($writeable == "No") {
         $msg = "<br>The directory where BASE is installed does not allow the web server to write.<br>This will prevent the setup";
         $msg = $msg." progam from creating the base_conf.php file.  You have two choices.<br>";
         $msg = $msg."1. Make the directory writeable for the web server user.<br>";
         $msg = $msg."2. When the set up is done, copy the information displayed to the screen and use it to create a base_conf.php.";
-        
+
         echo $msg;
     }
 ?>

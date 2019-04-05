@@ -9,7 +9,6 @@ require_once dirname(__DIR__) . '/includes/vendi_boot.php';
 session_start();
 
 define( "_BASE_INC", 1 );
-include("../includes/base_setup.inc.php");
 if (!array_key_exists("adodbpath", $_SESSION)) {
    throw new \Exception('The php session does not contain the array key "adodbpath". This is typically caused by not having allowed cookies.');
 }

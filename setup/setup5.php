@@ -19,7 +19,6 @@
 ********************************************************************************
 */
 
-include("../includes/base_setup.inc.php");
 include("base_conf_contents.php");
 
 session_start();
@@ -42,7 +41,7 @@ session_start();
 
     if (file_exists('../base_conf.php'))
 	die ("If you wish to re-run the setup routine, please either move OR delete your previous base_conf file first.");
-    
+
     $writeable = (is_writable("..")) ?  "Yes" : "No";
 
     if ($writeable == "Yes")
@@ -58,7 +57,7 @@ session_start();
 	{
             $error = 0;
 	}
-    } 
+    }
     else
     {
         $confcontents = returnContents();
@@ -66,7 +65,7 @@ session_start();
         $errorMsg = "Can't write base_conf.php file! <br>Please copy the below info into your base_conf.php file";
 
     }
-    
+
     if ($error != 1)
     {
         header("Location: ../index.php");

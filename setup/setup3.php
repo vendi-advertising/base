@@ -7,8 +7,6 @@ require_once dirname(__DIR__) . '/includes/vendi_boot.php';
 
 session_start();
 
-include("../includes/base_setup.inc.php");
-
 if (file_exists('../base_conf.php'))
 	die ("If you wish to re-run the setup routine, please either move OR delete your previous base_conf file first.");
 
