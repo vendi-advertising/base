@@ -87,7 +87,9 @@ function returnContents()
      */
 
     $sessionName = str_replace(\' \', \'_\', $BASE_installID . session_name());
-    session_name($sessionName);
+    session_write_close();
+    session_id($sessionName);
+    session_start();
 
 
     /* Custom footer addition.  The below variable, if set, will cause

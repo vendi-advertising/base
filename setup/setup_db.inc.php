@@ -1,6 +1,7 @@
 <?php
 
 use Vendi\BASE\DatabaseTypes;
+use Vendi\BASE\BaseUser;
 use Vendi\BASE\Exceptions\SetupException;
 
 require_once dirname(__DIR__) . '/includes/vendi_boot.php';

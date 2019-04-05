@@ -1,4 +1,10 @@
 <?php
+
+use Vendi\BASE\BaseUser;
+
+require_once __DIR__ . '/includes/vendi_boot.php';
+
+
 /*******************************************************************************
 ** Basic Analysis and Security Engine (BASE)
 ** Copyright (C) 2004 BASE Project Team
