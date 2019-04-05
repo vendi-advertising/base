@@ -1,31 +1,14 @@
 <?php
 
 use Vendi\BASE\DatabaseTypes;
+use Vendi\BASE\Exceptions\SetupException;
 
 require_once dirname(__DIR__) . '/includes/vendi_boot.php';
 
 /*******************************************************************************
-** Basic Analysis and Security Engine (BASE)
-** Copyright (C) 2004 BASE Project Team
-** Copyright (C) 2000 Carnegie Mellon University
-**
-** (see the file 'base_main.php' for license details)
-**
-** Project Leads: Kevin Johnson <kjohnson@secureideas.net>
-**                Sean Muller <samwise_diver@users.sourceforge.net>
-** Built upon work by Roman Danyliw <rdd@cert.org>, <roman@danyliw.com>
-**
 ** Purpose: Setup step 4, create the database stuff
 ********************************************************************************
-** Authors:
-********************************************************************************
-** Kevin Johnson <kjohnson@secureideas.net>
-**
-********************************************************************************
 */
-/** The below check is to make sure that the conf file has been loaded before this one....
- **  This should prevent someone from accessing the page directly. -- Kevin
- **/
 defined( '_BASE_INC' ) or die( 'Accessing this file directly is not allowed.' );
 
 function CreateBASEAG($db) {
@@ -83,14 +66,14 @@ function CreateBASEAG($db) {
                                           PRIMARY KEY         (ag_id))';
            $db->baseExecute($sql, -1, -1, false);
            if ( $db->baseErrorMessage() != "" )
-              ErrorMessage("Unable to CREATE table 'acid_ag': ".$db->baseErrorMessage());
+              throw new SetupException("Unable to CREATE table 'acid_ag': ".$db->baseErrorMessage());
            else
               ErrorMessage("Successfully created 'acid_ag'");
 
            $sql = 'CREATE SEQUENCE snort.seq_acid_ag_id START WITH 1 INCREMENT BY 1';
            $db->baseExecute($sql, -1, -1, false);
            if ( $db->baseErrorMessage() != "" )
-              ErrorMessage("Unable to CREATE sequence 'snort.seq_acid_ag_id': ".$db->baseErrorMessage());
+              throw new SetupException("Unable to CREATE sequence 'snort.seq_acid_ag_id': ".$db->baseErrorMessage());
            else
               ErrorMessage("Successfully created sequence 'snort.seq_acid_ag_id'");
 
@@ -102,7 +85,7 @@ function CreateBASEAG($db) {
                    END;/';
            $db->baseExecute($sql, -1, -1, false);
            if ( $db->baseErrorMessage() != "" )
-              ErrorMessage("Unable to CREATE trigger 'tr_acid_ag_id': ".$db->baseErrorMessage());
+              throw new SetupException("Unable to CREATE trigger 'tr_acid_ag_id': ".$db->baseErrorMessage());
            else
               ErrorMessage("Successfully created trigger 'tr_acid_ag_id'");
 	}
@@ -111,7 +94,7 @@ function CreateBASEAG($db) {
         if( $db->DB_type != DatabaseTypes::ORACLE ) {
            $db->baseExecute($sql, -1, -1, false);
            if ( $db->baseErrorMessage() != "" )
-              ErrorMessage("Unable to CREATE table 'acid_ag': ".$db->baseErrorMessage());
+              throw new SetupException("Unable to CREATE table 'acid_ag': ".$db->baseErrorMessage());
            else
               ErrorMessage("Successfully created 'acid_ag'");
         }
@@ -149,7 +132,7 @@ function CreateBASEAG($db) {
 
         $db->baseExecute($sql, -1, -1, false);
         if ( $db->baseErrorMessage() != "" )
-           ErrorMessage("Unable to CREATE table 'acid_ag_alert': ".$db->baseErrorMessage());
+           throw new SetupException("Unable to CREATE table 'acid_ag_alert': ".$db->baseErrorMessage());
         else
            ErrorMessage("Successfully created 'acid_ag_alert'");
         $tblBaseAGAlert_present = $db->baseTableExists("acid_ag_alert");
@@ -191,7 +174,7 @@ function CreateBASEAG($db) {
 
         $db->baseExecute($sql, -1, -1, false);
         if ( $db->baseErrorMessage() != "" )
-           ErrorMessage("Unable to CREATE table 'acid_ip_cache': ".$db->baseErrorMessage());
+           throw new SetupException("Unable to CREATE table 'acid_ip_cache': ".$db->baseErrorMessage());
         else
            ErrorMessage("Successfully created 'acid_ip_cache'");
         $tblBaseIPCache_present = $db->baseTableExists("acid_ip_cache");
@@ -294,7 +277,7 @@ function CreateBASEAG($db) {
 
            $db->baseExecute($sql, -1, -1, false);
            if ( $db->baseErrorMessage() != "" )
-              ErrorMessage("Unable to CREATE table 'acid_event': ".$db->baseErrorMessage());
+              throw new SetupException("Unable to CREATE table 'acid_event': ".$db->baseErrorMessage());
            else
               ErrorMessage("Successfully created 'acid_event'");
            $tblBaseEvent_present = $db->baseTableExists("acid_event");
@@ -317,7 +300,7 @@ function CreateBASEAG($db) {
                    CREATE INDEX acid_event_layer4_dport ON acid_event (layer4_dport)';
            $db->baseExecute($sql, -1, -1, false);
            if ($db->baseErrorMessage() != "")
-              ErrorMessage("Unable to CREATE MSSQL BASE table indexes : ".$db->baseErrorMessage());
+              throw new SetupException("Unable to CREATE MSSQL BASE table indexes : ".$db->baseErrorMessage());
            else
               ErrorMessage("Successfully created MSSQL BASE table indexes");
      }
@@ -350,7 +333,7 @@ function CreateBASEAG($db) {
 
            $db->baseExecute($sql, -1, -1, false);
            if ( $db->baseErrorMessage() != "" )
-              ErrorMessage("Unable to CREATE table 'base_roles': ".$db->baseErrorMessage());
+              throw new SetupException("Unable to CREATE table 'base_roles': ".$db->baseErrorMessage());
            else
               ErrorMessage("Successfully created 'base_roles'");
 
@@ -359,7 +342,7 @@ function CreateBASEAG($db) {
            $sql = "INSERT INTO base_roles (role_id, role_name, role_desc) VALUES (1, 'Admin', 'Administrator');";
            $db->baseExecute($sql, -1, -1, false);
            if ( $db->baseErrorMessage() != "" )
-              ErrorMessage("Unable to INSERT roles: ".$db->baseErrorMessage());
+              throw new SetupException("Unable to INSERT roles: ".$db->baseErrorMessage());
            else
               ErrorMessage("Successfully INSERTED Admin role");
 
@@ -367,7 +350,7 @@ function CreateBASEAG($db) {
            $sql = "INSERT INTO base_roles (role_id, role_name, role_desc) VALUES (10, 'user', 'Authenticated User');";
            $db->baseExecute($sql, -1, -1, false);
            if ( $db->baseErrorMessage() != "" )
-              ErrorMessage("Unable to INSERT roles: ".$db->baseErrorMessage());
+              throw new SetupException("Unable to INSERT roles: ".$db->baseErrorMessage());
            else
               ErrorMessage("Successfully INSERTED Authenticated User role");
 
@@ -375,7 +358,7 @@ function CreateBASEAG($db) {
            $sql = "INSERT INTO base_roles (role_id, role_name, role_desc) VALUES (10000, 'anonymous', 'Anonymous User');";
            $db->baseExecute($sql, -1, -1, false);
            if ( $db->baseErrorMessage() != "" )
-              ErrorMessage("Unable to INSERT roles: ".$db->baseErrorMessage());
+              throw new SetupException("Unable to INSERT roles: ".$db->baseErrorMessage());
            else
               ErrorMessage("Successfully INSERTED Anonymous User role");
 
@@ -383,7 +366,7 @@ function CreateBASEAG($db) {
            $sql = "INSERT INTO base_roles (role_id, role_name, role_desc) VALUES (50, 'ag_editor', 'Alert Group Editor');";
            $db->baseExecute($sql, -1, -1, false);
            if ( $db->baseErrorMessage() != "" )
-              ErrorMessage("Unable to INSERT roles: ".$db->baseErrorMessage());
+              throw new SetupException("Unable to INSERT roles: ".$db->baseErrorMessage());
            else
               ErrorMessage("Successfully INSERTED Alert Group Editor role");
            $tblBaseRoles_present = $db->baseTableExists("base_roles");
@@ -429,7 +412,7 @@ function CreateBASEAG($db) {
 
            $db->baseExecute($sql, -1, -1, false);
            if ( $db->baseErrorMessage() != "" )
-              ErrorMessage("Unable to CREATE table 'base_users': ".$db->baseErrorMessage());
+              throw new SetupException("Unable to CREATE table 'base_users': ".$db->baseErrorMessage());
            else
               ErrorMessage("Successfully created 'base_users'");
            $tblBaseUsers_present = $db->baseTableExists("base_users");
@@ -441,5 +424,3 @@ function CreateBASEAG($db) {
      else
         return 0;
 }
-
-?>
