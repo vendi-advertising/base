@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Vendi\BASE;
 
+use NilPortugues\Sql\QueryBuilder\Builder\MySqlBuilder;
+use Vendi\Shared\utils as vendi_utils;
+use Vendi\BASE\Database;
+
 /*******************************************************************************
 ** Purpose: Creates a user object that will contain the authenticated user
 ** information.  If the variable $Use_Auth_System is set to 0 (zero) then
@@ -313,17 +317,39 @@ class BaseUser
         setcookie('BASERole', $cookievalue);
     }
 
+    /**
+     * Reads the roleCookie and returns the role id
+     */
     public function readRoleCookie()
     {
-        // reads the roleCookie and returns the role id
-        $cookievalue = @$_COOKIE['BASERole'];
+        //The original code assumed this was always set however if the auth system isn't
+        //used, this will be empty. As a hack, for noew we're just default this to a value
+        //that should never exist in the database.
+        $defaultCookieValue = '@|@';
+        $cookievalue = vendi_utils::get_cookie_value('BASERole', $defaultCookieValue);
         $cookiearr = explode('|', $cookievalue);
-        $passwd = $this->db->DB->qstr($cookiearr[0], get_magic_quotes_gpc());
-        $user = $this->db->DB->qstr(@$cookiearr[1], get_magic_quotes_gpc());
-        $sql = "SELECT role_id FROM base_users where usr_login=$user and usr_pwd=$passwd;";
-        $result = $this->db->baseExecute($sql);
-        $role = $result->row->fields['role_id'];
+        $passwd = $cookiearr[0];
+        $user = @$cookiearr[1];
+        // $sql = "SELECT role_id FROM base_users where usr_login=$user and usr_pwd=$passwd;";
+        // $result = $this->db->baseExecute($sql);
+        // $role = $result->row->fields['role_id'];
 
+        $builder = new MySqlBuilder();
+        $query = $builder
+                    ->select()
+                    ->setTable('base_users')
+                    ->setColumns(['role_id'])
+                    ->where()
+                    ->equals('usr_login', $user)
+                    ->equals('usr_pwd', $passwd)
+                    ->end()
+                ;
+
+        $sql = $builder->write($query);
+        $values = $builder->getValues();
+        $stmt = Database::get_pdo()->prepare($sql);
+        $role = $stmt->fetchColumn();
+        dd($role);
         return $role;
     }
 
