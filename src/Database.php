@@ -14,14 +14,12 @@ final class Database
             return self::$dbh;
         }
 
-        include(VENDI_BASE_ROOT_DIR . '/base_conf.php');
+        $config = Config::get_config();
 
-        dump($alert_dbname);
-
-        $db_user = $alert_user;
-        $db_name = $alert_dbname;
-        $db_pass = $alert_password;
-        $db_host = $alert_host;
+        $db_user = $config['database']['primary']['username'];
+        $db_name = $config['database']['primary']['name'];
+        $db_pass = $config['database']['primary']['password'];
+        $db_host = $config['database']['primary']['host'];
 
         self::$dbh = new \PDO("mysql:host=${db_host};dbname=${db_name}", $db_user, $db_pass);
         self::$dbh->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);

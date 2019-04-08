@@ -1,0 +1,29 @@
+legacy:
+    # Path to the DB abstraction library
+    #  (Note: DO NOT include a trailing backslash after the directory)
+    #   e.g. $foo = '/tmp'      [OK]
+    #        $foo = '/tmp/'     [OK]
+    #        $foo = 'c:\tmp'    [OK]
+    #        $foo = 'c:\tmp\'   [WRONG]
+    DBlib_path: C:/Users/Chris Haas.VENDI/Development/base/vendor/adodb/adodb-php
+
+system:
+    language: english
+    use_auth_system: false
+
+database:
+    primary:
+        type: mysqli
+        name: snort
+        host: localhost
+        port:
+        username: snort
+        password: snort
+    archive:
+        exists: false # Set this to 1 if you have an archive DB
+        type: mysqli
+        name: snort
+        host: localhost
+        port:
+        username: snort
+        password: snort

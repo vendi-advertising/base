@@ -322,35 +322,38 @@ class BaseUser
      */
     public function readRoleCookie()
     {
-        //The original code assumed this was always set however if the auth system isn't
-        //used, this will be empty. As a hack, for noew we're just default this to a value
-        //that should never exist in the database.
-        $defaultCookieValue = '@|@';
-        $cookievalue = vendi_utils::get_cookie_value('BASERole', $defaultCookieValue);
-        $cookiearr = explode('|', $cookievalue);
-        $passwd = $cookiearr[0];
-        $user = @$cookiearr[1];
-        // $sql = "SELECT role_id FROM base_users where usr_login=$user and usr_pwd=$passwd;";
-        // $result = $this->db->baseExecute($sql);
-        // $role = $result->row->fields['role_id'];
+        $cookievalue = vendi_utils::get_cookie_value('BASERole');
+        if($cookievalue){
 
-        $builder = new MySqlBuilder();
-        $query = $builder
-                    ->select()
-                    ->setTable('base_users')
-                    ->setColumns(['role_id'])
-                    ->where()
-                    ->equals('usr_login', $user)
-                    ->equals('usr_pwd', $passwd)
-                    ->end()
-                ;
+            $cookiearr = explode('|', $cookievalue);
 
-        $sql = $builder->write($query);
-        $values = $builder->getValues();
-        $stmt = Database::get_pdo()->prepare($sql);
-        $role = $stmt->fetchColumn();
-        dd($role);
-        return $role;
+            if(2 === count($cookiearr)){
+                $passwd = $cookiearr[0];
+                $user = $cookiearr[1];
+
+                $builder = new MySqlBuilder();
+                $query = $builder
+                            ->select()
+                            ->setTable('base_users')
+                            ->setColumns(['role_id'])
+                            ->where()
+                            ->equals('usr_login', $user)
+                            ->equals('usr_pwd', $passwd)
+                            ->end()
+                        ;
+
+                $sql = $builder->write($query);
+                $values = $builder->getValues();
+                $stmt = Database::get_pdo()->prepare($sql);
+                $role = $stmt->fetchColumn();
+
+                if(false !== $role){
+                    return $role;
+                }
+            }
+        }
+
+        return null;
     }
 
     public function cryptpassword($password)

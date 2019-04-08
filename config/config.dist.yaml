@@ -1,0 +1,29 @@
+legacy:
+    # Path to the DB abstraction library
+    #  (Note: DO NOT include a trailing backslash after the directory)
+    #   e.g. $foo = '/tmp'      [OK]
+    #        $foo = '/tmp/'     [OK]
+    #        $foo = 'c:\tmp'    [OK]
+    #        $foo = 'c:\tmp\'   [WRONG]
+    DBlib_path: null
+
+system:
+    language: null
+    use_auth_system: null
+
+database:
+    primary:
+        type: mysqli
+        name:
+        host:
+        port:
+        username:
+        password:
+    archive:
+        exists: false # Set this to 1 if you have an archive DB
+        type:
+        name:
+        host:
+        port:
+        username:
+        password:

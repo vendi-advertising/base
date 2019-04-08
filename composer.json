@@ -30,7 +30,8 @@
         "webmozart/path-util": "^2.3",
         "symfony/polyfill-php73": "^1.11",
         "twig/twig": "^2.0",
-        "nilportugues/sql-query-builder": "^1.7"
+        "nilportugues/sql-query-builder": "^1.7",
+        "symfony/yaml": "^4.2"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^2.14.2",
