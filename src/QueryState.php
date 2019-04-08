@@ -194,7 +194,7 @@ class QueryState
         } else {
             $this->show_rows_on_screen = $show_rows;
 
-            return $db->baseExecute($sql, ($this->current_view * $show_rows),
+            return $db->baseExecute($sql, (($this->current_view ? $this->current_view : 0) * $show_rows),
                                 $show_rows);
         }
     }
@@ -210,9 +210,9 @@ class QueryState
             } else {
                 printf("<div style='text-align:center;margin:auto'>" . _DISPLAYINGTOTAL .
                   "</div><BR>\n",
-                  ($this->current_view * $show_rows) + 1,
-                  (($this->current_view * $show_rows) + $show_rows - 1) < $this->num_result_rows ?
-                  (($this->current_view * $show_rows) + $show_rows) : $this->num_result_rows,
+                  (($this->current_view ? $this->current_view : 0) * $show_rows) + 1,
+                  ((($this->current_view ? $this->current_view : 0) * $show_rows) + $show_rows - 1) < $this->num_result_rows ?
+                  ((($this->current_view ? $this->current_view : 0) * $show_rows) + $show_rows) : $this->num_result_rows,
                   $this->num_result_rows);
             }
         } else {
@@ -238,14 +238,14 @@ class QueryState
             $tmp_num_views = ($this->num_result_rows / $show_rows);
             $tmp_top = $tmp_bottom = $max_scroll_buttons / 2;
 
-            if (($this->current_view - ($max_scroll_buttons / 2)) >= 0) {
-                $tmp_bottom = $this->current_view - $max_scroll_buttons / 2;
+            if ((($this->current_view ? $this->current_view : 0) - ($max_scroll_buttons / 2)) >= 0) {
+                $tmp_bottom = ($this->current_view ? $this->current_view : 0) - $max_scroll_buttons / 2;
             } else {
                 $tmp_bottom = 0;
             }
 
-            if (($this->current_view + ($max_scroll_buttons / 2)) <= $tmp_num_views) {
-                $tmp_top = $this->current_view + $max_scroll_buttons / 2;
+            if ((($this->current_view ? $this->current_view : 0) + ($max_scroll_buttons / 2)) <= $tmp_num_views) {
+                $tmp_top = ($this->current_view ? $this->current_view : 0) + $max_scroll_buttons / 2;
             } else {
                 $tmp_top = $tmp_num_views;
             }
@@ -256,7 +256,7 @@ class QueryState
             }
 
             for ($i = $tmp_bottom; $i < $tmp_top; ++$i) {
-                if ($i != $this->current_view) {
+                if ($i != ($this->current_view ? $this->current_view : 0)) {
                     echo '<INPUT TYPE="submit" NAME="submit" VALUE="' . $i . '">' . "\n";
                 } else {
                     echo '[' . $i . '] ' . "\n";

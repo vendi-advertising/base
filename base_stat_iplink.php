@@ -181,7 +181,7 @@ require_once __DIR__ . '/includes/vendi_boot.php';
 		else
 		{
 			$sip_fqdn =_PSNODNS;
-			$sip_fqdn =_PSNODNS;
+			$dip_fqdn =_PSNODNS;
 		}
 
      /* Get stats on the link */
