@@ -278,9 +278,11 @@ class BaseUser
         return $myrow;
     }
 
+    /**
+     * Returns rolename for a specified role id
+     */
     public function roleName($roleID)
     {
-        // returns rolename for a specified role id
         $db = $this->db;
         $sql = "SELECT role_name FROM base_roles WHERE role_id = '" . $roleID . "';";
         $result = $db->baseExecute($sql);
