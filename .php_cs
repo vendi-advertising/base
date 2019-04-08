@@ -22,7 +22,10 @@ return PhpCsFixer\Config::create()
         'ordered_imports' => ['sortAlgorithm' => 'alpha'],
         'short_scalar_cast' => true,
         'single_quote' => true,
-        'strict_comparison' => true,
+
+        //Setting this to true is breaking things
+        'strict_comparison' => false,
+        'concat_space' => ['spacing' => 'one'],
     ])
     ->setFinder($finder)
     ->setUsingCache(true)
