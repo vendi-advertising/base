@@ -1,61 +1,66 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Vendi\BASE\Criteria;
 
 class Layer4Criteria extends SingleElementCriteria
 {
-   function Init()
-   {
-      $this->criteria = "";
-   }
+    public function Init()
+    {
+        $this->criteria = '';
+    }
 
-   function Clear()
-   {
-     /* clears the criteria */
-   }
+    public function Clear()
+    {
+        /* clears the criteria */
+    }
 
-   function SanitizeElement($i = null)
-   {
-      $this->criteria = CleanVariable($this->criteria, "", array("UDP", "TCP", "ICMP", "RawIP"));
-   }
+    public function SanitizeElement($i = null)
+    {
+        $this->criteria = CleanVariable($this->criteria, '', ['UDP', 'TCP', 'ICMP', 'RawIP']);
+    }
 
-   function PrintForm($field_list, $blank_field_string, $add_button_string)
-   {
-      if ( $this->criteria != "" )
-         echo '<INPUT TYPE="submit" NAME="submit" VALUE="'._NOLAYER4.'"> &nbsp';
-      if ( $this->criteria == "TCP" )
-         echo '
+    public function PrintForm($field_list = null, $blank_field_string = null, $add_button_string = null)
+    {
+        if ('' != $this->criteria) {
+            echo '<INPUT TYPE="submit" NAME="submit" VALUE="' . _NOLAYER4 . '"> &nbsp';
+        }
+        if ('TCP' == $this->criteria) {
+            echo '
            <INPUT TYPE="submit" NAME="submit" VALUE="UDP"> &nbsp
            <INPUT TYPE="submit" NAME="submit" VALUE="ICMP">';
-      else if ( $this->criteria == "UDP" )
-         echo '
+        } elseif ('UDP' == $this->criteria) {
+            echo '
            <INPUT TYPE="submit" NAME="submit" VALUE="TCP"> &nbsp
            <INPUT TYPE="submit" NAME="submit" VALUE="ICMP">';
-      else if ( $this->criteria == "ICMP" )
-         echo '
+        } elseif ('ICMP' == $this->criteria) {
+            echo '
            <INPUT TYPE="submit" NAME="submit" VALUE="TCP"> &nbsp
            <INPUT TYPE="submit" NAME="submit" VALUE="UDP">';
-      else
-         echo '
+        } else {
+            echo '
            <INPUT TYPE="submit" NAME="submit" VALUE="TCP"> &nbsp
            <INPUT TYPE="submit" NAME="submit" VALUE="UDP">
            <INPUT TYPE="submit" NAME="submit" VALUE="ICMP">';
-   }
+        }
+    }
 
-   function ToSQL()
-   {
-     /* convert this criteria to SQL */
-   }
+    public function ToSQL()
+    {
+        /* convert this criteria to SQL */
+    }
 
-   function Description($human_fields = null)
-   {
-      if ( $this->criteria == "TCP" )
-         return _QCTCPCRIT;
-      else if ( $this->criteria == "UDP" )
-         return _QCUDPCRIT;
-      else if ( $this->criteria == "ICMP" )
-         return _QCICMPCRIT ;
-      else
-         return _QCLAYER4CRIT;
-   }
+    public function Description($human_fields = null)
+    {
+        if ('TCP' == $this->criteria) {
+            return _QCTCPCRIT;
+        } elseif ('UDP' == $this->criteria) {
+            return _QCUDPCRIT;
+        } elseif ('ICMP' == $this->criteria) {
+            return _QCICMPCRIT;
+        } else {
+            return _QCLAYER4CRIT;
+        }
+    }
 }
