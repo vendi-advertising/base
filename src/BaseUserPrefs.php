@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Vendi\BASE;
 
 /*******************************************************************************
@@ -19,18 +21,16 @@ namespace Vendi\BASE;
 //TODO: This class is invoked once but not used. cjh - 2019-04-05
 class BaseUserPrefs
 {
-    var $db;
+    public $db;
 
-    function __construct()
+    public function __construct()
     {
         // Constructor
-        GLOBAL $DBlib_path, $DBtype, $db_connect_method, $alert_dbname, $alert_host,
+        global $DBlib_path, $DBtype, $db_connect_method, $alert_dbname, $alert_host,
                             $alert_port, $alert_user, $alert_password;
         $db = NewBASEDBConnection($DBlib_path, $DBtype);
         $db->baseDBConnect($db_connect_method, $alert_dbname, $alert_host,
                             $alert_port, $alert_user, $alert_password);
         $this->db = $db;
     }
-
-
 }

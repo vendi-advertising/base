@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Vendi\BASE;
 
 /*******************************************************************************
@@ -24,65 +26,58 @@ define(CAPA_PGRAPH, 4);
 
 class CapaRegistry
 {
-  var $CAPAREG;  // Registry hash, uses CAPA_ definitions as key.
+    public $CAPAREG;  // Registry hash, uses CAPA_ definitions as key.
 
-  // Constructor
-  function __construct ()
-  {
-    /* Automatically detect capabilities. Future development
-     * should be appended here.
-     */
-
-    // Mail
-    if (function_exists('mail'))
+    // Constructor
+    public function __construct()
     {
-      $this->CAPAREG[CAPA_MAIL] = true;
-    } else {
-      $this->CAPAREG[CAPA_MAIL] = false;
+        /* Automatically detect capabilities. Future development
+         * should be appended here.
+         */
+
+        // Mail
+        if (function_exists('mail')) {
+            $this->CAPAREG[CAPA_MAIL] = true;
+        } else {
+            $this->CAPAREG[CAPA_MAIL] = false;
+        }
+
+        // PEAR::MAIL
+        @include 'Mail.php';
+        if (class_exists('Mail')) {
+            $this->CAPAREG[CAPA_PMAIL] = true;
+        } else {
+            $this->CAPAREG[CAPA_PMAIL] = false;
+        }
+
+        // PEAR::DB
+        @include 'DB.php';
+        if (class_exists('DB')) {
+            $this->CAPAREG[CAPA_PEARDB] = true;
+        } else {
+            $this->CAPAREG[CAPA_PEARDB] = false;
+        }
+
+        // PEAR::Image_Graph
+        @include 'Image_Graph.php';
+        if (class_exists('Image_Graph')) {
+            $this->CAPAREG[CAPA_PGRAPH] = true;
+        } else {
+            $this->CAPAREG[CAPA_PGRAPH] = false;
+        }
+
+        // Add checks here as needed.
     }
 
-    // PEAR::MAIL
-    @include "Mail.php";
-    if (class_exists("Mail"))
+    // Capability checking function. Pass it the definitions used above.
+    public function hasCapa($capability)
     {
-      $this->CAPAREG[CAPA_PMAIL] = true;
-    } else {
-      $this->CAPAREG[CAPA_PMAIL] = false;
+        if (array_key_exists($capability, $this->CAPAREG)) {
+            return $this->CAPAREG[$capability];
+        } else {
+            return false;
+        }
     }
-
-    // PEAR::DB
-    @include "DB.php";
-    if (class_exists("DB"))
-    {
-      $this->CAPAREG[CAPA_PEARDB] = true;
-    } else {
-      $this->CAPAREG[CAPA_PEARDB] = false;
-    }
-
-    // PEAR::Image_Graph
-    @include "Image_Graph.php";
-    if (class_exists("Image_Graph"))
-    {
-      $this->CAPAREG[CAPA_PGRAPH] = true;
-    } else {
-      $this->CAPAREG[CAPA_PGRAPH] = false;
-    }
-
-    // Add checks here as needed.
-
-  }
-
-  // Capability checking function. Pass it the definitions used above.
-  function hasCapa($capability)
-  {
-    if (array_key_exists($capability, $this->CAPAREG))
-    {
-      return $this->CAPAREG[$capability];
-    } else {
-      return false;
-    }
-  }
-
 }
 
 //$CAPAREG = new CapaRegistry();

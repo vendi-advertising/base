@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Vendi\BASE;
 
 final class DatabaseTypes
@@ -12,7 +14,7 @@ final class DatabaseTypes
 
     public const ORACLE = 'oci8';
 
-    public static function get_support_database_types() : array
+    public static function get_support_database_types(): array
     {
         return [
             self::MYSQL,

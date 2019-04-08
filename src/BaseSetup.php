@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 /*******************************************************************************
 ** Basic Analysis and Security Engine (BASE)
 ** Copyright (C) 2004 BASE Project Team
@@ -23,31 +25,29 @@
 //TODO: This class appears to be dead. cjh - 2019-04-05
 class BaseSetup
 {
-   var $file;
+    public $file;
 
-    function __construct($filename)
+    public function __construct($filename)
     {
         // Passes in the filename... This is for the CheckConfig
         $this->file = $filename;
     }
 
-    function CheckConfig($distConfigFile)
+    public function CheckConfig($distConfigFile)
     {
         // Compares variables in distConfigFile to $this->file
     }
 
-    function writeConfig()
+    public function writeConfig()
     {
         //writes the config file
     }
 
-    function displayConfig()
+    public function displayConfig()
     {
         /*displays current config
          * Not to be confused with the end display on the
          * set up pages!
          */
     }
-
-
 }
