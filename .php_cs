@@ -11,7 +11,11 @@ return PhpCsFixer\Config::create()
         '@Symfony' =>  true,
         'array_syntax' => ['syntax' => 'short'],
         'declare_strict_types' => true,
-        'mb_str_functions' => true,
+
+        //Don't set this to true until it can be proven that strlen() is either
+        //intended for byte count or that only ASCII is ever used.
+        'mb_str_functions' => false,
+
         'no_php4_constructor' => true,
         'no_short_echo_tag' => true,
         'non_printable_character' => ['use_escape_sequences_in_strings' => true],
